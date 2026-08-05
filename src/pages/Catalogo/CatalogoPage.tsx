@@ -45,7 +45,7 @@ export default function CatalogoPage({ favorites, onQuickView, onToggleFavorite 
   };
 
   return (
-    <div id="catalogo-page" className="pt-[108px] sm:pt-[124px] bg-paper min-h-screen">
+    <div id="catalogo-page" className="pt-[140px] md:pt-[156px] bg-paper min-h-screen">
       <section className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20">
         <Link
           id="back-to-home-link-catalogo"

@@ -37,7 +37,7 @@ export default function OfertasPage({
   }, [saleProducts, sortMode]);
 
   return (
-    <div id="ofertas-page" className="pt-[108px] sm:pt-[124px] bg-paper">
+    <div id="ofertas-page" className="pt-[140px] md:pt-[156px] bg-paper">
       {/* Full-page header dedicated to deals — stats, not spec sheets */}
       <section id="ofertas-hero" className="relative bg-panel text-ink overflow-hidden border-b border-line">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">

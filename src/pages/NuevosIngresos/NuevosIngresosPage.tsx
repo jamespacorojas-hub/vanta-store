@@ -24,7 +24,7 @@ export default function NuevosIngresosPage({
   onExploreCatalog,
 }: NuevosIngresosPageProps) {
   return (
-    <div id="nuevos-ingresos-page" className="pt-[108px] sm:pt-[124px] bg-paper">
+    <div id="nuevos-ingresos-page" className="pt-[140px] md:pt-[156px] bg-paper">
 
       {/* ── HERO: imagen a la derecha, texto a la izquierda, layout limpio sin superposición ── */}
       <section id="nuevos-ingresos-hero" className="bg-paper-soft border-b border-line overflow-hidden">
