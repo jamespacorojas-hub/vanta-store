@@ -1,14 +1,15 @@
 import React, { useState } from 'react';
 import { Heart, ShoppingBag, Eye, Flame } from 'lucide-react';
-import { Product } from '../../types';
+import { SaleProduct } from '../../types';
 import { getColorClass } from '../../utils/colorSwatch';
 
 interface DealProductCardProps {
-  product: Product;
+  key?: string;
+  product: SaleProduct;
   discountPct: number;
   savingsAmount: number;
-  onQuickView: (product: Product) => void;
-  onToggleFavorite: (product: Product) => void;
+  onQuickView: (product: SaleProduct) => void;
+  onToggleFavorite: (product: SaleProduct) => void;
   isFavorite: boolean;
 }
 
