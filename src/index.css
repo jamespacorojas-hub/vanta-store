@@ -1,0 +1,64 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=JetBrains+Mono:wght@300;400;500;700;800&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400;1,9..144,500&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+  --font-display: "Fraunces", "Iowan Old Style", Georgia, serif;
+  --animate-pulse-red: pulse-red 1.5s infinite ease-in-out;
+
+  /* Taller — warm atelier palette. Paper & ink replace black/white/zinc; Botella green is the one accent. */
+  --color-paper: #EDEAE2;
+  --color-paper-soft: #F5F3ED;
+  --color-panel: #E3DFD3;
+  --color-ink: #221F1A;
+  --color-muted: #726C60;
+  --color-accent: #2F4538;
+  --color-accent-soft: #DCE3D8;
+  --color-line: #D3CCBC;
+
+  @keyframes pulse-red {
+    0%, 100% {
+      background-color: #ef4444; /* red-500 */
+      color: #ffffff;
+      border-color: #ef4444;
+    }
+    50% {
+      background-color: #18181b; /* zinc-900 */
+      color: #f87171; /* red-400 */
+      border-color: #f87171;
+    }
+  }
+}
+
+body {
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+}
+
+/* Custom Scrollbar Styles to match the warm atelier aesthetic */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-paper-soft);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-muted);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-ink);
+}
+
+/* Smooth motion utilities */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}

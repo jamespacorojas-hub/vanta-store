@@ -1,0 +1,6 @@
+{
+  "name": "MONT STORE",
+  "description": "Tienda web premium de comercio electrónico de ropa streetwear minimalista y urbana con finalización de pedidos por WhatsApp.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
