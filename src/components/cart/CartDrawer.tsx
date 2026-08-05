@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Trash2, Plus, Minus, Send, AlertCircle, ShoppingBag } from 'lucide-react';
+import { X, Trash2, Plus, Minus, Send, AlertCircle, ShoppingBag, Truck, MapPin, MessageSquare } from 'lucide-react';
 import { CartItem, OrderDetails } from '../../types';
 import PaymentInstructions from './PaymentInstructions';
 import { getGarmentPhoto } from '../../utils/productImages';
@@ -32,7 +32,6 @@ const LIMA_DISTRICTS = [
   'San Martín de Porres',
   'Ate Vitarte',
   'Otro Distrito (Lima)',
-  'Provincia (Envío Shalom/Olva)',
 ];
 
 const PAYMENT_METHODS = [
@@ -50,7 +49,9 @@ export default function CartDrawer({
   onClearCart,
 }: CartDrawerProps) {
   const [customerName, setCustomerName] = useState('');
+  const [shippingType, setShippingType] = useState<'lima' | 'provincia' | 'chat'>('lima');
   const [district, setDistrict] = useState('');
+  const [customCity, setCustomCity] = useState('');
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [paymentMethod, setPaymentMethod] = useState('');
   const [formError, setFormError] = useState('');
@@ -71,12 +72,12 @@ export default function CartDrawer({
       setFormError('Por favor, ingresa tu nombre completo.');
       return;
     }
-    if (!district) {
-      setFormError('Por favor, selecciona tu distrito o provincia de destino.');
+    if (shippingType === 'lima' && !district) {
+      setFormError('Por favor, selecciona tu distrito de entrega en Lima.');
       return;
     }
-    if (!deliveryAddress.trim()) {
-      setFormError('Por favor, especifica tu dirección exacta de entrega.');
+    if (shippingType === 'provincia' && !customCity.trim()) {
+      setFormError('Por favor, ingresa tu ciudad o provincia de destino.');
       return;
     }
     if (!paymentMethod) {
@@ -86,7 +87,21 @@ export default function CartDrawer({
 
     setFormError('');
 
-    // Generate formatted message string exactly as requested by user instructions
+    let shippingTypeLabel = 'Lima Metropolitana (Motorizado Express)';
+    let shippingDest = district;
+    let shippingAddr = deliveryAddress.trim() || 'Coordinar dirección por WhatsApp';
+
+    if (shippingType === 'provincia') {
+      shippingTypeLabel = 'Envío a Provincia (Shalom / Olva Courier)';
+      shippingDest = customCity.trim();
+      shippingAddr = deliveryAddress.trim() || 'Coordinar agencia o dirección por WhatsApp';
+    } else if (shippingType === 'chat') {
+      shippingTypeLabel = 'Coordinar Envío y Dirección por Chat';
+      shippingDest = 'Por coordinar en el chat de WhatsApp';
+      shippingAddr = 'Por coordinar en el chat de WhatsApp';
+    }
+
+    // Generate formatted message string
     let orderText = `Hola, MONT STORE. Quiero realizar el siguiente pedido:\n\n`;
 
     cartItems.forEach((item, index) => {
@@ -107,8 +122,9 @@ export default function CartDrawer({
     orderText += `Costo de envío: Por confirmar\n`;
     orderText += `Total de productos: ${totalQuantity}\n\n`;
     orderText += `Nombre del cliente: ${customerName.trim()}\n`;
-    orderText += `Distrito: ${district}\n`;
-    orderText += `Dirección de entrega: ${deliveryAddress.trim()}\n`;
+    orderText += `Tipo de envío: ${shippingTypeLabel}\n`;
+    orderText += `Destino / Ciudad: ${shippingDest}\n`;
+    orderText += `Dirección / Referencia: ${shippingAddr}\n`;
     orderText += `Método de pago: ${paymentMethod}\n\n`;
     orderText += `Quedo atento a la confirmación de disponibilidad. Gracias.`;
 
@@ -306,42 +322,134 @@ export default function CartDrawer({
                   />
                 </div>
 
-                {/* District */}
-                <div className="space-y-1">
-                  <label htmlFor="district-select" className="block text-[10px] uppercase tracking-wider text-muted font-semibold">
-                    Distrito / Provincia de Entrega *
+                {/* Tipo de Envío */}
+                <div className="space-y-1.5">
+                  <label className="block text-[10px] uppercase tracking-wider text-muted font-semibold">
+                    Tipo de Envío / Destino *
                   </label>
-                  <select
-                    id="district-select"
-                    required
-                    value={district}
-                    onChange={(e) => setDistrict(e.target.value)}
-                    className="w-full text-xs p-3 border border-line rounded-none bg-paper-soft focus:outline-none focus:border-accent font-sans"
-                  >
-                    <option value="">-- Seleccionar Destino --</option>
-                    {LIMA_DISTRICTS.map((dist) => (
-                      <option key={dist} value={dist}>
-                        {dist}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="grid grid-cols-3 gap-1.5 p-1 bg-panel border border-line">
+                    <button
+                      type="button"
+                      id="shipping-type-lima-btn"
+                      onClick={() => setShippingType('lima')}
+                      className={`py-2 px-1 text-[9px] font-mono uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 border cursor-pointer ${
+                        shippingType === 'lima'
+                          ? 'bg-ink text-paper-soft border-ink font-bold shadow-xs'
+                          : 'bg-transparent text-muted border-transparent hover:text-ink hover:bg-paper/50'
+                      }`}
+                    >
+                      <Truck className="w-3.5 h-3.5" />
+                      <span>Lima</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      id="shipping-type-provincia-btn"
+                      onClick={() => setShippingType('provincia')}
+                      className={`py-2 px-1 text-[9px] font-mono uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 border cursor-pointer ${
+                        shippingType === 'provincia'
+                          ? 'bg-ink text-paper-soft border-ink font-bold shadow-xs'
+                          : 'bg-transparent text-muted border-transparent hover:text-ink hover:bg-paper/50'
+                      }`}
+                    >
+                      <MapPin className="w-3.5 h-3.5" />
+                      <span>Provincia</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      id="shipping-type-chat-btn"
+                      onClick={() => setShippingType('chat')}
+                      className={`py-2 px-1 text-[9px] font-mono uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 border cursor-pointer ${
+                        shippingType === 'chat'
+                          ? 'bg-accent text-paper-soft border-accent font-bold shadow-xs'
+                          : 'bg-transparent text-muted border-transparent hover:text-ink hover:bg-paper/50'
+                      }`}
+                    >
+                      <MessageSquare className="w-3.5 h-3.5" />
+                      <span>Por Chat</span>
+                    </button>
+                  </div>
                 </div>
 
-                {/* Address */}
-                <div className="space-y-1">
-                  <label htmlFor="delivery-address-input" className="block text-[10px] uppercase tracking-wider text-muted font-semibold">
-                    Dirección Exacta de Entrega *
-                  </label>
-                  <input
-                    id="delivery-address-input"
-                    type="text"
-                    required
-                    placeholder="Ej. Av. Javier Prado Oeste 1240, Dpto 402"
-                    value={deliveryAddress}
-                    onChange={(e) => setDeliveryAddress(e.target.value)}
-                    className="w-full text-xs p-3 border border-line rounded-none bg-paper-soft focus:outline-none focus:border-accent font-sans"
-                  />
-                </div>
+                {/* Conditional Destination Inputs */}
+                {shippingType === 'lima' && (
+                  <>
+                    <div className="space-y-1">
+                      <label htmlFor="district-select" className="block text-[10px] uppercase tracking-wider text-muted font-semibold">
+                        Distrito de Lima *
+                      </label>
+                      <select
+                        id="district-select"
+                        required
+                        value={district}
+                        onChange={(e) => setDistrict(e.target.value)}
+                        className="w-full text-xs p-3 border border-line rounded-none bg-paper-soft focus:outline-none focus:border-accent font-sans"
+                      >
+                        <option value="">-- Seleccionar Distrito --</option>
+                        {LIMA_DISTRICTS.map((dist) => (
+                          <option key={dist} value={dist}>
+                            {dist}
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div className="space-y-1">
+                      <label htmlFor="delivery-address-input" className="block text-[10px] uppercase tracking-wider text-muted font-semibold">
+                        Dirección de Entrega <span className="text-muted/60 font-normal">(Opcional: o coordinar por chat)</span>
+                      </label>
+                      <input
+                        id="delivery-address-input"
+                        type="text"
+                        placeholder="Ej. Av. Javier Prado 1240, Dpto 402"
+                        value={deliveryAddress}
+                        onChange={(e) => setDeliveryAddress(e.target.value)}
+                        className="w-full text-xs p-3 border border-line rounded-none bg-paper-soft focus:outline-none focus:border-accent font-sans"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {shippingType === 'provincia' && (
+                  <>
+                    <div className="space-y-1">
+                      <label htmlFor="custom-city-input" className="block text-[10px] uppercase tracking-wider text-muted font-semibold">
+                        Ciudad / Provincia de Destino *
+                      </label>
+                      <input
+                        id="custom-city-input"
+                        type="text"
+                        required
+                        placeholder="Ej. Arequipa / Trujillo / Cusco / Chiclayo"
+                        value={customCity}
+                        onChange={(e) => setCustomCity(e.target.value)}
+                        className="w-full text-xs p-3 border border-line rounded-none bg-paper-soft focus:outline-none focus:border-accent font-sans"
+                      />
+                    </div>
+
+                    <div className="space-y-1">
+                      <label htmlFor="delivery-address-input-provincia" className="block text-[10px] uppercase tracking-wider text-muted font-semibold">
+                        Agencia (Shalom / Olva) o Dirección <span className="text-muted/60 font-normal">(Opcional)</span>
+                      </label>
+                      <input
+                        id="delivery-address-input-provincia"
+                        type="text"
+                        placeholder="Ej. Shalom Agencia Central / Olva Domicilio"
+                        value={deliveryAddress}
+                        onChange={(e) => setDeliveryAddress(e.target.value)}
+                        className="w-full text-xs p-3 border border-line rounded-none bg-paper-soft focus:outline-none focus:border-accent font-sans"
+                      />
+                    </div>
+                  </>
+                )}
+
+                {shippingType === 'chat' && (
+                  <div className="p-3 border border-accent/30 bg-accent-soft text-accent text-[10px] font-sans font-medium flex items-center space-x-2 leading-relaxed">
+                    <MessageSquare className="w-4 h-4 shrink-0" />
+                    <span>Coordinaremos tu dirección exacta, ciudad o agencia preferida directamente por WhatsApp.</span>
+                  </div>
+                )}
 
                 {/* Payment Method */}
                 <div className="space-y-1">
