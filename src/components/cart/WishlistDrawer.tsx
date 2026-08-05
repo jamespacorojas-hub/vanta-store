@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Heart, ShoppingBag, Trash2 } from 'lucide-react';
 import { Product } from '../../types';
+import { getGarmentPhoto } from '../../utils/productImages';
 
 interface WishlistDrawerProps {
   isOpen: boolean;
@@ -31,12 +32,12 @@ export default function WishlistDrawer({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="p-4 sm:p-6 border-b border-line flex items-center justify-between bg-paper-soft">
+        <div className="p-4 sm:p-6 border-b border-line bg-paper-soft flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <Heart className="w-5 h-5 text-ink fill-ink" />
-            <span className="text-xs uppercase tracking-widest font-black">
-              MIS FAVORITOS ({favorites.length})
-            </span>
+            <Heart className="w-5 h-5 text-accent fill-accent" />
+            <h2 className="font-display font-black text-sm uppercase tracking-wider text-ink">
+              FAVORITOS ({favorites.length})
+            </h2>
           </div>
           <button
             id="close-wishlist-btn"
@@ -56,7 +57,7 @@ export default function WishlistDrawer({
                 <Heart className="w-6 h-6 text-muted" />
               </div>
               <div>
-                <p className="text-xs uppercase tracking-widest font-bold text-ink">SIN FAVORITOS</p>
+                <p className="text-xs uppercase tracking-widest font-bold text-ink">LISTA DE FAVORITOS VACÍA</p>
                 <p className="text-muted text-xs mt-1.5 font-light">
                   Añade prendas pulsando el ícono de corazón en el catálogo.
                 </p>
@@ -71,68 +72,82 @@ export default function WishlistDrawer({
             </div>
           ) : (
             <div className="space-y-4">
-              {favorites.map((product) => (
-                <div
-                  id={`wishlist-item-${product.id}`}
-                  key={product.id}
-                  className="flex space-x-3.5 bg-paper-soft border border-line p-2.5 relative group"
-                >
-                  {/* Item Image Placeholder - 0 Images */}
-                  <div className="w-16 aspect-[3/4] bg-panel shrink-0 select-none border border-line flex flex-col justify-between p-1.5 text-ink">
-                    <span className="text-[6px] font-mono text-muted uppercase tracking-widest">COD-{product.id.substring(0, 3).toUpperCase()}</span>
-                    <div className="text-[11px] font-black tracking-wider text-center my-auto">
-                      {product.name.split(' ').map(n => n[0]).join('').toUpperCase()}
-                    </div>
-                    <span className="text-[5px] font-mono text-muted text-center uppercase">{product.fabrics[0]}</span>
-                  </div>
+              {favorites.map((product) => {
+                const photo = getGarmentPhoto(product.id, product.fabrics[0], product.colors[0]) || product.images?.[0];
 
-                  {/* Item Info */}
-                  <div className="flex-1 flex flex-col justify-between font-sans">
-                    <div>
-                      <span className="text-[9px] text-muted uppercase tracking-wider">
-                        {product.category}
-                      </span>
-                      <h4 className="font-bold text-xs uppercase text-ink leading-tight mt-0.5">
-                        {product.name}
-                      </h4>
-                      <div className="flex items-baseline space-x-2 mt-1">
-                        <span className="font-mono text-xs font-black text-ink">
-                          S/. {product.price.toFixed(2)}
+                return (
+                  <div
+                    id={`wishlist-item-${product.id}`}
+                    key={product.id}
+                    className="flex space-x-3.5 bg-paper-soft border border-line p-2.5 relative group"
+                  >
+                    {/* Item Image */}
+                    <div className="w-16 aspect-[3/4] bg-panel shrink-0 select-none border border-line overflow-hidden relative flex flex-col justify-between p-1.5 text-ink">
+                      {photo ? (
+                        <img
+                          src={photo}
+                          alt={product.name}
+                          className="absolute inset-0 w-full h-full object-cover"
+                          onError={(e) => {
+                            (e.currentTarget as HTMLElement).style.display = 'none';
+                          }}
+                        />
+                      ) : null}
+                      <span className="text-[6px] font-mono text-muted uppercase tracking-widest relative z-0">COD-{product.id.substring(0, 3).toUpperCase()}</span>
+                      <div className="text-[11px] font-black tracking-wider text-center my-auto relative z-0">
+                        {product.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                      </div>
+                      <span className="text-[5px] font-mono text-muted text-center uppercase relative z-0">{product.fabrics[0]}</span>
+                    </div>
+
+                    {/* Item Info */}
+                    <div className="flex-1 flex flex-col justify-between font-sans">
+                      <div>
+                        <span className="text-[9px] text-muted uppercase tracking-wider">
+                          {product.category}
                         </span>
-                        {product.oldPrice && (
-                          <span className="font-mono text-[10px] text-muted line-through">
-                            S/. {product.oldPrice.toFixed(2)}
+                        <h4 className="font-bold text-xs uppercase text-ink leading-tight mt-0.5">
+                          {product.name}
+                        </h4>
+                        <div className="flex items-baseline space-x-2 mt-1">
+                          <span className="font-mono text-xs font-black text-ink">
+                            S/. {product.price.toFixed(2)}
                           </span>
-                        )}
+                          {product.oldPrice && (
+                            <span className="font-mono text-[10px] text-muted line-through">
+                              S/. {product.oldPrice.toFixed(2)}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex items-center space-x-2 mt-2">
+                        <button
+                          id={`wishlist-buy-${product.id}`}
+                          onClick={() => {
+                            onQuickView(product);
+                            onClose();
+                          }}
+                          className="flex-1 bg-ink text-paper-soft hover:bg-accent text-[9px] py-1.5 px-3 flex items-center justify-center gap-1 uppercase tracking-wider font-bold"
+                        >
+                          <ShoppingBag className="w-3 h-3" />
+                          AGREGAR / VER OPCIONES
+                        </button>
                       </div>
                     </div>
 
-                    <div className="flex items-center space-x-2 mt-2">
-                      <button
-                        id={`wishlist-buy-${product.id}`}
-                        onClick={() => {
-                          onQuickView(product);
-                          onClose();
-                        }}
-                        className="flex-1 bg-ink text-paper-soft hover:bg-accent text-[9px] py-1.5 px-3 flex items-center justify-center gap-1 uppercase tracking-wider font-bold"
-                      >
-                        <ShoppingBag className="w-3 h-3" />
-                        AGREGAR / VER OPCIONES
-                      </button>
-                    </div>
+                    {/* Remove from favorites */}
+                    <button
+                      id={`wishlist-remove-${product.id}`}
+                      onClick={() => onRemoveFavorite(product)}
+                      className="absolute top-2.5 right-2.5 text-muted hover:text-red-500 transition-colors"
+                      aria-label="Quitar de favoritos"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
                   </div>
-
-                  {/* Remove from favorites */}
-                  <button
-                    id={`wishlist-remove-${product.id}`}
-                    onClick={() => onRemoveFavorite(product)}
-                    className="absolute top-2.5 right-2.5 text-muted hover:text-red-500 transition-colors"
-                    aria-label="Quitar de favoritos"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              ))}
+                );
+              })}
             </div>
           )}
         </div>

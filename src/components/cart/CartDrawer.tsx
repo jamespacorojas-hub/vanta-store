@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { X, Trash2, Plus, Minus, Send, AlertCircle, ShoppingBag } from 'lucide-react';
 import { CartItem, OrderDetails } from '../../types';
 import PaymentInstructions from './PaymentInstructions';
+import { getGarmentPhoto } from '../../utils/productImages';
 
 interface CartDrawerProps {
   isOpen: boolean;
@@ -183,20 +184,35 @@ export default function CartDrawer({
             <>
               {/* Product list */}
               <div className="space-y-4 border-b border-line pb-6">
-                {cartItems.map((item) => (
-                  <div
-                    id={`cart-item-${item.id}`}
-                    key={item.id}
-                    className="flex space-x-3.5 bg-paper-soft border border-line p-2.5 relative group"
-                  >
-                    {/* Item Image Placeholder - 0 Images */}
-                    <div className="w-16 aspect-[3/4] bg-panel shrink-0 select-none border border-line flex flex-col justify-between p-1.5 text-ink">
-                      <span className="text-[6px] font-mono text-muted uppercase tracking-widest">COD-{item.product.id.substring(0, 3).toUpperCase()}</span>
-                      <div className="text-[11px] font-black tracking-wider text-center my-auto">
-                        {item.product.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                {cartItems.map((item) => {
+                  const fabric = item.selectedFabric || item.product.fabrics[0] || '';
+                  const color = item.selectedColor || item.product.colors[0] || '';
+                  const photo = getGarmentPhoto(item.product.id, fabric, color) || item.product.images?.[0];
+
+                  return (
+                    <div
+                      id={`cart-item-${item.id}`}
+                      key={item.id}
+                      className="flex space-x-3.5 bg-paper-soft border border-line p-2.5 relative group"
+                    >
+                      {/* Item Image */}
+                      <div className="w-16 aspect-[3/4] bg-panel shrink-0 select-none border border-line overflow-hidden relative flex flex-col justify-between p-1.5 text-ink">
+                        {photo ? (
+                          <img
+                            src={photo}
+                            alt={item.product.name}
+                            className="absolute inset-0 w-full h-full object-cover"
+                            onError={(e) => {
+                              (e.currentTarget as HTMLElement).style.display = 'none';
+                            }}
+                          />
+                        ) : null}
+                        <span className="text-[6px] font-mono text-muted uppercase tracking-widest relative z-0">COD-{item.product.id.substring(0, 3).toUpperCase()}</span>
+                        <div className="text-[11px] font-black tracking-wider text-center my-auto relative z-0">
+                          {item.product.name.split(' ').map(n => n[0]).join('').toUpperCase()}
+                        </div>
+                        <span className="text-[5px] font-mono text-muted text-center uppercase relative z-0">{item.selectedFabric || item.product.fabrics[0]}</span>
                       </div>
-                      <span className="text-[5px] font-mono text-muted text-center uppercase">{item.selectedFabric || item.product.fabrics[0]}</span>
-                    </div>
 
                     {/* Item Info */}
                     <div className="flex-1 flex flex-col justify-between font-sans">
