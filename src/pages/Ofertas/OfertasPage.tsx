@@ -38,54 +38,79 @@ export default function OfertasPage({
 
   return (
     <div id="ofertas-page" className="pt-[78px] sm:pt-[96px] md:pt-[130px] bg-paper">
-      {/* Full-page header dedicated to deals — stats, not spec sheets */}
+      {/* Full-page header dedicated to deals with Campaign Banner */}
       <section id="ofertas-hero" className="relative bg-panel text-ink overflow-hidden border-b border-line">
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
-          <Link
-            id="back-to-home-link-ofertas"
-            to="/"
-            className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-ink hover:text-accent transition-colors mb-10"
-          >
-            <ArrowLeft className="w-3.5 h-3.5" /> Volver al inicio
-          </Link>
+        <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 min-h-[420px] sm:min-h-[500px]">
+          {/* Left Column: Info & Stats (7 cols) */}
+          <div className="lg:col-span-7 flex flex-col justify-center px-6 sm:px-10 lg:px-14 py-12 sm:py-16 gap-6">
+            <Link
+              id="back-to-home-link-ofertas"
+              to="/"
+              className="inline-flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-widest text-ink hover:text-accent transition-colors self-start"
+            >
+              <ArrowLeft className="w-3.5 h-3.5" /> Volver al inicio
+            </Link>
 
-          <div className="max-w-2xl">
-            <span className="text-[10px] font-sans tracking-[0.35em] text-muted uppercase flex items-center gap-2">
-              <span className="w-2 h-2 bg-accent rounded-full" />
-              PRECIOS REBAJADOS // STOCK REAL
-            </span>
-            <h1 className="font-display font-black text-4xl sm:text-6xl leading-tight mt-2.5">
-              OFERTAS
-              <br />
-              <span className="text-accent">ACTIVAS AHORA</span>
-            </h1>
-            <p className="text-muted text-xs sm:text-sm font-sans font-light leading-relaxed mt-5 max-w-xl">
+            <div>
+              <span className="text-[10px] font-mono tracking-[0.3em] text-muted uppercase flex items-center gap-2 mb-2.5">
+                <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+                PRECIOS REBAJADOS // STOCK REAL // TEMPORADA
+              </span>
+              <h1 className="font-display font-black text-4xl sm:text-6xl leading-tight tracking-tight">
+                OFERTAS
+                <br />
+                <span className="text-accent">ACTIVAS AHORA</span>
+              </h1>
+            </div>
+
+            <p className="text-muted text-xs sm:text-sm font-sans font-light leading-relaxed max-w-xl">
               Precios rebajados directamente sobre el precio de lista, sin cupones ni letra pequeña. Se actualizan por temporada y duran hasta agotar el stock disponible.
             </p>
+
+            {/* Real stats bar */}
+            <div className="grid grid-cols-3 gap-2.5 sm:gap-4 max-w-lg">
+              <div className="bg-paper-soft border border-line p-3 sm:p-4 rounded-xs">
+                <div className="flex items-center gap-1.5 text-muted mb-1">
+                  <Flame className="w-3.5 h-3.5 text-accent" />
+                  <span className="text-[8px] sm:text-[9px] font-mono uppercase tracking-widest font-bold">En oferta</span>
+                </div>
+                <span className="font-mono text-xl sm:text-3xl font-black text-ink">{saleProducts.length}</span>
+              </div>
+              <div className="bg-paper-soft border border-line p-3 sm:p-4 rounded-xs">
+                <div className="flex items-center gap-1.5 text-muted mb-1">
+                  <Percent className="w-3.5 h-3.5 text-accent" />
+                  <span className="text-[8px] sm:text-[9px] font-mono uppercase tracking-widest font-bold">Desc. máx.</span>
+                </div>
+                <span className="font-mono text-xl sm:text-3xl font-black text-accent">-{maxDiscountPct}%</span>
+              </div>
+              <div className="bg-paper-soft border border-line p-3 sm:p-4 rounded-xs">
+                <div className="flex items-center gap-1.5 text-muted mb-1">
+                  <Wallet className="w-3.5 h-3.5 text-accent" />
+                  <span className="text-[8px] sm:text-[9px] font-mono uppercase tracking-widest font-bold">Ahorro máx.</span>
+                </div>
+                <span className="font-mono text-xl sm:text-3xl font-black text-ink">S/.{maxSavings.toFixed(0)}</span>
+              </div>
+            </div>
           </div>
 
-          {/* Real stats bar — no invented urgency, only what the data actually says */}
-          <div className="grid grid-cols-3 gap-3 sm:gap-6 mt-12 max-w-2xl">
-            <div className="bg-paper-soft border border-line p-4 sm:p-5">
-              <div className="flex items-center gap-1.5 text-muted mb-1.5">
-                <Flame className="w-3.5 h-3.5 text-accent" />
-                <span className="text-[8px] sm:text-[9px] uppercase tracking-widest font-bold">En oferta</span>
-              </div>
-              <span className="font-mono text-2xl sm:text-3xl font-black text-ink">{saleProducts.length}</span>
-            </div>
-            <div className="bg-paper-soft border border-line p-4 sm:p-5">
-              <div className="flex items-center gap-1.5 text-muted mb-1.5">
-                <Percent className="w-3.5 h-3.5 text-accent" />
-                <span className="text-[8px] sm:text-[9px] uppercase tracking-widest font-bold">Descuento máx.</span>
-              </div>
-              <span className="font-mono text-2xl sm:text-3xl font-black text-ink">-{maxDiscountPct}%</span>
-            </div>
-            <div className="bg-paper-soft border border-line p-4 sm:p-5">
-              <div className="flex items-center gap-1.5 text-muted mb-1.5">
-                <Wallet className="w-3.5 h-3.5 text-accent" />
-                <span className="text-[8px] sm:text-[9px] uppercase tracking-widest font-bold">Ahorro máx.</span>
-              </div>
-              <span className="font-mono text-2xl sm:text-3xl font-black text-ink">S/.{maxSavings.toFixed(0)}</span>
+          {/* Right Column: Campaign Banner (5 cols) */}
+          <div className="lg:col-span-5 relative min-h-[260px] sm:min-h-[340px] lg:min-h-full bg-black overflow-hidden flex items-center justify-center border-t lg:border-t-0 lg:border-l border-line group">
+            <img
+              src="/imagenes/banner-3.png"
+              alt="Campaña Ofertas Especiales VANTA"
+              className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+            />
+            {/* Dark vignette overlay */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+
+            {/* Campaign pill */}
+            <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between gap-2 z-10">
+              <span className="bg-black/90 backdrop-blur-md border border-[#D1C2A5]/40 text-[#D1C2A5] px-3 py-1 font-mono text-[9px] sm:text-[10px] uppercase tracking-widest rounded-xs font-bold shadow-lg">
+                ✦ DROP ESPECIAL REBAJAS ✦
+              </span>
+              <span className="bg-accent text-white px-2.5 py-1 font-mono text-[9px] sm:text-[10px] uppercase tracking-widest rounded-xs font-black">
+                HASTA -{maxDiscountPct}%
+              </span>
             </div>
           </div>
         </div>
