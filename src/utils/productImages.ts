@@ -1,22 +1,67 @@
-import manifest from '../data/productImageManifest.json';
+﻿import { Product } from '../types';
+import productImageManifest from '../data/productImageManifest.json';
 
-// Product.fabrics uses display names; the manifest (built from the PRODUCTOS/ folders) keys fabrics by slug.
-const FABRIC_SLUGS: Record<string, string> = {
-  Waffle: 'waffle',
-  Jersey: 'jersey',
-  Piqué: 'pique',
-  Waffer: 'waffer',
-};
+const manifest = productImageManifest as Record<string, Record<string, Record<string, string>>>;
 
-type ImageManifest = Record<string, Record<string, Record<string, string>>>;
-const MANIFEST = manifest as ImageManifest;
+/**
+ * Retrieves the photo for a given product ID, fabric, and color from the manifest.
+ */
+export function getGarmentPhoto(productId: string, fabric?: string, color?: string): string | undefined {
+  if (!productId) return undefined;
+  const productKey = productId.toLowerCase();
+  const productData = manifest[productKey];
+  if (!productData) return undefined;
 
-/** Real garment photo for a given product line ('camisa' | 'camisero'), fabric and color, if one was found under PRODUCTOS/. */
-export function getGarmentPhoto(productId: string, fabric: string, color: string): string | undefined {
-  const fabricSlug = FABRIC_SLUGS[fabric] ?? fabric.toLowerCase();
-  return MANIFEST[productId]?.[fabricSlug]?.[color];
+  if (color) {
+    const fabricsToTry = fabric 
+      ? [fabric.toLowerCase(), 'jersey', 'waffle', 'pique', 'waffer']
+      : ['jersey', 'waffle', 'pique', 'waffer'];
+
+    for (const fab of fabricsToTry) {
+      if (productData[fab] && productData[fab][color]) {
+        return productData[fab][color];
+      }
+    }
+  }
+
+  // First available photo in any fabric/color for this garment
+  for (const fab of Object.keys(productData)) {
+    const colors = Object.values(productData[fab]);
+    if (colors.length > 0) return colors[0];
+  }
+
+  return undefined;
 }
 
-export function hasGarmentPhotos(productId: string): boolean {
-  return Boolean(MANIFEST[productId]);
+/**
+ * Retrieves the best matching image URL for a given product and color name.
+ * Falls back to available fabrics (jersey, waffle, pique, waffer) or default product images.
+ */
+export function getProductImageByColor(
+  product: Product,
+  colorName?: string,
+  preferredFabric?: string
+): string | undefined {
+  if (!product) return undefined;
+
+  if (colorName && product.colorImages) {
+    const fabricKeys = preferredFabric
+      ? [preferredFabric.toLowerCase(), 'jersey', 'waffle', 'pique', 'waffer']
+      : ['jersey', 'waffle', 'pique', 'waffer'];
+
+    for (const fab of fabricKeys) {
+      const fabricMap = (product.colorImages as Record<string, Record<string, string>>)[fab];
+      if (fabricMap && fabricMap[colorName]) {
+        return fabricMap[colorName];
+      }
+    }
+  }
+
+  if (colorName && product.id) {
+    const fromManifest = getGarmentPhoto(product.id, preferredFabric, colorName);
+    if (fromManifest) return fromManifest;
+  }
+
+  // Fallback to first available product image
+  return product.images && product.images.length > 0 ? product.images[0] : undefined;
 }

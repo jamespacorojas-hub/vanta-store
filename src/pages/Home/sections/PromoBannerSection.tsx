@@ -98,16 +98,16 @@ export default function PromoBannerSection({ promotionalProduct, onQuickView }: 
 
                 {/* Price block */}
                 <div className="flex items-baseline space-x-3 pt-2">
-                  <span className="font-mono text-2xl sm:text-3xl font-black text-accent">
+                  <span className="font-mono text-2xl sm:text-3xl font-black text-white">
                     S/. {currentProduct.price.toFixed(2)}
                   </span>
                   {currentProduct.oldPrice && (
-                    <span className="font-mono text-sm sm:text-base text-muted line-through">
+                    <span className="font-mono text-sm sm:text-base text-zinc-500 line-through">
                       S/. {currentProduct.oldPrice.toFixed(2)}
                     </span>
                   )}
                   {currentProduct.oldPrice && (
-                    <span className="text-[9px] font-mono font-bold bg-accent text-paper-soft px-2 py-0.5 uppercase tracking-wider">
+                    <span className="text-[9px] font-mono font-bold bg-rose-600 text-white px-2 py-0.5 uppercase tracking-wider">
                       -{Math.round(((currentProduct.oldPrice - currentProduct.price) / currentProduct.oldPrice) * 100)}% OFF
                     </span>
                   )}
@@ -117,12 +117,12 @@ export default function PromoBannerSection({ promotionalProduct, onQuickView }: 
           </div>
 
           {/* Action buttons & carousel navigation */}
-          <div className="space-y-4 pt-4 border-t border-line">
+          <div className="space-y-4 pt-4 border-t border-zinc-800">
             <div className="flex flex-wrap items-center gap-3">
               <button
                 id="promo-cta-buy-btn"
                 onClick={() => onQuickView(currentProduct)}
-                className="bg-ink text-paper-soft hover:bg-accent text-xs font-mono font-bold uppercase tracking-widest py-3.5 px-7 transition-all flex items-center gap-2 shadow-sm cursor-pointer"
+                className="bg-white text-black hover:bg-zinc-200 text-xs font-mono font-bold uppercase tracking-widest py-3.5 px-7 transition-all flex items-center gap-2 shadow-lg cursor-pointer"
               >
                 <ShoppingBag className="w-4 h-4" />
                 VER PRENDA Y COMPRAR
@@ -133,7 +133,7 @@ export default function PromoBannerSection({ promotionalProduct, onQuickView }: 
                 <button
                   id="promo-prev-btn"
                   onClick={handlePrev}
-                  className="p-2.5 border border-line bg-paper text-ink hover:bg-ink hover:text-paper-soft transition-all cursor-pointer"
+                  className="p-2.5 border border-zinc-700 bg-[#121218] text-zinc-200 hover:border-white hover:text-white hover:bg-[#1c1c28] transition-all cursor-pointer"
                   aria-label="Prenda anterior"
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -141,7 +141,7 @@ export default function PromoBannerSection({ promotionalProduct, onQuickView }: 
                 <button
                   id="promo-next-btn"
                   onClick={handleNext}
-                  className="p-2.5 border border-line bg-paper text-ink hover:bg-ink hover:text-paper-soft transition-all cursor-pointer"
+                  className="p-2.5 border border-line bg-[#121218] text-zinc-200 hover:border-accent hover:text-white hover:bg-[#1c0810] transition-all cursor-pointer"
                   aria-label="Siguiente prenda"
                 >
                   <ChevronRight className="w-4 h-4" />
@@ -157,8 +157,8 @@ export default function PromoBannerSection({ promotionalProduct, onQuickView }: 
                   onClick={() => setCurrentIndex(idx)}
                   className={`transition-all cursor-pointer ${
                     idx === currentIndex
-                      ? 'w-6 h-1.5 bg-ink rounded-none'
-                      : 'w-2 h-1.5 bg-line hover:bg-muted rounded-none'
+                      ? 'w-6 h-1.5 bg-accent shadow-[0_0_8px_rgba(225,29,72,0.6)] rounded-none'
+                      : 'w-2 h-1.5 bg-line hover:bg-zinc-600 rounded-none'
                   }`}
                   title={p.name}
                 />
@@ -195,20 +195,20 @@ export default function PromoBannerSection({ promotionalProduct, onQuickView }: 
           </AnimatePresence>
 
           {/* Top Info Overlay */}
-          <div className="relative z-10 p-6 flex justify-between items-start text-[9px] font-mono text-paper-soft uppercase tracking-wider drop-shadow-md">
-            <span className="bg-ink/80 backdrop-blur-sm px-2.5 py-1 border border-paper/10">
-              MONT STORE // SELECCIÓN EXCLUSIVA
+          <div className="relative z-10 p-6 flex justify-between items-start text-[9px] font-mono text-white uppercase tracking-wider drop-shadow-md">
+            <span className="bg-black/85 backdrop-blur-md px-2.5 py-1 border border-white/10 text-zinc-300">
+              VANTA // SELECCIÓN EXCLUSIVA
             </span>
-            <span className="bg-ink/80 backdrop-blur-sm px-2.5 py-1 border border-paper/10 font-bold">
+            <span className="bg-black/85 backdrop-blur-md px-2.5 py-1 border border-white/10 font-bold text-white">
               COLOR: {currentColor.toUpperCase()}
             </span>
           </div>
 
           {/* Bottom Info & Interactive Color Selector Overlay */}
-          <div className="relative z-10 p-6 space-y-3 bg-gradient-to-t from-ink via-ink/80 to-transparent text-paper-soft">
+          <div className="relative z-10 p-6 space-y-3 bg-gradient-to-t from-black via-black/90 to-transparent text-white">
             {/* Color Swatch Picker */}
             <div className="space-y-1.5">
-              <span className="text-[8px] font-mono text-paper-soft/70 uppercase tracking-widest block">
+              <span className="text-[8px] font-mono text-zinc-400 uppercase tracking-widest block">
                 VER VARIANTES DE COLOR PARA ESTA PRENDA:
               </span>
               <div className="flex flex-wrap gap-1.5">
@@ -218,8 +218,8 @@ export default function PromoBannerSection({ promotionalProduct, onQuickView }: 
                     onClick={() => setSelectedColorIndex(idx)}
                     className={`flex items-center gap-1.5 text-[8.5px] font-mono uppercase tracking-wider px-2 py-1 transition-all cursor-pointer border ${
                       idx === selectedColorIndex
-                        ? 'bg-paper-soft text-ink font-bold border-paper-soft scale-105 shadow-md'
-                        : 'bg-ink/70 text-paper-soft/80 border-paper/20 hover:border-paper/60 hover:text-paper'
+                        ? 'bg-white text-black font-bold border-white scale-105 shadow-md'
+                        : 'bg-[#121218]/90 text-zinc-300 border-zinc-700 hover:border-zinc-400 hover:text-white'
                     }`}
                   >
                     <span className={`w-2 h-2 rounded-full border ${getColorClass(colorName)}`} />
@@ -230,9 +230,9 @@ export default function PromoBannerSection({ promotionalProduct, onQuickView }: 
             </div>
 
             {/* Availability & Stock status bar */}
-            <div className="pt-2 border-t border-paper/15 flex justify-between items-center text-[9px] font-mono uppercase tracking-widest text-paper-soft/80">
-              <span className="flex items-center gap-1">
-                <Sparkles className="w-3 h-3 text-accent-soft" />
+            <div className="pt-2 border-t border-white/15 flex justify-between items-center text-[9px] font-mono uppercase tracking-widest text-zinc-400">
+              <span className="flex items-center gap-1 text-zinc-300 font-bold">
+                <Sparkles className="w-3 h-3 text-rose-400" />
                 DISPONIBILIDAD: ALTA DEMANDA
               </span>
               <span>STOCK: {currentProduct.stock} UNIDADES</span>

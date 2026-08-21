@@ -5,47 +5,47 @@ export default function Benefits() {
   const benefitList = [
     {
       id: 'b1',
-      icon: <Truck className="w-5 h-5 text-accent" />,
+      icon: <Truck className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />,
       title: 'ENVÍOS A TODO EL PERÚ',
-      desc: 'Despachos express en Lima Metropolitana en un plazo de 24 a 48 horas. Envíos nacionales certificados vía Olva Courier y Shalom.',
+      desc: 'Despachos express en Lima en 24 a 48h y envíos nacionales vía Olva y Shalom.',
     },
     {
       id: 'b2',
-      icon: <RotateCcw className="w-5 h-5 text-accent" />,
-      title: 'CAMBIOS SIN COMPLICACIONES',
-      desc: 'Tu satisfacción es nuestra prioridad. Cuentas con hasta 7 días para realizar cambios de talla o modelo de forma rápida.',
+      icon: <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />,
+      title: 'CAMBIOS SIN COSTO',
+      desc: 'Cuentas con hasta 7 días para cambios de talla o modelo de forma ágil.',
     },
     {
       id: 'b3',
-      icon: <ShieldCheck className="w-5 h-5 text-accent" />,
-      title: 'CALIDAD STREETWEAR PESADO',
-      desc: 'Tejidos estructurados premium con gramajes desde 240 GSM (polos) hasta 420 GSM (hoodies) diseñados para alta durabilidad.',
+      icon: <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />,
+      title: 'CALIDAD PESADA',
+      desc: 'Fibras seleccionadas con gramajes altos y estructura boxy fit duradera.',
     },
     {
       id: 'b4',
-      icon: <CreditCard className="w-5 h-5 text-accent" />,
-      title: 'PAGO CONTRA ENTREGA & YAPE',
-      desc: 'Compra con total seguridad. Cancela al momento de recibir en Lima Metropolitana, o paga mediante Yape, Plin y transferencia.',
+      icon: <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />,
+      title: 'YAPE, PLIN & TARJETAS',
+      desc: 'Paga con total seguridad por Yape, transferencia bancaria o contra-entrega.',
     },
   ];
 
   return (
-    <section id="purchase-benefits" className="border-y border-line bg-paper py-12 sm:py-16">
+    <section id="purchase-benefits" className="border-y border-line bg-paper-soft text-ink py-8 sm:py-14 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
           {benefitList.map((benefit) => (
             <div
               id={`benefit-${benefit.id}`}
               key={benefit.id}
-              className="flex flex-col space-y-3 p-4 bg-paper-soft border border-line shadow-2xs hover:border-accent hover:-translate-y-1.5 hover:shadow-lg transition-all duration-300 ease-out"
+              className="flex flex-col space-y-2 p-3 sm:p-5 bg-panel border border-line rounded-xs hover:border-ink/40 transition-all duration-300"
             >
-              <div className="w-10 h-10 bg-accent-soft flex items-center justify-center border border-line">
+              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-paper flex items-center justify-center border border-line rounded-full shrink-0">
                 {benefit.icon}
               </div>
-              <h3 className="text-xs uppercase tracking-wider font-black text-ink">
-                {benefit.title}
+              <h3 className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-ink font-mono flex items-center gap-1">
+                <span className="text-accent">◈</span> {benefit.title}
               </h3>
-              <p className="text-muted text-xs font-light leading-relaxed font-sans">
+              <p className="text-muted text-[10px] sm:text-xs font-light leading-relaxed font-sans">
                 {benefit.desc}
               </p>
             </div>

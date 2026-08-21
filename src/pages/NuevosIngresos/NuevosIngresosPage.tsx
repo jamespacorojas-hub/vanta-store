@@ -24,7 +24,7 @@ export default function NuevosIngresosPage({
   onExploreCatalog,
 }: NuevosIngresosPageProps) {
   return (
-    <div id="nuevos-ingresos-page" className="pt-[140px] md:pt-[156px] bg-paper">
+    <div id="nuevos-ingresos-page" className="pt-[78px] sm:pt-[96px] md:pt-[130px] bg-paper">
 
       {/* ── HERO: imagen a la derecha, texto a la izquierda, layout limpio sin superposición ── */}
       <section id="nuevos-ingresos-hero" className="bg-paper-soft border-b border-line overflow-hidden">
@@ -77,7 +77,7 @@ export default function NuevosIngresosPage({
             {/* Live card */}
             <div className="text-[9px] font-mono text-muted space-y-1.5 border border-line bg-paper p-4 self-start">
               {[
-                { k: 'SISTEMA', v: 'MONT_CAD_V4.5' },
+                { k: 'SISTEMA', v: 'VANTA_CAD_V4.5' },
                 { k: 'UBICACIÓN', v: 'LIMA METROPOLITANA' },
                 { k: 'PIEZAS', v: `${products.length} EN DROP` },
               ].map(row => (
@@ -96,7 +96,7 @@ export default function NuevosIngresosPage({
           {/* RIGHT — imagen real sin superposición */}
           <div className="relative hidden lg:block">
             <img
-              src="/imagenes/banner-secundario.png"
+              src="/imagenes/banner-2.png"
               alt="Nuevos Ingresos — Colección Drop"
               className="absolute inset-0 w-full h-full object-cover object-center"
             />
@@ -107,7 +107,7 @@ export default function NuevosIngresosPage({
           {/* Mobile: imagen debajo del texto */}
           <div className="lg:hidden w-full h-56 overflow-hidden relative">
             <img
-              src="/imagenes/banner-secundario.png"
+              src="/imagenes/banner-2.png"
               alt="Nuevos Ingresos"
               className="w-full h-full object-cover object-top"
             />
@@ -189,11 +189,15 @@ export default function NuevosIngresosPage({
 
         {/* Technical Blueprint Widget */}
         <div id="technical-blueprint-widget" className="pt-16 border-t border-line scroll-mt-32">
-          <div className="text-center space-y-1.5 mb-10">
-            <span className="text-[9px] font-sans tracking-[0.2em] text-muted uppercase block">LABORATORIO SARTORIAL // PATRONAJE</span>
-            <h3 className="text-xl font-sans font-bold tracking-widest text-ink uppercase">VISUALIZADOR TÉCNICO DE PRENDAS</h3>
-            <p className="text-muted text-[10px] font-sans font-light max-w-md mx-auto">
-              Haz clic en las líneas acotadas del plano para simular y comprender los encajes holgados de nuestras siluetas.
+          <div className="text-center space-y-2 mb-10 max-w-2xl mx-auto">
+            <span className="text-[9.5px] font-mono tracking-[0.3em] text-accent uppercase font-bold block">
+              ✦ LABORATORIO SARTORIAL // DROP FIT 2026 ✦
+            </span>
+            <h3 className="text-2xl sm:text-3xl font-display font-black tracking-tight text-ink uppercase">
+              Simulador Técnico & Guía de Tallas
+            </h3>
+            <p className="text-muted text-xs font-light max-w-lg mx-auto">
+              Explora las cotas de patronaje en tiempo real, compara las medidas exactas de cada silueta y calcula tu talla ideal con nuestro recomendador inteligente.
             </p>
           </div>
           <div className="max-w-5xl mx-auto">
@@ -209,7 +213,7 @@ export default function NuevosIngresosPage({
           <button
             id="nuevos-ingresos-explore-catalog-btn"
             onClick={onExploreCatalog}
-            className="bg-ink text-paper-soft hover:bg-accent text-xs font-mono font-bold uppercase tracking-widest py-4 px-8 transition-all flex items-center gap-2"
+            className="bg-accent text-white hover:bg-rose-600 text-xs font-mono font-bold uppercase tracking-widest py-4 px-8 transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(225,29,72,0.35)]"
           >
             VER CATÁLOGO COMPLETO <ArrowRight className="w-3.5 h-3.5" />
           </button>

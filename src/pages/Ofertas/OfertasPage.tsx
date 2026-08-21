@@ -37,7 +37,7 @@ export default function OfertasPage({
   }, [saleProducts, sortMode]);
 
   return (
-    <div id="ofertas-page" className="pt-[140px] md:pt-[156px] bg-paper">
+    <div id="ofertas-page" className="pt-[78px] sm:pt-[96px] md:pt-[130px] bg-paper">
       {/* Full-page header dedicated to deals — stats, not spec sheets */}
       <section id="ofertas-hero" className="relative bg-panel text-ink overflow-hidden border-b border-line">
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-24">
@@ -121,7 +121,7 @@ export default function OfertasPage({
           </div>
 
           {sortedDeals.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">
               {sortedDeals.map((p) => (
                 <DealProductCard
                   key={p.id}
@@ -153,7 +153,7 @@ export default function OfertasPage({
                 <h2 className="font-display text-xl sm:text-2xl font-medium text-ink">También te puede interesar</h2>
               </div>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">
               {crossSellProducts.map((p) => (
                 <ProductCard
                   key={p.id}
@@ -175,7 +175,7 @@ export default function OfertasPage({
           <button
             id="ofertas-explore-catalog-btn"
             onClick={onExploreCatalog}
-            className="bg-ink text-paper-soft hover:bg-accent text-xs font-mono font-bold uppercase tracking-widest py-4 px-8 transition-all flex items-center gap-2"
+            className="bg-accent text-white hover:bg-rose-600 text-xs font-mono font-bold uppercase tracking-widest py-4 px-8 transition-all flex items-center gap-2 shadow-[0_0_20px_rgba(225,29,72,0.35)]"
           >
             VER CATÁLOGO COMPLETO <ArrowRight className="w-3.5 h-3.5" />
           </button>

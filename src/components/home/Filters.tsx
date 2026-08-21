@@ -24,7 +24,7 @@ interface FiltersProps {
 }
 
 const AVAILABLE_SIZES = ['S', 'M', 'L', 'XL'];
-const AVAILABLE_FABRICS = ['Waffle', 'Piqué', 'Clásica', 'Clásico', 'Waffer', 'Jersey', 'Neru'];
+const AVAILABLE_FABRICS = ['Waffle', 'Piqué', 'Clásica', 'Clásico', 'Waffer', 'Jersey', 'Zyko'];
 const AVAILABLE_COLORS = [
   'Azul',
   'Beige',
@@ -143,8 +143,8 @@ export default function Filters({
                 onClick={() => onToggleSize(size)}
                 className={`text-[10px] sm:text-xs font-mono py-2 text-center transition-all ${
                   isSelected
-                    ? 'bg-accent text-paper-soft font-bold'
-                    : 'bg-paper-soft text-muted hover:bg-panel border border-line'
+                    ? 'bg-accent text-white font-bold shadow-[0_0_8px_rgba(225,29,72,0.4)]'
+                    : 'bg-[#121218] text-muted hover:bg-panel border border-line hover:border-accent hover:text-white'
                 }`}
               >
                 {size}
@@ -167,11 +167,11 @@ export default function Filters({
                 onClick={() => onToggleColor(col)}
                 className={`text-[10px] px-2.5 py-1.5 border transition-all flex items-center space-x-1 ${
                   isSelected
-                    ? 'border-accent bg-accent text-paper-soft font-bold'
-                    : 'border-line bg-paper-soft text-muted hover:border-ink'
+                    ? 'border-accent bg-accent text-white font-bold shadow-[0_0_8px_rgba(225,29,72,0.3)]'
+                    : 'border-line bg-[#121218] text-muted hover:border-accent hover:text-white'
                 }`}
               >
-                {isSelected && <Check className="w-3 h-3 text-paper-soft" />}
+                {isSelected && <Check className="w-3 h-3 text-white" />}
                 <span>{col}</span>
               </button>
             );
@@ -192,11 +192,11 @@ export default function Filters({
                 onClick={() => onToggleFabric(fab)}
                 className={`text-[10px] px-2.5 py-1.5 border transition-all flex items-center space-x-1 ${
                   isSelected
-                    ? 'border-accent bg-accent text-paper-soft font-bold'
-                    : 'border-line bg-paper-soft text-muted hover:border-ink'
+                    ? 'border-accent bg-accent text-white font-bold shadow-[0_0_8px_rgba(225,29,72,0.3)]'
+                    : 'border-line bg-[#121218] text-muted hover:border-accent hover:text-white'
                 }`}
               >
-                {isSelected && <Check className="w-3 h-3 text-paper-soft" />}
+                {isSelected && <Check className="w-3 h-3 text-white" />}
                 <span>{fab}</span>
               </button>
             );
@@ -237,12 +237,12 @@ export default function Filters({
           id="only-in-stock-btn"
           onClick={onToggleInStock}
           className={`w-10 h-5 rounded-full p-0.5 transition-colors duration-300 focus:outline-none ${
-            onlyInStock ? 'bg-accent' : 'bg-panel'
+            onlyInStock ? 'bg-accent shadow-[0_0_8px_rgba(225,29,72,0.5)]' : 'bg-panel'
           }`}
           aria-label="Filtrar por stock"
         >
           <div
-            className={`bg-paper-soft w-4 h-4 rounded-full shadow-md transform duration-300 ${
+            className={`bg-white w-4 h-4 rounded-full shadow-md transform duration-300 ${
               onlyInStock ? 'translate-x-5' : 'translate-x-0'
             }`}
           />
@@ -263,26 +263,26 @@ export default function Filters({
       {/* Mobile Drawer (Sliding Panel) */}
       <div
         id="mobile-filters-drawer"
-        className={`fixed inset-0 z-50 lg:hidden transition-opacity duration-300 bg-ink/60 ${
+        className={`fixed inset-0 z-50 lg:hidden transition-opacity duration-300 bg-black/80 backdrop-blur-md ${
           isMobileOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={() => setIsMobileOpen(false)}
       >
         <div
           id="mobile-filters-container"
-          className={`fixed bottom-0 left-0 w-full max-h-[85vh] overflow-y-auto bg-paper-soft rounded-t-2xl z-50 p-6 flex flex-col transition-transform duration-300 transform ${
+          className={`fixed bottom-0 left-0 w-full max-h-[85vh] overflow-y-auto bg-[#0d0d12] border-t border-line rounded-t-2xl z-50 p-6 flex flex-col transition-transform duration-300 transform ${
             isMobileOpen ? 'translate-y-0' : 'translate-y-full'
           }`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between border-b border-line pb-3 mb-4">
-            <span className="text-xs uppercase tracking-widest font-black">
-              Filtrar prendas
+            <span className="text-xs uppercase tracking-widest font-mono font-bold text-white">
+              ✦ FILTRAR PRENDAS ✦
             </span>
             <button
               id="close-mobile-filters"
               onClick={() => setIsMobileOpen(false)}
-              className="p-1.5 text-ink hover:bg-panel rounded-full transition-all"
+              className="p-1.5 text-zinc-300 hover:text-white hover:bg-panel rounded-full transition-all"
             >
               <X className="w-5 h-5" />
             </button>
@@ -292,21 +292,21 @@ export default function Filters({
             <FilterContent />
           </div>
 
-          <div className="border-t border-line pt-4 bg-paper-soft sticky bottom-0 flex justify-between gap-3">
+          <div className="border-t border-line pt-4 bg-[#0d0d12] sticky bottom-0 flex justify-between gap-3">
             <button
               id="mobile-filters-reset-btn"
               onClick={() => {
                 onResetFilters();
                 setIsMobileOpen(false);
               }}
-              className="w-1/3 py-3 border border-line text-xs uppercase tracking-widest text-muted hover:text-ink transition-all"
+              className="w-1/3 py-3 border border-line text-xs font-mono uppercase tracking-widest text-muted hover:text-white hover:border-accent transition-all"
             >
               LIMPIAR
             </button>
             <button
               id="mobile-filters-apply-btn"
               onClick={() => setIsMobileOpen(false)}
-              className="w-2/3 py-3 bg-ink text-paper-soft text-xs font-black uppercase tracking-widest transition-all hover:bg-accent"
+              className="w-2/3 py-3 bg-accent text-white text-xs font-mono font-bold uppercase tracking-widest transition-all hover:bg-rose-600 shadow-[0_0_15px_rgba(225,29,72,0.3)]"
             >
               VER {totalProductsCount} PRENDAS
             </button>

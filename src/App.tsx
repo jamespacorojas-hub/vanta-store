@@ -14,6 +14,7 @@ import Benefits from './components/home/Benefits';
 import CustomerReviews from './components/home/CustomerReviews';
 import FAQAndPolicies from './components/home/FAQAndPolicies';
 import FloatingWhatsApp from './components/shared/FloatingWhatsApp';
+import MobileBottomNav from './components/layout/MobileBottomNav';
 
 // Page Imports
 import HomePage from './pages/Home/HomePage';
@@ -39,27 +40,65 @@ export default function App() {
 
   // Cart & Wishlist state with localStorage persistence
   const [cartItems, setCartItems] = useState<CartItem[]>(() => {
-    const saved = localStorage.getItem('mont_store_cart');
+    const saved = localStorage.getItem('vanta_store_cart') || localStorage.getItem('mont_store_cart');
     return saved ? JSON.parse(saved) : [];
   });
 
   const [favorites, setFavorites] = useState<Product[]>(() => {
-    const saved = localStorage.getItem('mont_store_favorites');
+    const saved = localStorage.getItem('vanta_store_favorites') || localStorage.getItem('mont_store_favorites');
     return saved ? JSON.parse(saved) : [];
   });
 
-  // Global toast notifications
-  const [notification, setNotification] = useState<string>('');
+  // Theme State with localStorage persistence
+  const [theme, setTheme] = useState<'dark' | 'light'>(() => {
+    const saved = localStorage.getItem('vanta_store_theme');
+    return saved === 'light' || saved === 'dark' ? saved : 'dark';
+  });
+
+  // Apply Theme class to document root and body
+  useEffect(() => {
+    localStorage.setItem('vanta_store_theme', theme);
+    const root = document.documentElement;
+    const body = document.body;
+    if (theme === 'light') {
+      root.classList.add('light');
+      body.classList.add('light');
+      root.setAttribute('data-theme', 'light');
+    } else {
+      root.classList.remove('light');
+      body.classList.remove('light');
+      root.removeAttribute('data-theme');
+    }
+  }, [theme]);
+
+  const handleToggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
+  // Safe Body Scroll Lock when Modal or Drawers are active
+  useEffect(() => {
+    if (selectedProduct || isCartOpen || isWishlistOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [selectedProduct, isCartOpen, isWishlistOpen]);
 
   // Persist Cart
   useEffect(() => {
-    localStorage.setItem('mont_store_cart', JSON.stringify(cartItems));
+    localStorage.setItem('vanta_store_cart', JSON.stringify(cartItems));
   }, [cartItems]);
 
   // Persist Favorites
   useEffect(() => {
-    localStorage.setItem('mont_store_favorites', JSON.stringify(favorites));
+    localStorage.setItem('vanta_store_favorites', JSON.stringify(favorites));
   }, [favorites]);
+
+  // Global toast notifications
+  const [notification, setNotification] = useState<string>('');
 
   // Show a global micro-notification
   const showToast = (message: string) => {
@@ -202,7 +241,7 @@ export default function App() {
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
   return (
-    <div id="mont-store-workspace" className="min-h-screen bg-paper text-ink selection:bg-accent selection:text-paper-soft relative">
+    <div id="vanta-store-workspace" className="min-h-screen bg-paper text-ink selection:bg-accent selection:text-paper-soft relative pb-16 md:pb-0">
       {/* Dynamic Header */}
       <Header
         activeCategory={
@@ -226,6 +265,8 @@ export default function App() {
             setTimeout(scrollToCatalog, 150);
           }
         }}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
       />
       <Routes>
         <Route
@@ -261,6 +302,7 @@ export default function App() {
               favorites={favorites}
               onQuickView={(p) => setSelectedProduct(p)}
               onToggleFavorite={handleToggleFavorite}
+              onAddToCart={handleAddToCart}
             />
           }
         />
@@ -296,6 +338,8 @@ export default function App() {
       <Footer
         onSelectCategory={handleSelectCategory}
         onOpenWishlist={() => setIsWishlistOpen(true)}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
       />
 
       {/* Floating Buttons */}
@@ -334,16 +378,16 @@ export default function App() {
       {notification && (
         <div
           id="global-toast-notification"
-          className="fixed bottom-6 left-6 z-50 bg-ink text-paper px-5 py-3.5 border border-paper/10 shadow-2xl flex items-center space-x-2.5 font-mono text-[10px] uppercase tracking-widest animate-in slide-in-from-bottom-5 duration-300"
+          className="fixed bottom-20 md:bottom-6 left-4 md:left-6 z-50 bg-[#121218] text-white px-4 py-3 border border-zinc-700 shadow-2xl flex items-center space-x-2.5 font-mono text-[10px] uppercase tracking-widest animate-in slide-in-from-bottom-5 duration-300"
         >
-          <Sparkles className="w-4 h-4 text-accent-soft" />
+          <Sparkles className="w-4 h-4 text-rose-400 shrink-0" />
           <span>{notification}</span>
           <button
             id="close-toast-btn"
             onClick={() => setNotification('')}
-            className="text-paper/50 hover:text-paper pl-2 border-l border-paper/15 font-sans font-bold"
+            className="text-zinc-400 hover:text-white pl-2 border-l border-zinc-700 font-mono font-bold cursor-pointer"
           >
-            X
+            ✕
           </button>
         </div>
       )}

@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'motion/react';
 import { Sparkles, ShoppingBag, Heart, Shield, Percent, Truck, Gift, Eye, Clock, AlertTriangle, Check, ArrowRight, Layers, HelpCircle } from 'lucide-react';
 import { Product, CartItem } from '../../types';
 import { PRODUCTS } from '../../data';
+import { getProductImageByColor } from '../../utils/productImages';
 
 interface NuevosIngresosPremiumProps {
   products: Product[];
@@ -170,7 +171,7 @@ export default function NuevosIngresosPremium({
           <div className="space-y-1.5 my-3">
             <h4 className="font-sans font-black text-sm tracking-wider text-ink uppercase">LONA MORRAL GRATUITO</h4>
             <p className="text-[10px] font-sans font-light text-muted leading-relaxed">
-              Por compras superiores a S/. 160 te obsequiamos un bolso utilitario MONT de lona cruda resistente de 400g.
+              Por compras superiores a S/. 160 te obsequiamos un bolso utilitario VANTA de lona cruda resistente de 400g.
             </p>
           </div>
           <div className="text-[9px] font-sans text-muted border-t border-line/60 pt-2.5 flex justify-between">
@@ -241,7 +242,7 @@ export default function NuevosIngresosPremium({
                         onClick={() => setMixSize1(sz)}
                         className={`w-7 h-7 text-[9px] font-mono uppercase font-bold flex items-center justify-center transition-all ${
                           mixSize1 === sz
-                            ? 'bg-ink text-paper-soft font-black'
+                            ? 'bg-accent text-white font-black shadow-[0_0_8px_rgba(225,29,72,0.4)]'
                             : 'bg-panel text-muted border border-line hover:bg-paper'
                         }`}
                       >
@@ -288,13 +289,13 @@ export default function NuevosIngresosPremium({
             {/* Micro image preview */}
             <div className="flex items-center gap-3 bg-panel p-2 border border-line">
               <img
-                src={mixProduct1.images[0]}
-                alt={mixProduct1.name}
+                src={getProductImageByColor(mixProduct1, mixColor1, mixFabric1) || mixProduct1.images[0]}
+                alt={`${mixProduct1.name} - ${mixColor1}`}
                 referrerPolicy="no-referrer"
                 className="w-10 h-10 object-cover border border-line"
               />
               <div className="font-sans text-[8.5px] text-muted">
-                <span className="block font-black text-ink uppercase">{mixProduct1.name}</span>
+                <span className="block font-black text-ink uppercase">{mixProduct1.name} ({mixColor1})</span>
                 <span>Configuración de corte boxy fit</span>
               </div>
             </div>
@@ -344,7 +345,7 @@ export default function NuevosIngresosPremium({
                         onClick={() => setMixSize2(sz)}
                         className={`w-7 h-7 text-[9px] font-mono uppercase font-bold flex items-center justify-center transition-all ${
                           mixSize2 === sz
-                            ? 'bg-ink text-paper-soft font-black'
+                            ? 'bg-accent text-white font-black shadow-[0_0_8px_rgba(225,29,72,0.4)]'
                             : 'bg-panel text-muted border border-line hover:bg-paper'
                         }`}
                       >
@@ -361,8 +362,8 @@ export default function NuevosIngresosPremium({
                     onChange={(e) => setMixColor2(e.target.value)}
                     className="w-full text-[9px] font-sans bg-paper border border-line p-1.5 text-ink focus:outline-none focus:border-accent"
                   >
-                    {mixProduct2.colors.slice(2, 9).map((color) => (
-                      <option key={`color2-${color}`} value={color}>{color}</option>
+                    {mixProduct2.colors.map((c) => (
+                      <option key={`color2-${c}`} value={c}>{c.toUpperCase()}</option>
                     ))}
                   </select>
                 </div>
@@ -391,13 +392,13 @@ export default function NuevosIngresosPremium({
             {/* Micro image preview */}
             <div className="flex items-center gap-3 bg-panel p-2 border border-line">
               <img
-                src={mixProduct2.images[0]}
-                alt={mixProduct2.name}
+                src={getProductImageByColor(mixProduct2, mixColor2, mixFabric2) || mixProduct2.images[0]}
+                alt={`${mixProduct2.name} - ${mixColor2}`}
                 referrerPolicy="no-referrer"
                 className="w-10 h-10 object-cover border border-line"
               />
               <div className="font-sans text-[8.5px] text-muted">
-                <span className="block font-black text-ink uppercase">{mixProduct2.name}</span>
+                <span className="block font-black text-ink uppercase">{mixProduct2.name} ({mixColor2})</span>
                 <span>Configuración de manga drop acoplada</span>
               </div>
             </div>
@@ -443,7 +444,7 @@ export default function NuevosIngresosPremium({
 
             <button
               onClick={handleAddMixToCart}
-              className="w-full mt-6 bg-ink text-paper-soft hover:bg-accent py-3 px-4 font-sans text-[10px] tracking-widest uppercase font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-lg active:scale-95"
+              className="w-full mt-6 bg-white text-black hover:bg-zinc-200 py-3.5 px-4 font-mono text-[10px] tracking-widest uppercase font-black transition-all flex items-center justify-center gap-2 cursor-pointer shadow-md active:scale-95"
             >
               <ShoppingBag className="w-3.5 h-3.5" />
               <span>COMPRAR MIXTURA</span>
@@ -458,7 +459,7 @@ export default function NuevosIngresosPremium({
         <div className="space-y-1">
           <span className="text-[8px] font-sans tracking-widest text-muted uppercase block">FILTRAR POR TEXTURA REVOLUCIONARIA</span>
           <div className="flex items-center gap-1.5 flex-wrap">
-            {['Todos', 'Waffle', 'Jersey', 'Piqué', 'Waffer', 'Clásica', 'Clásico', 'Neru'].map((weave) => {
+            {['Todos', 'Waffle', 'Jersey', 'Piqué', 'Waffer', 'Clásica', 'Clásico', 'Zyko'].map((weave) => {
               const isSelected = selectedFabricFilter === weave;
               return (
                 <button
@@ -483,7 +484,7 @@ export default function NuevosIngresosPremium({
       </div>
 
       {/* 5. Highly Crafted Streetwear Product Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-6">
         {filteredNewProducts.map((p) => {
           const isLiked = favorites.some((f) => f.id === p.id);
           return (
@@ -496,12 +497,12 @@ export default function NuevosIngresosPremium({
             >
               {/* Hot tag overlay */}
               <div className="absolute top-2 left-2 z-10 flex flex-col gap-1">
-                <span className="bg-ink text-paper-soft text-[7.5px] font-sans font-bold tracking-widest uppercase px-2 py-0.5">
-                  NUEVO INGRESO
+                <span className="bg-accent text-white text-[7px] sm:text-[7.5px] font-mono font-bold tracking-widest uppercase px-1.5 sm:px-2 py-0.5 shadow-[0_0_8px_rgba(225,29,72,0.4)]">
+                  NUEVO
                 </span>
                 {p.oldPrice && (
-                  <span className="bg-accent text-paper-soft text-[7.5px] font-sans font-black tracking-widest uppercase px-2 py-0.5">
-                    OFERTA LIMITADA
+                  <span className="bg-[#24060f] text-rose-300 border border-accent/50 text-[7px] sm:text-[7.5px] font-mono font-bold tracking-widest uppercase px-1.5 sm:px-2 py-0.5">
+                    OFERTA
                   </span>
                 )}
               </div>
@@ -509,13 +510,13 @@ export default function NuevosIngresosPremium({
               {/* Favorites action */}
               <button
                 onClick={() => onToggleFavorite(p)}
-                className="absolute top-2 right-2 z-10 w-8 h-8 rounded-full bg-paper-soft/90 border border-line flex items-center justify-center text-muted hover:text-red-500 hover:scale-105 active:scale-90 transition-all cursor-pointer"
+                className="absolute top-2 right-2 z-10 w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-black/60 backdrop-blur-md border border-white/15 flex items-center justify-center text-muted hover:text-red-500 hover:scale-105 active:scale-90 transition-all cursor-pointer"
               >
-                <Heart className={`w-3.5 h-3.5 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
+                <Heart className={`w-3 sm:w-3.5 h-3 sm:h-3.5 ${isLiked ? 'fill-red-500 text-red-500' : ''}`} />
               </button>
 
               {/* Image zoom-on-hover box */}
-              <div className="relative overflow-hidden aspect-[4/5] bg-paper border-b border-line">
+              <div className="relative overflow-hidden aspect-[4/5] bg-[#121218] border-b border-line">
                 <img
                   src={p.images[0]}
                   alt={p.name}
@@ -524,22 +525,22 @@ export default function NuevosIngresosPremium({
                 />
 
                 {/* Micro tech details overlay */}
-                <div className="absolute bottom-2 left-2 right-2 bg-ink/85 backdrop-blur-sm p-2 text-paper-soft border border-line opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex justify-between items-center text-[7px] font-sans">
+                <div className="absolute bottom-2 left-2 right-2 bg-black/85 backdrop-blur-sm p-2 text-zinc-200 border border-white/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 hidden sm:flex justify-between items-center text-[7px] font-mono">
                   <span>FIBRA ANTIALÉRGICA S/S</span>
                   <span>PRE-CONFECCIONADO</span>
                 </div>
               </div>
 
               {/* Details & Interactive Quick Adds */}
-              <div className="p-4 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-1.5">
-                  <div className="flex justify-between items-start gap-1">
-                    <h3 className="font-display font-semibold text-xs sm:text-sm text-ink group-hover:text-accent transition-colors">
+              <div className="p-2.5 sm:p-4 flex-1 flex flex-col justify-between space-y-2.5 sm:space-y-4">
+                <div className="space-y-1">
+                  <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-1">
+                    <h3 className="font-display font-semibold text-xs sm:text-sm text-ink group-hover:text-accent transition-colors truncate">
                       {p.name}
                     </h3>
                     <div className="flex items-center space-x-1.5">
                       {p.oldPrice && (
-                        <span className="text-[10px] sm:text-xs text-muted line-through font-mono">
+                        <span className="text-[9px] sm:text-xs text-muted line-through font-mono">
                           S/. {p.oldPrice.toFixed(2)}
                         </span>
                       )}
@@ -549,13 +550,13 @@ export default function NuevosIngresosPremium({
                     </div>
                   </div>
 
-                  <p className="text-[10px] font-sans font-light text-muted leading-relaxed line-clamp-2">
+                  <p className="text-[9px] sm:text-[10px] font-sans font-light text-muted leading-relaxed line-clamp-1 sm:line-clamp-2">
                     {p.description}
                   </p>
 
-                  <div className="flex flex-wrap gap-1 pt-1 border-t border-line mt-2">
-                    {p.fabrics.map((fabric) => (
-                      <span key={fabric} className="text-[7.5px] font-sans uppercase bg-panel text-muted border border-line px-1 py-0.5">
+                  <div className="flex flex-wrap gap-1 pt-1 border-t border-line mt-1">
+                    {p.fabrics.slice(0, 2).map((fabric) => (
+                      <span key={fabric} className="text-[7px] sm:text-[7.5px] font-mono uppercase bg-[#14141c] text-muted border border-line px-1.5 py-0.5">
                         {fabric}
                       </span>
                     ))}
@@ -563,22 +564,13 @@ export default function NuevosIngresosPremium({
                 </div>
 
                 {/* Grid Buttons */}
-                <div className="grid grid-cols-5 gap-1.5 pt-2">
-                  <button
-                    onClick={() => onQuickView(p)}
-                    className="col-span-1 border border-line hover:bg-panel flex items-center justify-center py-2.5 cursor-pointer text-ink"
-                    title="Vista Rápida"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    onClick={() => onQuickView(p)}
-                    className="col-span-4 bg-ink hover:bg-accent text-paper-soft text-[8.5px] font-sans tracking-widest uppercase font-bold py-2.5 transition-all flex items-center justify-center gap-1 cursor-pointer"
-                  >
-                    <span>PERSONALIZAR Y AÑADIR</span>
-                    <ArrowRight className="w-3 h-3" />
-                  </button>
-                </div>
+                <button
+                  onClick={() => onQuickView(p)}
+                  className="w-full bg-white text-black hover:bg-zinc-200 text-[8.5px] sm:text-[9.5px] font-mono tracking-wider uppercase font-bold py-2 transition-all flex items-center justify-center gap-1 cursor-pointer shadow-sm"
+                >
+                  <ShoppingBag className="w-3 h-3" />
+                  <span>VER PRENDA</span>
+                </button>
               </div>
             </motion.div>
           );

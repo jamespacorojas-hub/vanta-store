@@ -102,7 +102,7 @@ export default function CartDrawer({
     }
 
     // Generate formatted message string
-    let orderText = `Hola, MONT STORE. Quiero realizar el siguiente pedido:\n\n`;
+    let orderText = `Hola, VANTA. Quiero realizar el siguiente pedido:\n\n`;
 
     cartItems.forEach((item, index) => {
       orderText += `${index + 1}. Producto: ${item.product.name}\n`;
@@ -138,20 +138,20 @@ export default function CartDrawer({
   return (
     <div
       id="cart-drawer-overlay"
-      className="fixed inset-0 z-50 bg-ink/60 backdrop-blur-xs flex justify-end"
+      className="fixed inset-0 z-50 bg-black/80 backdrop-blur-md flex justify-end"
       onClick={onClose}
     >
       <div
         id="cart-drawer-container"
-        className="w-full max-w-md bg-paper h-full flex flex-col shadow-2xl relative animate-in slide-in-from-right duration-300"
+        className="w-full max-w-md bg-paper text-ink h-full flex flex-col shadow-2xl relative border-l border-line animate-in slide-in-from-right duration-300"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="p-4 sm:p-6 border-b border-line flex items-center justify-between bg-paper-soft">
           <div className="flex items-center space-x-2">
-            <ShoppingBag className="w-5 h-5 text-ink" />
-            <span className="text-xs uppercase tracking-widest font-black text-ink">
-              CARRITO ({totalQuantity})
+            <ShoppingBag className="w-5 h-5 text-accent" />
+            <span className="text-xs uppercase tracking-widest font-mono font-bold text-ink">
+              ✦ CARRITO ({totalQuantity}) ✦
             </span>
           </div>
           <div className="flex items-center space-x-2">
@@ -159,7 +159,7 @@ export default function CartDrawer({
               <button
                 id="clear-all-cart-btn"
                 onClick={onClearCart}
-                className="text-[10px] tracking-widest text-muted hover:text-red-500 hover:underline py-1 px-2 uppercase transition-all"
+                className="text-[10px] tracking-widest text-muted hover:text-accent font-mono py-1 px-2 uppercase transition-all cursor-pointer"
               >
                 VACIAR
               </button>
@@ -167,7 +167,7 @@ export default function CartDrawer({
             <button
               id="close-cart-btn"
               onClick={onClose}
-              className="p-1.5 hover:bg-panel text-ink transition-all"
+              className="p-1.5 hover:bg-panel text-muted hover:text-ink transition-all cursor-pointer"
               aria-label="Cerrar carrito"
             >
               <X className="w-5 h-5" />
@@ -179,11 +179,11 @@ export default function CartDrawer({
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-6">
           {cartItems.length === 0 ? (
             <div id="empty-cart-state" className="h-full flex flex-col items-center justify-center text-center space-y-4 py-20">
-              <div className="w-16 h-16 rounded-full bg-paper-soft flex items-center justify-center border border-line">
+              <div className="w-16 h-16 rounded-full bg-panel flex items-center justify-center border border-line">
                 <ShoppingBag className="w-6 h-6 text-muted" />
               </div>
               <div>
-                <p className="text-xs uppercase tracking-widest font-bold text-ink">CARRITO VACÍO</p>
+                <p className="text-xs uppercase tracking-widest font-bold text-ink font-mono">CARRITO VACÍO</p>
                 <p className="text-muted text-xs mt-1.5 font-light">
                   Añade prendas de la colección para iniciar tu pedido.
                 </p>
@@ -191,7 +191,7 @@ export default function CartDrawer({
               <button
                 id="empty-cart-back-to-shop"
                 onClick={onClose}
-                className="bg-ink text-paper-soft px-6 py-2.5 text-xs tracking-wider uppercase hover:bg-accent"
+                className="bg-accent text-white px-6 py-3 text-xs font-mono font-bold tracking-wider uppercase hover:bg-rose-600 shadow-md transition-all cursor-pointer"
               >
                 VOLVER A LA TIENDA
               </button>
@@ -316,7 +316,7 @@ export default function CartDrawer({
                     id="customer-name-input"
                     type="text"
                     required
-                    placeholder="Ej. James Rojas"
+                    placeholder="Ej. Mateo Silva"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
                     className="w-full text-xs p-3 border border-line rounded-none bg-paper-soft focus:outline-none focus:border-accent font-sans"
@@ -512,12 +512,12 @@ export default function CartDrawer({
               id="finalize-order-wa-btn"
               type="submit"
               onClick={handleCheckout}
-              className="w-full bg-ink text-paper-soft hover:bg-accent text-xs font-sans font-black uppercase tracking-[0.2em] py-4 flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
+              className="w-full bg-white text-black hover:bg-zinc-200 text-xs font-mono font-bold uppercase tracking-[0.2em] py-4 flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
             >
               <Send className="w-4 h-4" />
               FINALIZAR PEDIDO POR WHATSAPP
             </button>
-            <p className="text-[10px] text-muted text-center">
+            <p className="text-[10px] text-zinc-400 text-center font-mono">
               Al finalizar, se abrirá WhatsApp con el pedido listo para enviar.
             </p>
           </div>

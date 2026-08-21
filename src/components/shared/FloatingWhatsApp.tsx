@@ -18,7 +18,7 @@ export default function FloatingWhatsApp() {
   }, []);
 
   const handleClick = () => {
-    const formattedMessage = `Hola, MONT STORE. Me comunico desde su tienda web para realizar una consulta general sobre las prendas de temporada.`;
+    const formattedMessage = `Hola, VANTA. Me comunico desde su tienda web para realizar una consulta general sobre las prendas de temporada.`;
     const whatsappUrl = `https://wa.me/51904536406?text=${encodeURIComponent(formattedMessage)}`;
     window.open(whatsappUrl, '_blank');
   };
@@ -26,11 +26,11 @@ export default function FloatingWhatsApp() {
   return (
     <div
       id="whatsapp-floating-trigger"
-      className="fixed bottom-6 right-6 z-40 flex items-center space-x-2.5 font-sans"
+      className="fixed bottom-20 md:bottom-6 right-4 md:right-6 z-40 flex items-center space-x-2.5 font-sans"
     >
       {/* Dynamic elegant black tooltip */}
       <div
-        className={`bg-ink text-white text-[10px] font-mono uppercase tracking-widest px-3 py-2 border border-line shadow-2xl transition-all duration-300 flex flex-col gap-1 ${
+        className={`bg-[#0e0e14] text-white text-[10px] font-mono uppercase tracking-widest px-3 py-2 border border-line shadow-2xl transition-all duration-300 flex flex-col gap-1 ${
           showTooltip ? 'opacity-100 translate-x-0' : 'opacity-0 translate-x-2 pointer-events-none'
         }`}
       >
@@ -50,18 +50,18 @@ export default function FloatingWhatsApp() {
           onClick={handleClick}
           onMouseEnter={() => setShowTooltip(true)}
           onMouseLeave={() => setShowTooltip(false)}
-          className="relative bg-ink text-white p-4 hover:bg-ink/90 transition-all shadow-xl flex items-center justify-center group"
+          className="relative bg-[#0e0e14] text-white p-3.5 border border-zinc-700 hover:border-white hover:bg-[#161622] hover:shadow-2xl transition-all flex items-center justify-center group cursor-pointer"
           aria-label="Contactar por WhatsApp"
         >
           {/* Radar pulsing ring matching status */}
-          <span className={`absolute inset-0 w-full h-full -z-10 animate-ping opacity-45 ${isOnline ? 'bg-accent/40' : 'bg-line/30'}`} />
-          <MessageCircle className="w-5 h-5 transition-transform duration-300 group-hover:scale-110" />
+          <span className={`absolute inset-0 w-full h-full -z-10 animate-ping opacity-30 ${isOnline ? 'bg-emerald-500/40' : 'bg-zinc-700/30'}`} />
+          <img src="/iconos/whatsapp.jfif" alt="WhatsApp" className="w-6 h-6 object-cover rounded-full transition-transform duration-300 group-hover:scale-110" />
         </button>
 
         {/* Small absolute availability indicator dot */}
         <span
           id="whatsapp-status-indicator"
-          className={`absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full border border-ink shadow-md flex items-center justify-center transition-colors duration-500 ${
+          className={`absolute -top-1 -right-1 w-3.5 h-3.5 rounded-full border border-black shadow-md flex items-center justify-center transition-colors duration-500 ${
             isOnline ? 'bg-accent' : 'bg-line'
           }`}
           title={isOnline ? 'En Línea (9am - 10pm)' : 'Fuera de Línea (9am - 10pm)'}

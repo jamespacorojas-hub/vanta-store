@@ -16,7 +16,6 @@ export const CATEGORIES = [
   'Clásico',
   'Notch',
   'Polera',
-  'Polera c/ Cierre',
   'Ofertas',
 ];
 
@@ -30,11 +29,13 @@ export const PRODUCTS: Product[] = [
     description: 'Camisa minimalista de alta gama confeccionada para un estilo streetwear refinado. Presenta un cuello impecable, silueta boxy contemporánea y acabados de costura invisibles.',
     fabricDetails: 'Disponible en tejidos premium seleccionados: Waffle, Jersey, Piqué, Waffer. Aporta una textura táctil incomparable y un peso óptimo para una caída perfecta.',
     images: [
+      productImageManifest.camisa.waffle.Blanco,
       productImageManifest.camisa.jersey.Negro,
-      productImageManifest.camisa.jersey.Azul,
+      productImageManifest.camisa.jersey.Beige,
+      productImageManifest.camisa.jersey.Denim,
     ],
     colorImages: productImageManifest.camisa,
-    colors: ['Negro', ...GARMENT_COLORS],
+    colors: ['Blanco', 'Negro', 'Beige', 'Denim', 'Vino', 'Botella', 'Cemento', ...GARMENT_COLORS.filter(c => !['Blanco', 'Negro', 'Beige', 'Denim', 'Vino', 'Botella', 'Cemento'].includes(c))],
     sizes: ['S', 'M', 'L', 'XL'],
     tags: ['Nuevo'],
     stock: 24,
@@ -49,11 +50,13 @@ export const PRODUCTS: Product[] = [
     description: 'Nuestra silueta Camisero de corte relajado, ideal para layering urbano. Cuenta con bolsillo frontal plano y una caída fluida que brinda máxima movilidad y un estilo contemporáneo.',
     fabricDetails: 'Confeccionado artesanalmente en tu tela preferida: Waffle, Jersey, Piqué, Waffer. Alta durabilidad y suavidad al tacto.',
     images: [
+      productImageManifest.camisero.jersey.Cemento,
+      productImageManifest.camisero.jersey.Denim,
       productImageManifest.camisero.jersey.Negro,
-      productImageManifest.camisero.jersey.Azul,
+      productImageManifest.camisero.jersey.Beige,
     ],
     colorImages: productImageManifest.camisero,
-    colors: ['Negro', ...GARMENT_COLORS],
+    colors: ['Cemento', 'Denim', 'Negro', 'Beige', 'Botella', 'Vino', 'Plomo', ...GARMENT_COLORS.filter(c => !['Cemento', 'Denim', 'Negro', 'Beige', 'Botella', 'Vino', 'Plomo'].includes(c))],
     sizes: ['S', 'M', 'L', 'XL'],
     tags: ['Lanzamiento'],
     stock: 18,
@@ -69,11 +72,13 @@ export const PRODUCTS: Product[] = [
     description: 'Polo pesado de manga larga de silueta holgada. Presenta puños de rib acanalados y cuello cerrado de 3cm para un ajuste streetwear de inspiración retro de los 90s.',
     fabricDetails: 'Disponible en tejidos seleccionados: Waffle, Jersey, Piqué, Waffer. Textura acogedora de alta transpirabilidad.',
     images: [
+      productImageManifest['manga-larga'].jersey.Vino,
       productImageManifest['manga-larga'].jersey.Negro,
-      productImageManifest['manga-larga'].jersey.Azul,
+      productImageManifest['manga-larga'].jersey.Plomo,
+      productImageManifest['manga-larga'].jersey.Blanco,
     ],
     colorImages: productImageManifest['manga-larga'],
-    colors: ['Negro', ...GARMENT_COLORS],
+    colors: ['Vino', 'Negro', 'Plomo', 'Blanco', 'Azul', 'Botella', 'Melange Oscuro', ...GARMENT_COLORS.filter(c => !['Vino', 'Negro', 'Plomo', 'Blanco', 'Azul', 'Botella', 'Melange Oscuro'].includes(c))],
     sizes: ['S', 'M', 'L', 'XL'],
     tags: ['Oferta', 'Nuevo'],
     stock: 15,
@@ -88,11 +93,13 @@ export const PRODUCTS: Product[] = [
     description: 'El polo clásico e indispensable para cualquier clóset. Ofrece un corte boxy fit ultra balanceado, hombros ligeramente caídos y una costura reforzada de doble aguja en el cuello.',
     fabricDetails: 'Tejido pesado estructurado en opciones: Waffle, Jersey, Piqué, Waffer. No encoge ni deforma con las lavadas continuas.',
     images: [
+      productImageManifest.clasico.jersey.Denim,
+      productImageManifest.clasico.jersey.Blanco,
       productImageManifest.clasico.jersey.Negro,
-      productImageManifest.clasico.jersey.Azul,
+      productImageManifest.clasico.jersey.Botella,
     ],
     colorImages: productImageManifest.clasico,
-    colors: ['Negro', ...GARMENT_COLORS],
+    colors: ['Denim', 'Blanco', 'Negro', 'Botella', 'Vino', 'Beige', 'Cemento', ...GARMENT_COLORS.filter(c => !['Denim', 'Blanco', 'Negro', 'Botella', 'Vino', 'Beige', 'Cemento'].includes(c))],
     sizes: ['S', 'M', 'L', 'XL'],
     tags: ['Básico'],
     stock: 30,
@@ -107,11 +114,13 @@ export const PRODUCTS: Product[] = [
     description: 'Polo de diseño minimalista con cuello Notch (abertura sutil sin botones). Otorga un look refinado sin sacrificar la comodidad ni el carácter relajado de la indumentaria streetwear.',
     fabricDetails: 'Disponible para personalizar en telas: Waffle, Piqué, Jersey, Waffer. Ofrece excelente retención de forma.',
     images: [
+      productImageManifest.notch.jersey.Botella,
+      productImageManifest.notch.jersey.Beige,
       productImageManifest.notch.jersey.Negro,
-      productImageManifest.notch.jersey.Azul,
+      productImageManifest.notch.jersey.Vino,
     ],
     colorImages: productImageManifest.notch,
-    colors: ['Negro', ...GARMENT_COLORS],
+    colors: ['Botella', 'Beige', 'Negro', 'Vino', 'Blanco', 'Topo', 'Palo Rosa', ...GARMENT_COLORS.filter(c => !['Botella', 'Beige', 'Negro', 'Vino', 'Blanco', 'Topo', 'Palo Rosa'].includes(c))],
     sizes: ['S', 'M', 'L', 'XL'],
     tags: ['Nuevo'],
     stock: 22,
@@ -120,51 +129,31 @@ export const PRODUCTS: Product[] = [
   },
   {
     id: 'polera',
-    name: 'Polera',
+    name: 'Polera Zyko',
     category: 'Polera',
     price: 75.00,
     oldPrice: 89.00,
-    description: 'Sudadera con capucha (hoodie) de silueta oversized. Su capucha pesada de doble capa sin cordón otorga un perfil limpio y moderno, complementado por un forro interior suave.',
-    fabricDetails: 'Confección pesada y acogedora en tus telas favoritas: Waffle, Jersey, Piqué, Waffer. El estándar definitivo de comodidad urbana.',
+    description: 'Sudadera con capucha (hoodie) Polera Zyko de silueta oversized. Su capucha pesada de doble capa sin cordón otorga un perfil limpio y moderno, complementado por un forro interior suave.',
+    fabricDetails: 'Confección pesada y acogedora en tus telas favoritas: Zyko, Waffle, Jersey, Piqué, Waffer. El estándar definitivo de comodidad urbana.',
     images: [
+      productImageManifest.polera.jersey['Melange Oscuro'],
       productImageManifest.polera.jersey.Negro,
+      productImageManifest.polera.jersey.Vino,
       productImageManifest.polera.jersey.Azul,
     ],
     colorImages: productImageManifest.polera,
-    colors: ['Negro', ...GARMENT_COLORS],
+    colors: ['Melange Oscuro', 'Negro', 'Vino', 'Azul', 'Botella', 'Cemento', 'Beige', ...GARMENT_COLORS.filter(c => !['Melange Oscuro', 'Negro', 'Vino', 'Azul', 'Botella', 'Cemento', 'Beige'].includes(c))],
     sizes: ['S', 'M', 'L', 'XL'],
     tags: ['Nuevo', 'Oferta'],
     stock: 16,
-    fabrics: ['Waffle', 'Jersey', 'Piqué', 'Waffer'],
-    sleeves: ['Manga Larga']
-  },
-  {
-    id: 'polera-cierre',
-    name: 'Polera c/ Cierre',
-    category: 'Polera c/ Cierre',
-    price: 85.00,
-    description: 'Sudadera con capucha y cierre completo mediante cremallera de deslizamiento suave. Silueta oversized ajustable con puños y basta acanalados para retener el calor corporal. Próximo lanzamiento: las confecciones aún están en proceso de producción.',
-    fabricDetails: 'Tejido pesado y abrigador disponible en: Neru, Waffle, Piqué. Costuras reforzadas de resistencia industrial.',
-    // Sin fotos todavía — confección aún no finalizada. No usar placeholders genéricos que no
-    // representan la prenda real; los componentes de tarjeta muestran un estado "próximamente" en su lugar.
-    images: [],
-    colors: [
-      'Azul', 'Beige', 'Botella', 'Cemento', 'Denim', 'Melange Oscuro', 'Negro',
-      'Pacay', 'Palo Rosa', 'Perla', 'Vino', 'Marrón', 'Camote', 'Topo', 'Plomo',
-      'Blanco', 'Gris'
-    ],
-    sizes: ['S', 'M', 'L', 'XL'],
-    // Confecciones aún no finalizadas — próximo lanzamiento, todavía sin stock disponible
-    tags: ['Próximamente'],
-    stock: 0,
-    fabrics: ['Neru', 'Waffle', 'Piqué'],
+    fabrics: ['Zyko', 'Waffle', 'Jersey', 'Piqué', 'Waffer'],
     sleeves: ['Manga Larga']
   }
 ];
 
 export const FAQS: FAQItem[] = [
   {
-    question: '¿Cómo realizo una compra en MONT STORE?',
+    question: '¿Cómo realizo una compra en VANTA?',
     answer: 'La compra se inicia seleccionando tus prendas, tallas y colores preferidos en nuestra web. Una vez añadidas al carrito, completa tus datos de entrega y haz clic en "Finalizar pedido por WhatsApp". Se generará automáticamente un mensaje con tu pedido estructurado que nos llegará para confirmar stock inmediato y brindarte los datos de pago.',
   },
   {

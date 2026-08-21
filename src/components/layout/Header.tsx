@@ -1,7 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ShoppingBag, Heart, Search, ChevronDown } from 'lucide-react';
+import { Menu, X, ShoppingBag, Heart, Search, ChevronDown, Sun, Moon } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CATEGORIES } from '../../data';
+import TikTokIcon from '../shared/TikTokIcon';
 
 interface HeaderProps {
   activeCategory: string;
@@ -12,6 +13,8 @@ interface HeaderProps {
   onOpenWishlist: () => void;
   searchQuery: string;
   onSearchChange: (query: string) => void;
+  theme?: 'dark' | 'light';
+  onToggleTheme?: () => void;
 }
 
 const MAIN_NAV_ITEMS = ['Inicio', 'Nuevos ingresos', 'Prendas', 'Catálogo', 'Ofertas'];
@@ -22,8 +25,7 @@ const PRODUCT_CATEGORIES_WITH_FABRICS = [
   { name: 'Manga Larga', fabrics: ['Waffle', 'Jersey', 'Piqué', 'Waffer'] },
   { name: 'Clásico', fabrics: ['Waffle', 'Clásico', 'Piqué', 'Waffer'] },
   { name: 'Notch', fabrics: ['Waffle', 'Piqué', 'Jersey', 'Waffer'] },
-  { name: 'Polera', fabrics: ['Neru', 'Waffle', 'Piqué'] },
-  { name: 'Polera c/ Cierre', fabrics: ['Neru', 'Waffle', 'Piqué'] },
+  { name: 'Polera', fabrics: ['Zyko', 'Waffle', 'Piqué'] },
 ];
 
 export default function Header({
@@ -35,6 +37,8 @@ export default function Header({
   onOpenWishlist,
   searchQuery,
   onSearchChange,
+  theme = 'dark',
+  onToggleTheme,
 }: HeaderProps) {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
@@ -68,42 +72,44 @@ export default function Header({
       id="main-header"
       className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 ${
         isScrolled
-          ? 'bg-paper/95 backdrop-blur-md border-b border-line shadow-xs'
-          : 'bg-paper border-b border-line'
+          ? 'bg-[#070709]/95 backdrop-blur-xl border-b border-zinc-800 shadow-[0_4px_30px_rgba(0,0,0,0.8)]'
+          : 'bg-[#070709]/98 backdrop-blur-md border-b border-zinc-800/80'
       }`}
     >
-      {/* Promo banner */}
+      {/* Gothic Luxury Promo banner - High Legibility */}
       <div
         id="promo-banner"
-        className="bg-ink text-paper text-[10px] sm:text-xs uppercase tracking-[0.2em] py-2 text-center font-mono select-none"
+        className="bg-[#0c0c10] text-zinc-300 border-b border-white/10 text-[9px] sm:text-[11px] uppercase tracking-[0.25em] py-1.5 sm:py-2 text-center font-mono select-none flex items-center justify-center gap-2"
       >
-        ENVIOS A TODO EL PERU • COMPRA POR WHATSAPP • 10% OFF EN TU PRIMER PEDIDO
+        <span className="text-rose-500 font-bold text-[8px] sm:text-xs">✦</span>
+        <span>ENVIOS A TODO EL PERU • COMPRA POR WHATSAPP • 10% OFF</span>
+        <span className="text-rose-500 font-bold text-[8px] sm:text-xs">✦</span>
       </div>
 
       {/* Main Header Container */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 md:h-20 flex items-center justify-between">
         {/* Left: Mobile Menu Trigger & Search */}
-        <div className="flex items-center space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4">
           <button
             id="mobile-menu-trigger"
             onClick={() => setIsMobileMenuOpen(true)}
-            className="md:hidden p-2 text-ink hover:text-accent transition-colors"
+            className="md:hidden p-2 text-zinc-200 hover:text-white transition-colors cursor-pointer"
             aria-label="Abrir menú"
           >
             <Menu className="w-5 h-5" />
           </button>
 
-          <div className="hidden md:flex items-center relative">
+          <div className="flex items-center relative">
             <button
               id="search-toggle-btn"
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="p-2 text-ink hover:text-accent transition-colors"
+              className="p-2 text-zinc-300 hover:text-white transition-colors cursor-pointer"
               aria-label="Buscar"
             >
-              <Search className="w-5 h-5" />
+              <Search className="w-4 h-4 sm:w-5 sm:h-5" />
             </button>
             <div
-              className={`absolute left-10 transition-all duration-300 overflow-hidden ${
+              className={`hidden md:block absolute left-10 transition-all duration-300 overflow-hidden ${
                 isSearchOpen ? 'w-64 opacity-100' : 'w-0 opacity-0 pointer-events-none'
               }`}
             >
@@ -113,13 +119,13 @@ export default function Header({
                 placeholder="Buscar prenda..."
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full text-sm py-1 px-3 border border-line focus:outline-none focus:border-accent font-sans bg-paper-soft"
+                className="w-full text-xs py-1.5 px-3 border border-zinc-700 focus:outline-none focus:border-white font-mono bg-[#121218] text-white placeholder:text-zinc-500"
               />
               {searchQuery && (
                 <button
                   id="clear-search-btn-desktop"
                   onClick={() => onSearchChange('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-ink font-sans"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-white font-mono cursor-pointer"
                 >
                   Limpiar
                 </button>
@@ -128,35 +134,52 @@ export default function Header({
           </div>
         </div>
 
-        {/* Center: Brand Logo */}
-        <div className="flex-1 flex justify-center md:justify-center">
+        {/* Center: Pure Panther Brand Icon */}
+        <div className="flex-1 flex justify-center items-center">
           <button
             id="brand-logo-btn"
             onClick={() => handleCategoryClick('Inicio')}
-            className="group flex flex-col items-center"
+            className="group flex items-center justify-center cursor-pointer p-1 transition-transform duration-300 hover:scale-108"
+            aria-label="VANTA — Ir al inicio"
+            title="VANTA"
           >
-            <span className="font-display text-2xl sm:text-3xl font-medium tracking-wide text-ink transition-transform duration-300 group-hover:scale-[1.02]">
-              Mont Store
-            </span>
-            <span className="text-[8px] sm:text-[9px] tracking-[0.3em] text-muted mt-0.5 font-semibold uppercase">
-              Streetwear Editorial
-            </span>
+            <img
+              src={theme === 'light' ? '/panther-dark.png' : '/panther-white.png'}
+              alt="VANTA"
+              className="w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
+            />
           </button>
         </div>
 
-        {/* Right: Cart & Wishlist */}
-        <div className="flex items-center space-x-2 sm:space-x-4">
+        {/* Right: Theme Toggle, Cart & Wishlist */}
+        <div className="flex items-center space-x-1 sm:space-x-3">
+          {onToggleTheme && (
+            <button
+              id="theme-toggle-btn"
+              onClick={onToggleTheme}
+              className="p-2 text-zinc-300 hover:text-white transition-colors cursor-pointer rounded-full hover:bg-white/10"
+              aria-label="Cambiar tema claro / oscuro"
+              title={theme === 'dark' ? 'Activar Modo Claro' : 'Activar Modo Oscuro'}
+            >
+              {theme === 'dark' ? (
+                <Sun className="w-5 h-5 text-amber-400 hover:rotate-45 transition-transform" />
+              ) : (
+                <Moon className="w-5 h-5 text-slate-700 hover:-rotate-12 transition-transform" />
+              )}
+            </button>
+          )}
+
           <button
             id="wishlist-trigger-btn"
             onClick={onOpenWishlist}
-            className="p-2 text-ink hover:text-accent transition-colors relative"
+            className="p-2 text-zinc-300 hover:text-white transition-colors relative cursor-pointer"
             aria-label="Ver favoritos"
           >
             <Heart className="w-5 h-5" />
             {wishlistCount > 0 && (
               <span
                 id="wishlist-badge"
-                className="absolute top-0 right-0 bg-accent text-paper-soft text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-mono font-bold border border-paper"
+                className="absolute -top-0.5 -right-0.5 bg-accent text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-mono font-black shadow-md"
               >
                 {wishlistCount}
               </span>
@@ -166,14 +189,14 @@ export default function Header({
           <button
             id="cart-trigger-btn"
             onClick={onOpenCart}
-            className="p-2 text-ink hover:text-accent transition-colors relative"
+            className="p-2 text-zinc-300 hover:text-white transition-colors relative cursor-pointer"
             aria-label="Ver carrito"
           >
             <ShoppingBag className="w-5 h-5" />
             {cartCount > 0 && (
               <span
                 id="cart-badge"
-                className="absolute top-0 right-0 bg-accent text-paper-soft text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-mono font-bold border border-paper"
+                className="absolute -top-0.5 -right-0.5 bg-accent text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-mono font-black shadow-md"
               >
                 {cartCount}
               </span>
@@ -182,31 +205,42 @@ export default function Header({
         </div>
       </div>
 
-      {/* Mobile Search Bar - below header */}
-      <div className="md:hidden px-4 pb-3 bg-paper">
-        <div className="relative">
-          <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted">
-            <Search className="w-4 h-4" />
-          </span>
-          <input
-            id="search-input-mobile"
-            type="text"
-            placeholder="Buscar prenda..."
-            value={searchQuery}
-            onChange={(e) => onSearchChange(e.target.value)}
-            className="w-full text-xs py-2 pl-9 pr-8 border border-line rounded-none focus:outline-none focus:border-accent font-sans bg-paper-soft"
-          />
-          {searchQuery && (
-            <button
-              id="clear-search-btn-mobile"
-              onClick={() => onSearchChange('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-ink font-mono"
-            >
-              <X className="w-3 h-3" />
-            </button>
-          )}
-        </div>
-      </div>
+      {/* Mobile Interactive Search Bar - Expands smoothly only when triggered */}
+      <AnimatePresence>
+        {isSearchOpen && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+            transition={{ duration: 0.2 }}
+            className="md:hidden px-3 pb-3 pt-1 bg-[#070709] border-b border-zinc-800 overflow-hidden"
+          >
+            <div className="relative">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-zinc-400">
+                <Search className="w-4 h-4" />
+              </span>
+              <input
+                id="search-input-mobile"
+                type="text"
+                placeholder="Buscar prenda o tejido..."
+                value={searchQuery}
+                onChange={(e) => onSearchChange(e.target.value)}
+                autoFocus
+                className="w-full text-xs py-2 pl-9 pr-8 border border-zinc-700 bg-[#121218] text-white focus:outline-none focus:border-white font-mono placeholder:text-zinc-500"
+              />
+              {searchQuery && (
+                <button
+                  id="clear-search-btn-mobile"
+                  onClick={() => onSearchChange('')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-white font-mono"
+                >
+                  <X className="w-3.5 h-3.5" />
+                </button>
+              )}
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Desktop Navigation Menus (Centered under logo on large viewports or standard navigation block) */}
       <nav id="desktop-navigation" className="hidden md:flex justify-center border-t border-line py-3 bg-paper">
@@ -312,50 +346,111 @@ export default function Header({
       {/* Mobile Sidebar Navigation Drawer */}
       <div
         id="mobile-drawer"
-        className={`fixed inset-0 z-50 transition-opacity duration-300 bg-ink/60 ${
+        className={`fixed inset-0 z-50 transition-opacity duration-300 bg-black/85 backdrop-blur-md ${
           isMobileMenuOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
         }`}
         onClick={() => setIsMobileMenuOpen(false)}
       >
         <div
           id="mobile-drawer-content"
-          className={`fixed top-0 left-0 w-[80vw] max-w-sm h-full bg-paper z-50 p-6 flex flex-col transition-transform duration-300 transform ${
+          className={`fixed top-0 left-0 w-[85vw] max-w-xs h-full bg-paper text-ink z-50 p-5 sm:p-6 flex flex-col justify-between shadow-[0_0_50px_rgba(0,0,0,0.9)] border-r border-line transition-transform duration-300 transform ${
             isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
           }`}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="flex items-center justify-between mb-8 border-b border-line pb-4">
-            <div className="flex flex-col">
-              <span className="font-display text-xl tracking-wide text-ink">
-                Mont Store
-              </span>
-              <span className="text-[8px] tracking-[0.3em] text-muted -mt-1 font-semibold">
-                STREETWEAR
-              </span>
+          {/* Drawer Header */}
+          <div>
+            <div className="flex items-center justify-between mb-6 border-b border-line pb-4">
+              <div className="flex items-center gap-2.5">
+                <img
+                  src={theme === 'light' ? '/panther-dark.png' : '/panther-white.png'}
+                  alt="VANTA"
+                  className="w-8 h-8 object-contain drop-shadow-sm"
+                />
+                <div className="flex flex-col">
+                  <span className="font-display text-xl font-black tracking-wider text-ink leading-none">
+                    VANTA
+                  </span>
+                  <span className="text-[7.5px] tracking-[0.25em] text-muted mt-0.5 font-semibold uppercase">
+                    STREETWEAR
+                  </span>
+                </div>
+              </div>
+              <button
+                id="close-mobile-menu"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="p-2 text-ink hover:text-accent transition-colors rounded-sm hover:bg-panel"
+                aria-label="Cerrar menú"
+              >
+                <X className="w-5 h-5" />
+              </button>
             </div>
-            <button
-              id="close-mobile-menu"
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="p-2 text-ink hover:text-accent transition-colors"
-              aria-label="Cerrar menú"
-            >
-              <X className="w-5 h-5" />
-            </button>
+
+            {/* Quick Actions (Bolsa & Favoritos moved into sidebar) */}
+            <div className="grid grid-cols-2 gap-2 mb-5">
+              <button
+                id="mobile-drawer-cart-btn"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  onOpenCart();
+                }}
+                className="p-3 bg-panel border border-line rounded-sm flex items-center justify-between text-ink hover:border-accent transition-all cursor-pointer group"
+              >
+                <div className="flex items-center gap-2">
+                  <ShoppingBag className="w-4 h-4 text-accent" />
+                  <span className="text-xs font-mono font-bold uppercase">Bolsa</span>
+                </div>
+                {cartCount > 0 ? (
+                  <span className="bg-accent text-white text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full">
+                    {cartCount}
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-mono text-muted">0</span>
+                )}
+              </button>
+
+              <button
+                id="mobile-drawer-wishlist-btn"
+                onClick={() => {
+                  setIsMobileMenuOpen(false);
+                  onOpenWishlist();
+                }}
+                className="p-3 bg-panel border border-line rounded-sm flex items-center justify-between text-ink hover:border-accent transition-all cursor-pointer group"
+              >
+                <div className="flex items-center gap-2">
+                  <Heart className="w-4 h-4 text-rose-400" />
+                  <span className="text-xs font-mono font-bold uppercase">Deseos</span>
+                </div>
+                {wishlistCount > 0 ? (
+                  <span className="bg-rose-500 text-white text-[10px] font-mono font-bold px-1.5 py-0.5 rounded-full">
+                    {wishlistCount}
+                  </span>
+                ) : (
+                  <span className="text-[10px] font-mono text-muted">0</span>
+                )}
+              </button>
+            </div>
           </div>
 
-          <div className="flex-1 overflow-y-auto">
-            <p className="text-[10px] tracking-widest text-muted uppercase mb-4">CATEGORÍAS</p>
-            <ul className="space-y-3 text-sm font-sans uppercase tracking-wider">
+          {/* Navigation Links */}
+          <div className="flex-1 overflow-y-auto pr-1">
+            <p className="text-[9px] font-mono tracking-widest text-muted uppercase mb-3 font-bold">
+              NAVEGACIÓN // DROP 2026
+            </p>
+            <ul className="space-y-1.5 text-xs font-mono uppercase tracking-wider">
               {/* Home / Inicio */}
               <li>
                 <button
                   id="mobile-nav-item-inicio"
                   onClick={() => handleCategoryClick('Inicio')}
-                  className={`w-full text-left py-2.5 transition-colors border-b border-line font-medium ${
-                    activeCategory === 'Inicio' ? 'text-ink font-black pl-1' : 'text-muted hover:text-ink'
+                  className={`w-full text-left py-2.5 px-3 rounded-xs transition-colors flex items-center justify-between font-bold ${
+                    activeCategory === 'Inicio'
+                      ? 'bg-panel text-ink border-l-2 border-accent'
+                      : 'text-muted hover:text-ink hover:bg-panel/40'
                   }`}
                 >
-                  INICIO
+                  <span>INICIO</span>
+                  <span className="text-[10px] text-muted">01</span>
                 </button>
               </li>
 
@@ -364,28 +459,71 @@ export default function Header({
                 <button
                   id="mobile-nav-item-nuevos-ingresos"
                   onClick={() => handleCategoryClick('Nuevos ingresos')}
-                  className={`w-full text-left py-2.5 transition-colors border-b border-line flex items-center justify-between font-medium ${
-                    activeCategory === 'Nuevos ingresos' ? 'text-ink font-black pl-1' : 'text-muted hover:text-ink'
+                  className={`w-full text-left py-2.5 px-3 rounded-xs transition-colors flex items-center justify-between font-bold ${
+                    activeCategory === 'Nuevos ingresos'
+                      ? 'bg-panel text-ink border-l-2 border-accent'
+                      : 'text-muted hover:text-ink hover:bg-panel/40'
                   }`}
                 >
-                  <span>NUEVOS INGRESOS</span>
-                  <span className="flex h-1.5 w-1.5 relative">
-                    <span className="relative inline-flex rounded-full h-1.5 w-1.5 bg-accent"></span>
+                  <div className="flex items-center gap-2">
+                    <span>NUEVOS DROPS</span>
+                    <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
+                  </div>
+                  <span className="text-[10px] text-accent font-bold">NUEVO</span>
+                </button>
+              </li>
+
+              {/* Catálogo 3D */}
+              <li>
+                <button
+                  id="mobile-nav-item-catalogo"
+                  onClick={() => handleCategoryClick('Catálogo')}
+                  className={`w-full text-left py-2.5 px-3 rounded-xs transition-colors flex items-center justify-between font-bold ${
+                    activeCategory === 'Catálogo'
+                      ? 'bg-panel text-ink border-l-2 border-accent'
+                      : 'text-muted hover:text-ink hover:bg-panel/40'
+                  }`}
+                >
+                  <span>CATÁLOGO 3D</span>
+                  <span className="text-[9px] font-mono text-muted bg-panel px-1.5 py-0.5 border border-line">
+                    3D VIEW
+                  </span>
+                </button>
+              </li>
+
+              {/* Ofertas */}
+              <li>
+                <button
+                  id="mobile-nav-item-ofertas"
+                  onClick={() => handleCategoryClick('Ofertas')}
+                  className={`w-full text-left py-2.5 px-3 rounded-xs transition-colors flex items-center justify-between font-bold ${
+                    activeCategory === 'Ofertas'
+                      ? 'bg-panel text-ink border-l-2 border-accent'
+                      : 'text-muted hover:text-ink hover:bg-panel/40'
+                  }`}
+                >
+                  <span>OFERTAS DE TEMPORADA</span>
+                  <span className="text-[9px] font-bold text-rose-400 bg-rose-500/10 px-1.5 py-0.5 border border-rose-500/20">
+                    % SALE
                   </span>
                 </button>
               </li>
 
               {/* Collapsible PRENDAS */}
-              <li>
+              <li className="pt-2">
                 <button
                   id="mobile-nav-item-prendas"
                   onClick={() => setIsMobilePrendasOpen(!isMobilePrendasOpen)}
-                  className={`w-full text-left py-2.5 transition-colors border-b border-line flex items-center justify-between font-medium ${
-                    isPrendasActive ? 'text-ink font-black' : 'text-muted'
+                  className={`w-full text-left py-2.5 px-3 rounded-xs transition-colors flex items-center justify-between font-bold border border-line bg-panel/60 ${
+                    isPrendasActive ? 'text-ink border-accent' : 'text-muted hover:text-ink'
                   }`}
                 >
-                  <span>PRENDAS</span>
-                  <ChevronDown className={`w-4 h-4 transition-transform duration-300 ${isMobilePrendasOpen ? 'rotate-180' : ''}`} />
+                  <span>COLECCIÓN DE PRENDAS</span>
+                  <ChevronDown
+                    className={`w-4 h-4 transition-transform duration-300 ${
+                      isMobilePrendasOpen ? 'rotate-180 text-accent' : ''
+                    }`}
+                  />
                 </button>
 
                 {/* Collapsible List of garments */}
@@ -396,7 +534,7 @@ export default function Header({
                       animate={{ height: 'auto', opacity: 1 }}
                       exit={{ height: 0, opacity: 0 }}
                       transition={{ duration: 0.2 }}
-                      className="overflow-hidden pl-3 pr-1 mt-1 space-y-1 bg-paper-soft/60 border-l border-line"
+                      className="overflow-hidden pl-2 pr-1 mt-1.5 space-y-1 bg-panel/30 border-l-2 border-accent"
                     >
                       {PRODUCT_CATEGORIES_WITH_FABRICS.map((pCat) => {
                         const isSubActive = activeCategory === pCat.name;
@@ -408,8 +546,10 @@ export default function Header({
                               handleCategoryClick(pCat.name);
                               setIsMobileMenuOpen(false);
                             }}
-                            className={`w-full text-left py-2 transition-colors block ${
-                              isSubActive ? 'text-ink font-bold text-xs' : 'text-muted hover:text-ink text-[11px]'
+                            className={`w-full text-left py-2 px-2 transition-colors block rounded-xs ${
+                              isSubActive
+                                ? 'text-accent font-black text-xs bg-panel'
+                                : 'text-muted hover:text-ink text-[11px] hover:bg-panel/40'
                             }`}
                           >
                             <div className="flex items-center justify-between">
@@ -426,40 +566,58 @@ export default function Header({
                   )}
                 </AnimatePresence>
               </li>
-
-              {/* Catálogo */}
-              <li>
-                <button
-                  id="mobile-nav-item-catalogo"
-                  onClick={() => handleCategoryClick('Catálogo')}
-                  className={`w-full text-left py-2.5 transition-colors border-b border-line font-medium ${
-                    activeCategory === 'Catálogo' ? 'text-ink font-black pl-1' : 'text-muted hover:text-ink'
-                  }`}
-                >
-                  CATÁLOGO
-                </button>
-              </li>
-
-              {/* Ofertas */}
-              <li>
-                <button
-                  id="mobile-nav-item-ofertas"
-                  onClick={() => handleCategoryClick('Ofertas')}
-                  className={`w-full text-left py-2.5 transition-colors border-b border-line font-medium ${
-                    activeCategory === 'Ofertas' ? 'text-ink font-black pl-1' : 'text-muted hover:text-ink'
-                  }`}
-                >
-                  OFERTAS
-                </button>
-              </li>
             </ul>
           </div>
 
-          <div className="border-t border-line pt-6 mt-auto">
-            <p className="text-[10px] tracking-wider text-muted mb-2">SÍGUENOS EN REDES</p>
-            <div className="flex space-x-4 text-xs font-mono text-ink/70">
-              <a href="https://instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-accent">INSTAGRAM</a>
-              <a href="https://tiktok.com" target="_blank" rel="noopener noreferrer" className="hover:text-accent">TIKTOK</a>
+          {/* Drawer Footer Utility Deck */}
+          <div className="border-t border-line pt-4 mt-auto space-y-3">
+            {onToggleTheme && (
+              <button
+                id="mobile-theme-toggle-btn"
+                onClick={onToggleTheme}
+                className="w-full flex items-center justify-between p-2.5 border border-line bg-panel text-ink font-mono text-xs uppercase tracking-wider cursor-pointer rounded-sm hover:border-ink/40"
+              >
+                <div className="flex items-center gap-2">
+                  {theme === 'dark' ? (
+                    <Sun className="w-4 h-4 text-amber-400" />
+                  ) : (
+                    <Moon className="w-4 h-4 text-slate-600" />
+                  )}
+                  <span>MODO {theme === 'dark' ? 'CLARO' : 'OSCURO'}</span>
+                </div>
+                <span className="text-[9px] text-accent font-bold">CAMBIAR</span>
+              </button>
+            )}
+
+            {/* Quick Link to Policies and Terms */}
+            <a
+              href="#faq-and-policies"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="w-full flex items-center justify-between p-2 border border-line bg-panel/60 text-muted hover:text-ink font-mono text-[10px] uppercase tracking-wider rounded-sm transition-colors"
+            >
+              <span>📜 POLÍTICAS & TÉRMINOS</span>
+              <span className="text-accent font-bold">VER ↗</span>
+            </a>
+
+            <div className="flex items-center justify-between text-xs font-mono text-muted pt-1">
+              <a
+                href="https://wa.me/51904536406"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-accent flex items-center gap-1.5 text-[11px] font-bold"
+              >
+                <span>WhatsApp Oficial ↗</span>
+              </a>
+
+              <a
+                href="https://www.tiktok.com/@vanta_ptr?is_from_webapp=1&sender_device=pc"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-accent flex items-center gap-1 text-[11px] font-bold"
+              >
+                <TikTokIcon className="w-3.5 h-3.5" />
+                <span>TikTok ↗</span>
+              </a>
             </div>
           </div>
         </div>

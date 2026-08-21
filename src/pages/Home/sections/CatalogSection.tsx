@@ -230,7 +230,7 @@ export default function CatalogSection({
               <button
                 id="catalog-reset-filters-btn"
                 onClick={handleResetFilters}
-                className="bg-ink text-paper-soft px-6 py-3 text-xs tracking-widest uppercase mt-6 hover:bg-accent"
+                className="bg-accent text-white px-6 py-3 text-xs font-mono font-bold tracking-widest uppercase mt-6 hover:bg-rose-600 shadow-[0_0_15px_rgba(225,29,72,0.3)] transition-all"
               >
                 Reiniciar todos los filtros
               </button>
@@ -240,7 +240,7 @@ export default function CatalogSection({
               <p className="text-[10px] tracking-widest text-muted mb-4 uppercase">
                 Mostrando {sortedProducts.length} de {PRODUCTS.length} artículos
               </p>
-              <motion.div layout className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              <motion.div layout className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2.5 sm:gap-6">
                 {sortedProducts.map((p, index) => (
                   <motion.div
                     key={p.id}
