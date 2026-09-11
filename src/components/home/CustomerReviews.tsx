@@ -66,14 +66,14 @@ export default function CustomerReviews() {
   )}`;
 
   return (
-    <section id="social-integration" className="py-14 sm:py-24 bg-[#060608] border-b border-line relative overflow-hidden">
+    <section id="social-integration" className="py-14 sm:py-24 bg-paper border-b border-line relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
         <div className="text-center space-y-2 mb-10 sm:mb-16">
           <span className="text-[10px] uppercase tracking-[0.35em] text-muted font-bold block flex items-center justify-center gap-2">
             <span className="text-accent">✦</span> RESEÑAS VERIFICADAS <span className="text-accent">✦</span>
           </span>
-          <h2 className="font-display font-black text-2xl sm:text-4xl text-white tracking-wide uppercase">
+          <h2 className="font-display font-black text-2xl sm:text-4xl text-ink tracking-wide uppercase">
             Clientes con pedido entregado
           </h2>
           <p className="text-muted text-xs sm:text-sm font-light max-w-md mx-auto leading-relaxed">
@@ -85,9 +85,9 @@ export default function CustomerReviews() {
               href={reviewWhatsAppUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center space-x-2 bg-white text-black hover:bg-zinc-200 px-6 py-3 text-xs tracking-widest uppercase font-mono font-bold shadow-lg transition-all"
+              className="inline-flex items-center space-x-2 bg-ink text-paper hover:opacity-90 px-6 py-3 text-xs tracking-widest uppercase font-mono font-bold shadow-md transition-all cursor-pointer"
             >
-              <MessageCircle className="w-4 h-4 text-black" />
+              <MessageCircle className="w-4 h-4" />
               <span>DEJA TU RESEÑA POR WHATSAPP</span>
             </a>
           </div>
@@ -99,15 +99,15 @@ export default function CustomerReviews() {
             <div
               id={`review-card-${post.id}`}
               key={post.id}
-              className="relative min-h-[240px] p-5 bg-[#0d0d12] border border-zinc-800 flex flex-col justify-between text-ink transition-all duration-500 hover:border-zinc-500 hover:shadow-2xl group"
+              className="relative min-h-[240px] p-5 bg-panel border border-line flex flex-col justify-between text-ink transition-all duration-500 hover:border-accent/40 hover:shadow-lg group"
             >
               {/* Header with name and location */}
               <div className="flex justify-between items-start z-10">
                 <div className="space-y-0.5">
-                  <span className="text-[10px] text-white font-mono font-bold block">{post.name}</span>
-                  <span className="text-[7.5px] text-zinc-400 font-mono block">{post.location}</span>
+                  <span className="text-[10px] text-ink font-mono font-bold block">{post.name}</span>
+                  <span className="text-[7.5px] text-muted font-mono block">{post.location}</span>
                 </div>
-                <div className="flex items-center space-x-1 text-rose-400" title="Pedido entregado">
+                <div className="flex items-center space-x-1 text-accent" title="Pedido entregado">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                 </div>
               </div>
@@ -118,22 +118,22 @@ export default function CustomerReviews() {
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-3 h-3 ${i < post.rating ? 'text-amber-400 fill-current' : 'text-zinc-800 fill-current'}`}
+                      className={`w-3 h-3 ${i < post.rating ? 'text-amber-400 fill-current' : 'text-line fill-current'}`}
                     />
                   ))}
                 </div>
-                <p className="text-[10.5px] sm:text-xs font-light text-zinc-300 leading-relaxed italic">
+                <p className="text-[10.5px] sm:text-xs font-light text-ink/85 leading-relaxed italic">
                   "{post.review}"
                 </p>
-                <div className="mt-3 pt-2 border-t border-zinc-800/80 text-[8px] font-mono text-zinc-400 uppercase tracking-wider">
-                  FIT: <span className="text-zinc-200">{post.outfit}</span>
+                <div className="mt-3 pt-2 border-t border-line text-[8px] font-mono text-muted uppercase tracking-wider">
+                  FIT: <span className="text-ink font-semibold">{post.outfit}</span>
                 </div>
               </div>
 
               {/* Bottom Bar */}
-              <div className="flex items-center justify-between z-10 border-t border-zinc-800/80 pt-2 text-zinc-500 font-mono text-[9px]">
+              <div className="flex items-center justify-between z-10 border-t border-line pt-2 text-muted font-mono text-[9px]">
                 <div className="flex items-center space-x-1">
-                  <MessageCircle className="w-3 h-3 text-zinc-500" />
+                  <MessageCircle className="w-3 h-3 text-muted" />
                   <span>Vía WhatsApp</span>
                 </div>
                 <span>{post.date}</span>

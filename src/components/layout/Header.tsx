@@ -72,28 +72,28 @@ export default function Header({
       id="main-header"
       className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 ${
         isScrolled
-          ? 'bg-[#070709]/95 backdrop-blur-xl border-b border-zinc-800 shadow-[0_4px_30px_rgba(0,0,0,0.8)]'
-          : 'bg-[#070709]/98 backdrop-blur-md border-b border-zinc-800/80'
+          ? 'bg-paper/95 backdrop-blur-xl border-b border-line shadow-md'
+          : 'bg-paper/98 backdrop-blur-md border-b border-line/80'
       }`}
     >
       {/* Gothic Luxury Promo banner - High Legibility */}
       <div
         id="promo-banner"
-        className="bg-[#0c0c10] text-zinc-300 border-b border-white/10 text-[9px] sm:text-[11px] uppercase tracking-[0.25em] py-1.5 sm:py-2 text-center font-mono select-none flex items-center justify-center gap-2"
+        className="bg-panel text-muted border-b border-line text-[9px] sm:text-[11px] uppercase tracking-[0.25em] py-1.5 sm:py-2 text-center font-mono select-none flex items-center justify-center gap-2"
       >
-        <span className="text-rose-500 font-bold text-[8px] sm:text-xs">✦</span>
-        <span>ENVIOS A TODO EL PERU • COMPRA POR WHATSAPP • 10% OFF</span>
-        <span className="text-rose-500 font-bold text-[8px] sm:text-xs">✦</span>
+        <span className="text-accent font-bold text-[8px] sm:text-xs">✦</span>
+        <span className="font-semibold text-ink">ENVIOS A TODO EL PERU • COMPRA POR WHATSAPP • 10% OFF</span>
+        <span className="text-accent font-bold text-[8px] sm:text-xs">✦</span>
       </div>
 
       {/* Main Header Container */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 md:h-20 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 md:h-20 flex items-center justify-between relative">
         {/* Left: Mobile Menu Trigger & Search */}
-        <div className="flex items-center space-x-2 sm:space-x-4">
+        <div className="flex items-center space-x-2 sm:space-x-4 z-10">
           <button
             id="mobile-menu-trigger"
             onClick={() => setIsMobileMenuOpen(true)}
-            className="md:hidden p-2 text-zinc-200 hover:text-white transition-colors cursor-pointer"
+            className="md:hidden p-2 text-muted hover:text-ink transition-colors cursor-pointer"
             aria-label="Abrir menú"
           >
             <Menu className="w-5 h-5" />
@@ -103,7 +103,7 @@ export default function Header({
             <button
               id="search-toggle-btn"
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="p-2 text-zinc-300 hover:text-white transition-colors cursor-pointer"
+              className="p-2 text-muted hover:text-ink transition-colors cursor-pointer"
               aria-label="Buscar"
             >
               <Search className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -119,13 +119,13 @@ export default function Header({
                 placeholder="Buscar prenda..."
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full text-xs py-1.5 px-3 border border-zinc-700 focus:outline-none focus:border-white font-mono bg-[#121218] text-white placeholder:text-zinc-500"
+                className="w-full text-xs py-1.5 px-3 border border-line focus:outline-none focus:border-accent font-mono bg-panel text-ink placeholder:text-muted rounded-xs"
               />
               {searchQuery && (
                 <button
                   id="clear-search-btn-desktop"
                   onClick={() => onSearchChange('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-white font-mono cursor-pointer"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-ink font-mono cursor-pointer"
                 >
                   Limpiar
                 </button>
@@ -134,8 +134,8 @@ export default function Header({
           </div>
         </div>
 
-        {/* Center: Pure Panther Brand Icon */}
-        <div className="flex-1 flex justify-center items-center">
+        {/* Center: Pure Panther Brand Icon - Centered Perfectly */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-center pointer-events-auto">
           <button
             id="brand-logo-btn"
             onClick={() => handleCategoryClick('Inicio')}
@@ -152,12 +152,12 @@ export default function Header({
         </div>
 
         {/* Right: Theme Toggle, Cart & Wishlist */}
-        <div className="flex items-center space-x-1 sm:space-x-3">
+        <div className="flex items-center space-x-1 sm:space-x-3 z-10">
           {onToggleTheme && (
             <button
               id="theme-toggle-btn"
               onClick={onToggleTheme}
-              className="p-2 text-zinc-300 hover:text-white transition-colors cursor-pointer rounded-full hover:bg-white/10"
+              className="p-2 text-muted hover:text-ink transition-colors cursor-pointer rounded-full hover:bg-panel"
               aria-label="Cambiar tema claro / oscuro"
               title={theme === 'dark' ? 'Activar Modo Claro' : 'Activar Modo Oscuro'}
             >
@@ -172,7 +172,7 @@ export default function Header({
           <button
             id="wishlist-trigger-btn"
             onClick={onOpenWishlist}
-            className="p-2 text-zinc-300 hover:text-white transition-colors relative cursor-pointer"
+            className="p-2 text-muted hover:text-ink transition-colors relative cursor-pointer"
             aria-label="Ver favoritos"
           >
             <Heart className="w-5 h-5" />
@@ -189,7 +189,7 @@ export default function Header({
           <button
             id="cart-trigger-btn"
             onClick={onOpenCart}
-            className="p-2 text-zinc-300 hover:text-white transition-colors relative cursor-pointer"
+            className="p-2 text-muted hover:text-ink transition-colors relative cursor-pointer"
             aria-label="Ver carrito"
           >
             <ShoppingBag className="w-5 h-5" />
@@ -213,10 +213,10 @@ export default function Header({
             animate={{ height: 'auto', opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden px-3 pb-3 pt-1 bg-[#070709] border-b border-zinc-800 overflow-hidden"
+            className="md:hidden px-3 pb-3 pt-1 bg-paper border-b border-line overflow-hidden"
           >
             <div className="relative">
-              <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-zinc-400">
+              <span className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-muted">
                 <Search className="w-4 h-4" />
               </span>
               <input
@@ -226,13 +226,13 @@ export default function Header({
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 autoFocus
-                className="w-full text-xs py-2 pl-9 pr-8 border border-zinc-700 bg-[#121218] text-white focus:outline-none focus:border-white font-mono placeholder:text-zinc-500"
+                className="w-full text-xs py-2 pl-9 pr-8 border border-line bg-panel text-ink focus:outline-none focus:border-accent font-mono placeholder:text-muted rounded-xs"
               />
               {searchQuery && (
                 <button
                   id="clear-search-btn-mobile"
                   onClick={() => onSearchChange('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-zinc-400 hover:text-white font-mono"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-ink font-mono"
                 >
                   <X className="w-3.5 h-3.5" />
                 </button>
@@ -571,6 +571,7 @@ export default function Header({
 
           {/* Drawer Footer Utility Deck */}
           <div className="border-t border-line pt-4 mt-auto space-y-3">
+
             {onToggleTheme && (
               <button
                 id="mobile-theme-toggle-btn"

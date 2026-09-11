@@ -512,12 +512,12 @@ export default function CartDrawer({
               id="finalize-order-wa-btn"
               type="submit"
               onClick={handleCheckout}
-              className="w-full bg-white text-black hover:bg-zinc-200 text-xs font-mono font-bold uppercase tracking-[0.2em] py-4 flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer"
+              className="w-full bg-accent text-white hover:bg-rose-600 text-xs font-mono font-bold uppercase tracking-[0.18em] py-3.5 flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer rounded-xs"
             >
               <Send className="w-4 h-4" />
               FINALIZAR PEDIDO POR WHATSAPP
             </button>
-            <p className="text-[10px] text-zinc-400 text-center font-mono">
+            <p className="text-[10px] text-muted text-center font-mono">
               Al finalizar, se abrirá WhatsApp con el pedido listo para enviar.
             </p>
           </div>

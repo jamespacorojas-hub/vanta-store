@@ -133,6 +133,7 @@ export default function ProductDetailModal({
   const [selectedColor, setSelectedColor] = useState<string>('');
   const [selectedFabric, setSelectedFabric] = useState<string>('');
   const [selectedSize, setSelectedSize] = useState<string>('M');
+  const [selectedSleeve, setSelectedSleeve] = useState<string>('Manga Corta');
   const [quantity, setQuantity] = useState<number>(1);
   const [toastMessage, setToastMessage] = useState<string>('');
 
@@ -140,6 +141,7 @@ export default function ProductDetailModal({
     setSelectedColor(product.colors[0] || 'Negro');
     setSelectedFabric(product.fabrics[0] || 'Jersey');
     setSelectedSize('M');
+    setSelectedSleeve(product.id === 'manga-larga' ? 'Manga Larga' : (product.sleeves?.[0] || 'Manga Corta'));
     setQuantity(1);
     setActiveMediaTab('photo');
     setToastMessage('');
@@ -148,6 +150,7 @@ export default function ProductDetailModal({
   const activeColor = selectedColor || product.colors[0] || 'Negro';
   const activeColorHex = COLOR_HEX[activeColor] || '#18181b';
   const activeFabric = selectedFabric || product.fabrics[0] || 'Jersey';
+  const activeSleeve = selectedSleeve || (product.id === 'manga-larga' ? 'Manga Larga' : 'Manga Corta');
   const fabricData = FABRIC_SPECS[activeFabric] || {
     gsm: '300 GSM',
     feel: 'Premium Cotton',
@@ -169,9 +172,9 @@ export default function ProductDetailModal({
       selectedSize,
       activeColor,
       activeFabric,
-      product.sleeves?.[0]
+      activeSleeve
     );
-    setToastMessage(`✓ ${product.name} (${activeColor} - ${selectedSize}) agregada`);
+    setToastMessage(`✓ ${product.name} (${activeColor} - ${selectedSize} - ${activeSleeve}) agregada`);
     setTimeout(() => setToastMessage(''), 2500);
   };
 
@@ -179,11 +182,12 @@ export default function ProductDetailModal({
     const msg = `Hola, VANTA. Deseo realizar el pedido de la siguiente prenda:
 
 1. Prenda: ${product.name}
-2. Color: ${activeColor}
-3. Tejido: ${activeFabric} (${fabricData.gsm})
-4. Talla: ${selectedSize} (Corte Boxy Fit)
-5. Cantidad: ${quantity}
-6. Precio: S/ ${(product.price * quantity).toFixed(2)}
+2. Tipo de Manga: ${activeSleeve}
+3. Color: ${activeColor}
+4. Tejido: ${activeFabric} (${fabricData.gsm})
+5. Talla: ${selectedSize} (Corte Boxy Fit)
+6. Cantidad: ${quantity}
+7. Precio: S/ ${(product.price * quantity).toFixed(2)}
 
 Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
 
@@ -497,6 +501,39 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
                         }`}
                       >
                         {sz}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* 4. Sleeve Selection (Manga Corta vs Manga Larga) */}
+              <div className="space-y-2">
+                <div className="flex justify-between items-center text-xs font-mono">
+                  <span className="text-muted">
+                    4. TIPO DE MANGA: <strong className="text-ink">{activeSleeve}</strong>
+                  </span>
+                  <span className="text-[10px] font-mono text-accent font-bold">
+                    {activeSleeve === 'Manga Larga' ? '✦ COBERTURA COMPLETA' : '✦ CORTE VERANO'}
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-2">
+                  {['Manga Corta', 'Manga Larga'].map((sleeveOption) => {
+                    const isSel = activeSleeve === sleeveOption;
+                    return (
+                      <button
+                        key={sleeveOption}
+                        type="button"
+                        onClick={() => setSelectedSleeve(sleeveOption)}
+                        className={`py-2.5 px-3 text-xs font-mono font-bold uppercase rounded-xs border transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                          isSel
+                            ? 'bg-accent text-white border-accent shadow-sm'
+                            : 'bg-panel text-muted border-line hover:border-ink/40 hover:text-ink'
+                        }`}
+                      >
+                        <span>{sleeveOption}</span>
+                        {isSel && <span className="w-1.5 h-1.5 rounded-full bg-white animate-pulse" />}
                       </button>
                     );
                   })}

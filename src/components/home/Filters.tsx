@@ -144,7 +144,7 @@ export default function Filters({
                 className={`text-[10px] sm:text-xs font-mono py-2 text-center transition-all ${
                   isSelected
                     ? 'bg-accent text-white font-bold shadow-[0_0_8px_rgba(225,29,72,0.4)]'
-                    : 'bg-[#121218] text-muted hover:bg-panel border border-line hover:border-accent hover:text-white'
+                    : 'bg-panel text-muted hover:bg-paper border border-line hover:border-accent hover:text-ink'
                 }`}
               >
                 {size}
@@ -168,7 +168,7 @@ export default function Filters({
                 className={`text-[10px] px-2.5 py-1.5 border transition-all flex items-center space-x-1 ${
                   isSelected
                     ? 'border-accent bg-accent text-white font-bold shadow-[0_0_8px_rgba(225,29,72,0.3)]'
-                    : 'border-line bg-[#121218] text-muted hover:border-accent hover:text-white'
+                    : 'border-line bg-panel text-muted hover:border-accent hover:text-ink'
                 }`}
               >
                 {isSelected && <Check className="w-3 h-3 text-white" />}
@@ -193,7 +193,7 @@ export default function Filters({
                 className={`text-[10px] px-2.5 py-1.5 border transition-all flex items-center space-x-1 ${
                   isSelected
                     ? 'border-accent bg-accent text-white font-bold shadow-[0_0_8px_rgba(225,29,72,0.3)]'
-                    : 'border-line bg-[#121218] text-muted hover:border-accent hover:text-white'
+                    : 'border-line bg-panel text-muted hover:border-accent hover:text-ink'
                 }`}
               >
                 {isSelected && <Check className="w-3 h-3 text-white" />}
@@ -270,19 +270,19 @@ export default function Filters({
       >
         <div
           id="mobile-filters-container"
-          className={`fixed bottom-0 left-0 w-full max-h-[85vh] overflow-y-auto bg-[#0d0d12] border-t border-line rounded-t-2xl z-50 p-6 flex flex-col transition-transform duration-300 transform ${
+          className={`fixed bottom-0 left-0 w-full max-h-[85vh] overflow-y-auto bg-paper border-t border-line rounded-t-2xl z-50 p-6 flex flex-col transition-transform duration-300 transform ${
             isMobileOpen ? 'translate-y-0' : 'translate-y-full'
           }`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between border-b border-line pb-3 mb-4">
-            <span className="text-xs uppercase tracking-widest font-mono font-bold text-white">
+            <span className="text-xs uppercase tracking-widest font-mono font-bold text-ink">
               ✦ FILTRAR PRENDAS ✦
             </span>
             <button
               id="close-mobile-filters"
               onClick={() => setIsMobileOpen(false)}
-              className="p-1.5 text-zinc-300 hover:text-white hover:bg-panel rounded-full transition-all"
+              className="p-1.5 text-muted hover:text-ink hover:bg-panel rounded-full transition-all"
             >
               <X className="w-5 h-5" />
             </button>
@@ -292,14 +292,14 @@ export default function Filters({
             <FilterContent />
           </div>
 
-          <div className="border-t border-line pt-4 bg-[#0d0d12] sticky bottom-0 flex justify-between gap-3">
+          <div className="border-t border-line pt-4 bg-paper sticky bottom-0 flex justify-between gap-3">
             <button
               id="mobile-filters-reset-btn"
               onClick={() => {
                 onResetFilters();
                 setIsMobileOpen(false);
               }}
-              className="w-1/3 py-3 border border-line text-xs font-mono uppercase tracking-widest text-muted hover:text-white hover:border-accent transition-all"
+              className="w-1/3 py-3 border border-line text-xs font-mono uppercase tracking-widest text-muted hover:text-ink hover:border-accent transition-all"
             >
               LIMPIAR
             </button>

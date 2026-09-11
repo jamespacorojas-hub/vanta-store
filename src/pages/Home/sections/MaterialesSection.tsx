@@ -91,12 +91,12 @@ export default function MaterialesSection() {
   const openWeave = openIndex !== null ? WEAVES[openIndex] : null;
 
   return (
-    <section id="interactive-fabrics" className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-[#060608] border-b border-line scroll-mt-48">
+    <section id="interactive-fabrics" className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-paper border-b border-line scroll-mt-48">
       <div className="text-center space-y-2 mb-10 sm:mb-16">
         <span className="text-[10px] font-mono tracking-[0.35em] text-muted font-bold block uppercase flex items-center justify-center gap-2">
           <span className="text-accent">✦</span> CÁTEDRA DE MATERIALES & INGENIERÍA TEXTIL <span className="text-accent">✦</span>
         </span>
-        <h2 className="font-display font-black text-3xl sm:text-4xl text-white tracking-wide uppercase">
+        <h2 className="font-display font-black text-3xl sm:text-4xl text-ink tracking-wide uppercase">
           Cuadros por tejido
         </h2>
         <p className="text-[11px] font-sans font-light text-muted max-w-md mx-auto">
@@ -116,11 +116,11 @@ export default function MaterialesSection() {
               key={weave.name}
               ref={(el) => { itemRefs.current[i] = el; }}
               onClick={() => setOpenIndex(i)}
-              className={`snap-center shrink-0 w-[72%] flex flex-col bg-[#0d0d12] border overflow-hidden cursor-pointer transition-all duration-300 ${
+              className={`snap-center shrink-0 w-[72%] flex flex-col bg-panel border overflow-hidden cursor-pointer transition-all duration-300 ${
                 activeIndex === i ? 'border-accent shadow-[0_0_20px_rgba(225,29,72,0.3)] scale-100 opacity-100' : 'border-line opacity-55 scale-95'
               }`}
             >
-              <div className="aspect-square w-full overflow-hidden bg-[#121218]">
+              <div className="aspect-square w-full overflow-hidden bg-paper">
                 <img
                   src={weave.photo}
                   alt={`Textura de tela ${weave.name}`}
@@ -128,8 +128,8 @@ export default function MaterialesSection() {
                 />
               </div>
               <div className="p-4">
-                <span className="font-mono text-[9px] text-rose-400 font-bold block uppercase">{weave.gsm}</span>
-                <h3 className="font-display text-base font-bold text-white">{weave.name}</h3>
+                <span className="font-mono text-[9px] text-accent font-bold block uppercase">{weave.gsm}</span>
+                <h3 className="font-display text-base font-bold text-ink">{weave.name}</h3>
                 <p className="text-[10px] font-sans font-light text-muted leading-relaxed mt-2 line-clamp-2">
                   {weave.desc}
                 </p>
@@ -161,9 +161,9 @@ export default function MaterialesSection() {
             id={`fabric-card-${weave.name}`}
             key={weave.name}
             onClick={() => setOpenIndex(i)}
-            className="group flex flex-col bg-[#0d0d12] border border-line overflow-hidden cursor-pointer hover:border-accent/60 hover:shadow-[0_0_25px_rgba(225,29,72,0.15)] hover:-translate-y-1 transition-all duration-300 ease-out"
+            className="group flex flex-col bg-panel border border-line overflow-hidden cursor-pointer hover:border-accent/60 hover:shadow-[0_0_25px_rgba(225,29,72,0.15)] hover:-translate-y-1 transition-all duration-300 ease-out"
           >
-            <div className="aspect-square w-full overflow-hidden bg-[#121218]">
+            <div className="aspect-square w-full overflow-hidden bg-paper">
               <img
                 src={weave.photo}
                 alt={`Textura de tela ${weave.name}`}
@@ -173,8 +173,8 @@ export default function MaterialesSection() {
 
             <div className="flex flex-col justify-between flex-1 p-5">
               <div className="space-y-1">
-                <span className="font-mono text-[9px] text-rose-400 font-bold block uppercase">{weave.gsm}</span>
-                <h3 className="font-display text-base font-bold text-white group-hover:text-rose-400 transition-colors">{weave.name}</h3>
+                <span className="font-mono text-[9px] text-accent font-bold block uppercase">{weave.gsm}</span>
+                <h3 className="font-display text-base font-bold text-ink group-hover:text-accent transition-colors">{weave.name}</h3>
               </div>
 
               <p className="text-[10px] font-sans font-light text-muted leading-relaxed mt-4">
@@ -194,20 +194,20 @@ export default function MaterialesSection() {
         >
           <div
             id="fabric-detail-card"
-            className="relative bg-[#0d0d14] w-full max-w-sm max-h-[88vh] border border-zinc-800 shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200"
+            className="relative bg-paper w-full max-w-sm max-h-[88vh] border border-line shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               id="fabric-detail-close-btn"
               onClick={() => setOpenIndex(null)}
-              className="absolute top-3 right-3 z-10 bg-[#161622] text-zinc-300 border border-zinc-700 p-1.5 hover:text-white hover:bg-[#222230] transition-colors cursor-pointer"
+              className="absolute top-3 right-3 z-10 bg-panel text-muted border border-line p-1.5 hover:text-ink hover:bg-paper-soft transition-colors cursor-pointer"
               aria-label="Cerrar detalle de tejido"
             >
               <X className="w-4 h-4" />
             </button>
 
             <div className="overflow-y-auto">
-              <div className="aspect-[4/3] w-full overflow-hidden bg-[#121218] border-b border-zinc-800">
+              <div className="aspect-[4/3] w-full overflow-hidden bg-panel border-b border-line">
                 <img
                   src={openWeave.photo}
                   alt={`Textura de tela ${openWeave.name}`}
@@ -217,28 +217,28 @@ export default function MaterialesSection() {
 
               <div className="p-5 sm:p-6 space-y-4">
                 <div>
-                  <span className="font-mono text-[10px] text-zinc-400 uppercase tracking-widest font-bold">{openWeave.gsm}</span>
-                  <h3 className="font-display text-2xl font-bold text-white mt-0.5">{openWeave.name}</h3>
+                  <span className="font-mono text-[10px] text-muted uppercase tracking-widest font-bold">{openWeave.gsm}</span>
+                  <h3 className="font-display text-2xl font-bold text-ink mt-0.5">{openWeave.name}</h3>
                 </div>
 
-                <p className="text-zinc-300 text-xs font-light leading-relaxed">
+                <p className="text-ink/85 text-xs font-light leading-relaxed">
                   {openWeave.detail}
                 </p>
 
-                <div className="border-t border-zinc-800 pt-3.5 space-y-3">
+                <div className="border-t border-line pt-3.5 space-y-3">
                   <div>
-                    <span className="text-[10px] uppercase tracking-widest text-white font-bold">Ideal para</span>
-                    <p className="text-zinc-400 text-xs font-light leading-relaxed mt-1">{openWeave.idealFor}</p>
+                    <span className="text-[10px] uppercase tracking-widest text-ink font-bold">Ideal para</span>
+                    <p className="text-muted text-xs font-light leading-relaxed mt-1">{openWeave.idealFor}</p>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase tracking-widest text-white font-bold">Cuidados</span>
-                    <p className="text-zinc-400 text-xs font-light leading-relaxed mt-1">{openWeave.care}</p>
+                    <span className="text-[10px] uppercase tracking-widest text-ink font-bold">Cuidados</span>
+                    <p className="text-muted text-xs font-light leading-relaxed mt-1">{openWeave.care}</p>
                   </div>
                 </div>
 
-                <p className="text-[9px] font-mono text-zinc-400 uppercase tracking-wide border-t border-zinc-800 pt-3.5">
+                <p className="text-[9px] font-mono text-muted uppercase tracking-wide border-t border-line pt-3.5">
                   Gramajes de hilado disponibles en todas nuestras telas:{' '}
-                  <span className="text-white font-bold">{YARN_COUNTS.join(' · ')}</span>
+                  <span className="text-ink font-bold">{YARN_COUNTS.join(' · ')}</span>
                 </p>
               </div>
             </div>

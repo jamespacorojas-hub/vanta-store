@@ -57,7 +57,7 @@ export default function SiluetasSection({ onSelectCategory }: SiluetasSectionPro
         <span className="text-[10px] font-mono tracking-[0.35em] text-muted font-bold block uppercase flex items-center justify-center gap-2">
           <span className="text-accent">✦</span> ARQUITECTURA DE SILUETAS <span className="text-accent">✦</span>
         </span>
-        <h2 className="font-display font-black text-3xl sm:text-4xl text-white tracking-wide uppercase">
+        <h2 className="font-display font-black text-3xl sm:text-4xl text-ink tracking-wide uppercase">
           Cuadros por categoría
         </h2>
         <p className="text-[11px] font-sans font-light text-muted max-w-md mx-auto">
@@ -71,23 +71,23 @@ export default function SiluetasSection({ onSelectCategory }: SiluetasSectionPro
             key={tile.category}
             id={`collection-${tile.category.toLowerCase().replace(/[^a-z0-9]+/g, '-')}-banner`}
             onClick={() => onSelectCategory(tile.category)}
-            className="group flex flex-col justify-between min-h-[260px] sm:min-h-[320px] p-4 sm:p-6 bg-[#0d0d12] text-ink border border-zinc-800 cursor-pointer relative overflow-hidden transition-all duration-500 hover:border-zinc-500 hover:shadow-2xl hover:-translate-y-0.5"
+            className="group flex flex-col justify-between min-h-[260px] sm:min-h-[320px] p-4 sm:p-6 bg-panel text-ink border border-line cursor-pointer relative overflow-hidden transition-all duration-500 hover:border-accent/50 hover:shadow-lg hover:-translate-y-0.5"
           >
-            <div className="flex justify-between items-start z-10 text-[9px] font-mono text-zinc-400 uppercase tracking-wider">
+            <div className="flex justify-between items-start z-10 text-[9px] font-mono text-muted uppercase tracking-wider">
               <span>Sección {tile.section}</span>
-              <span className="text-zinc-300 font-bold">{tile.gsm}</span>
+              <span className="text-accent font-bold">{tile.gsm}</span>
             </div>
 
             <div className="z-10 space-y-1.5 my-3">
-              <h3 className="font-display font-bold text-xl sm:text-2xl text-white group-hover:text-zinc-200 transition-colors">{tile.category}</h3>
-              <p className="text-[11px] font-sans font-light text-zinc-400 leading-relaxed line-clamp-3">
+              <h3 className="font-display font-bold text-xl sm:text-2xl text-ink group-hover:text-accent transition-colors">{tile.category}</h3>
+              <p className="text-[11px] font-sans font-light text-muted leading-relaxed line-clamp-3">
                 {tile.desc}
               </p>
               <div className="flex gap-1 flex-wrap pt-1.5">
                 {tile.fabrics.map((f, i) => (
                   <span
                     key={f}
-                    className={`text-[8px] font-mono border border-zinc-800 bg-[#14141c] px-2 py-0.5 ${i === 0 ? 'text-white font-bold border-zinc-600' : 'text-zinc-400'}`}
+                    className={`text-[8px] font-mono border border-line bg-paper px-2 py-0.5 ${i === 0 ? 'text-ink font-bold border-accent/40' : 'text-muted'}`}
                   >
                     {f.toUpperCase()}
                   </span>
@@ -95,10 +95,10 @@ export default function SiluetasSection({ onSelectCategory }: SiluetasSectionPro
               </div>
             </div>
 
-            <div className="flex justify-between items-end z-10 pt-3 border-t border-zinc-800/80">
-              <span className="font-mono text-[8.5px] text-zinc-500 uppercase">S / M / L / XL</span>
-              <button className="text-[9.5px] sm:text-[10px] font-mono tracking-widest text-zinc-200 border-b border-zinc-600 pb-0.5 uppercase flex items-center group-hover:text-white group-hover:border-white transition-all">
-                Filtrar <ArrowRight className="w-3 h-3 ml-1 text-zinc-300" />
+            <div className="flex justify-between items-end z-10 pt-3 border-t border-line">
+              <span className="font-mono text-[8.5px] text-muted uppercase">S / M / L / XL</span>
+              <button className="text-[9.5px] sm:text-[10px] font-mono tracking-widest text-muted border-b border-line pb-0.5 uppercase flex items-center group-hover:text-ink group-hover:border-ink transition-all">
+                Filtrar <ArrowRight className="w-3 h-3 ml-1 text-muted group-hover:text-ink" />
               </button>
             </div>
           </div>

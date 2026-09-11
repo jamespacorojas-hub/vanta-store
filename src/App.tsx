@@ -21,6 +21,7 @@ import HomePage from './pages/Home/HomePage';
 import NuevosIngresosPage from './pages/NuevosIngresos/NuevosIngresosPage';
 import OfertasPage from './pages/Ofertas/OfertasPage';
 import CatalogoPage from './pages/Catalogo/CatalogoPage';
+import AdminPOSPage from './pages/Admin/AdminPOSPage';
 
 export default function App() {
   const navigate = useNavigate();
@@ -240,6 +241,11 @@ export default function App() {
 
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
+  // If viewing the Admin POS module, render dedicated POS terminal interface
+  if (location.pathname === '/admin' || location.pathname === '/pos') {
+    return <AdminPOSPage theme={theme} onToggleTheme={handleToggleTheme} />;
+  }
+
   return (
     <div id="vanta-store-workspace" className="min-h-screen bg-paper text-ink selection:bg-accent selection:text-paper-soft relative pb-16 md:pb-0">
       {/* Dynamic Header */}
@@ -378,14 +384,14 @@ export default function App() {
       {notification && (
         <div
           id="global-toast-notification"
-          className="fixed bottom-20 md:bottom-6 left-4 md:left-6 z-50 bg-[#121218] text-white px-4 py-3 border border-zinc-700 shadow-2xl flex items-center space-x-2.5 font-mono text-[10px] uppercase tracking-widest animate-in slide-in-from-bottom-5 duration-300"
+          className="fixed bottom-20 md:bottom-6 left-4 md:left-6 z-50 bg-paper text-ink px-4 py-3 border border-line shadow-2xl flex items-center space-x-2.5 font-mono text-[10px] uppercase tracking-widest animate-in slide-in-from-bottom-5 duration-300 rounded-xs"
         >
-          <Sparkles className="w-4 h-4 text-rose-400 shrink-0" />
+          <Sparkles className="w-4 h-4 text-accent shrink-0" />
           <span>{notification}</span>
           <button
             id="close-toast-btn"
             onClick={() => setNotification('')}
-            className="text-zinc-400 hover:text-white pl-2 border-l border-zinc-700 font-mono font-bold cursor-pointer"
+            className="text-muted hover:text-ink pl-2 border-l border-line font-mono font-bold cursor-pointer"
           >
             ✕
           </button>

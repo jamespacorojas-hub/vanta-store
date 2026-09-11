@@ -98,16 +98,16 @@ export default function PromoBannerSection({ promotionalProduct, onQuickView }: 
 
                 {/* Price block */}
                 <div className="flex items-baseline space-x-3 pt-2">
-                  <span className="font-mono text-2xl sm:text-3xl font-black text-white">
+                  <span className="font-mono text-2xl sm:text-3xl font-black text-ink">
                     S/. {currentProduct.price.toFixed(2)}
                   </span>
                   {currentProduct.oldPrice && (
-                    <span className="font-mono text-sm sm:text-base text-zinc-500 line-through">
+                    <span className="font-mono text-sm sm:text-base text-muted line-through">
                       S/. {currentProduct.oldPrice.toFixed(2)}
                     </span>
                   )}
                   {currentProduct.oldPrice && (
-                    <span className="text-[9px] font-mono font-bold bg-rose-600 text-white px-2 py-0.5 uppercase tracking-wider">
+                    <span className="text-[9px] font-mono font-bold bg-accent text-white px-2 py-0.5 uppercase tracking-wider">
                       -{Math.round(((currentProduct.oldPrice - currentProduct.price) / currentProduct.oldPrice) * 100)}% OFF
                     </span>
                   )}
@@ -117,12 +117,12 @@ export default function PromoBannerSection({ promotionalProduct, onQuickView }: 
           </div>
 
           {/* Action buttons & carousel navigation */}
-          <div className="space-y-4 pt-4 border-t border-zinc-800">
+          <div className="space-y-4 pt-4 border-t border-line">
             <div className="flex flex-wrap items-center gap-3">
               <button
                 id="promo-cta-buy-btn"
                 onClick={() => onQuickView(currentProduct)}
-                className="bg-white text-black hover:bg-zinc-200 text-xs font-mono font-bold uppercase tracking-widest py-3.5 px-7 transition-all flex items-center gap-2 shadow-lg cursor-pointer"
+                className="bg-ink text-paper hover:opacity-90 text-xs font-mono font-bold uppercase tracking-widest py-3.5 px-7 transition-all flex items-center gap-2 shadow-lg cursor-pointer"
               >
                 <ShoppingBag className="w-4 h-4" />
                 VER PRENDA Y COMPRAR
@@ -133,7 +133,7 @@ export default function PromoBannerSection({ promotionalProduct, onQuickView }: 
                 <button
                   id="promo-prev-btn"
                   onClick={handlePrev}
-                  className="p-2.5 border border-zinc-700 bg-[#121218] text-zinc-200 hover:border-white hover:text-white hover:bg-[#1c1c28] transition-all cursor-pointer"
+                  className="p-2.5 border border-line bg-paper text-muted hover:border-ink hover:text-ink hover:bg-paper-soft transition-all cursor-pointer"
                   aria-label="Prenda anterior"
                 >
                   <ChevronLeft className="w-4 h-4" />
@@ -141,7 +141,7 @@ export default function PromoBannerSection({ promotionalProduct, onQuickView }: 
                 <button
                   id="promo-next-btn"
                   onClick={handleNext}
-                  className="p-2.5 border border-line bg-[#121218] text-zinc-200 hover:border-accent hover:text-white hover:bg-[#1c0810] transition-all cursor-pointer"
+                  className="p-2.5 border border-line bg-paper text-muted hover:border-accent hover:text-accent hover:bg-paper-soft transition-all cursor-pointer"
                   aria-label="Siguiente prenda"
                 >
                   <ChevronRight className="w-4 h-4" />
