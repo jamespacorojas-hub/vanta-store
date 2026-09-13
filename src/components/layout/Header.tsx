@@ -146,7 +146,10 @@ export default function Header({
             <img
               src={theme === 'light' ? '/panther-dark.png' : '/panther-white.png'}
               alt="VANTA"
-              className="w-8 h-8 sm:w-10 sm:h-10 md:w-11 md:h-11 object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
+              className="w-9 h-9 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-full object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-105"
+              onError={(e) => {
+                e.currentTarget.src = '/logo-oficial.png';
+              }}
             />
           </button>
         </div>
@@ -365,7 +368,10 @@ export default function Header({
                 <img
                   src={theme === 'light' ? '/panther-dark.png' : '/panther-white.png'}
                   alt="VANTA"
-                  className="w-8 h-8 object-contain drop-shadow-sm"
+                  className="w-9 h-9 rounded-full object-contain drop-shadow-sm"
+                  onError={(e) => {
+                    e.currentTarget.src = '/logo-oficial.png';
+                  }}
                 />
                 <div className="flex flex-col">
                   <span className="font-display text-xl font-black tracking-wider text-ink leading-none">

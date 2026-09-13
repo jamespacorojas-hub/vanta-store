@@ -15,6 +15,7 @@ import {
 import { POSSale } from '../../../types/pos';
 import { getStoredSales, voidPOSSale } from '../../../utils/posStorage';
 import POSTicketModal from './POSTicketModal';
+import POSProformaModal from './POSProformaModal';
 
 interface POSSalesHistoryProps {
   onRefreshStats?: () => void;
@@ -26,6 +27,7 @@ export default function POSSalesHistory({ onRefreshStats }: POSSalesHistoryProps
   const [filterStatus, setFilterStatus] = useState<'TODOS' | 'COMPLETADA' | 'ANULADA'>('TODOS');
   const [filterMethod, setFilterMethod] = useState<string>('TODOS');
   const [selectedSaleForTicket, setSelectedSaleForTicket] = useState<POSSale | null>(null);
+  const [selectedSaleForA4, setSelectedSaleForA4] = useState<POSSale | null>(null);
 
   // Void modal state
   const [saleToVoid, setSaleToVoid] = useState<POSSale | null>(null);
@@ -47,12 +49,29 @@ export default function POSSalesHistory({ onRefreshStats }: POSSalesHistoryProps
 
   // Filtered sales list
   const filteredSales = useMemo(() => {
+    const q = searchQuery.toLowerCase().trim();
     return sales.filter((s) => {
       const matchSearch =
-        s.receiptNumber.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        s.customer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (s.customer.phone && s.customer.phone.includes(searchQuery)) ||
-        (s.customer.documentNumber && s.customer.documentNumber.includes(searchQuery));
+        !q ||
+        s.receiptNumber.toLowerCase().includes(q) ||
+        s.customer.name.toLowerCase().includes(q) ||
+        (s.customer.phone && s.customer.phone.includes(q)) ||
+        (s.customer.documentNumber && s.customer.documentNumber.includes(q)) ||
+        (s.shippingInfo?.provincia && (
+          s.shippingInfo.provincia.consigneeName.toLowerCase().includes(q) ||
+          s.shippingInfo.provincia.consigneeDni.includes(q) ||
+          (s.shippingInfo.provincia.departmentProvinceDistrict && s.shippingInfo.provincia.departmentProvinceDistrict.toLowerCase().includes(q)) ||
+          (s.shippingInfo.provincia.department && s.shippingInfo.provincia.department.toLowerCase().includes(q)) ||
+          (s.shippingInfo.provincia.provinceCity && s.shippingInfo.provincia.provinceCity.toLowerCase().includes(q)) ||
+          s.shippingInfo.provincia.agency.toLowerCase().includes(q) ||
+          (s.shippingInfo.provincia.agencyBranch && s.shippingInfo.provincia.agencyBranch.toLowerCase().includes(q))
+        )) ||
+        (s.shippingInfo?.lima && (
+          s.shippingInfo.lima.recipientName.toLowerCase().includes(q) ||
+          s.shippingInfo.lima.district.toLowerCase().includes(q) ||
+          (s.shippingInfo.lima.recipientDni && s.shippingInfo.lima.recipientDni.includes(q)) ||
+          (s.shippingInfo.lima.address && s.shippingInfo.lima.address.toLowerCase().includes(q))
+        ));
 
       const matchStatus = filterStatus === 'TODOS' || s.status === filterStatus;
       const matchMethod =
@@ -86,56 +105,103 @@ export default function POSSalesHistory({ onRefreshStats }: POSSalesHistoryProps
       'Tipo',
       'Fecha',
       'Hora',
-      'Cliente',
-      'Doc Cliente',
+      'Cliente / Consignado',
+      'Doc / DNI',
       'Telefono',
+      'Tipo Envio',
+      'Destino / Distrito',
+      'Agencia / Courier',
+      'Detalle Envio / Sucursal',
+      'Flete',
       'Prendas Total',
       'Subtotal S/',
       'Descuento S/',
       'Total S/',
+      'Adelanto S/',
+      'Saldo Pendiente S/',
+      'Cuenta Receptora',
       'Metodos Pago',
       'Estado',
       'Cajero',
     ];
 
-    const rows = sales.map((s) => [
-      s.receiptNumber,
-      s.receiptType,
-      s.formattedDate,
-      s.formattedTime,
-      `"${s.customer.name || 'Cliente Varios'}"`,
-      `"${s.customer.documentNumber || ''}"`,
-      `"${s.customer.phone || ''}"`,
-      s.items.reduce((acc, i) => acc + i.quantity, 0),
-      s.subtotalAmount.toFixed(2),
-      s.discountAmount.toFixed(2),
-      s.totalAmount.toFixed(2),
-      `"${s.payments.map((p) => p.method).join(', ')}"`,
-      s.status,
-      `"${s.sellerName}"`,
-    ]);
+    const rows = sales.map((s) => {
+      const isProv = s.destinationType === 'PROVINCIA' || Boolean(s.shippingInfo?.provincia);
+      const prov = s.shippingInfo?.provincia;
+      const lima = s.shippingInfo?.lima;
+
+      const clientName = isProv ? (prov?.consigneeName || s.customer.name) : (lima?.recipientName || s.customer.name || 'Cliente Varios');
+      const docNum = isProv ? (prov?.consigneeDni || s.customer.documentNumber || '') : (lima?.recipientDni || s.customer.documentNumber || '');
+      const phoneNum = isProv ? (prov?.consigneePhone || s.customer.phone || '') : (lima?.recipientPhone || s.customer.phone || '');
+      const destName = isProv
+        ? (prov?.departmentProvinceDistrict || (prov?.provinceCity ? `${prov.provinceCity}, ${prov.department}` : prov?.department) || 'Provincia')
+        : (lima?.district || 'Lima');
+      const agencyName = isProv
+        ? (prov?.agency === 'OTRA' ? (prov?.otherAgencyName || 'OTRA') : (prov?.agency || 'SHALOM'))
+        : (lima?.courier ? lima.courier.replace('_', ' ') : 'Motorizado');
+      const detailEnvio = isProv
+        ? (prov?.agencyBranch || prov?.address || '')
+        : (lima?.address ? `${lima.address} ${lima.reference ? `(Ref: ${lima.reference})` : ''}` : '');
+      const fleteStr = isProv
+        ? (prov?.freightPayment === 'PAGO_DESTINO' ? 'PAGO EN DESTINO' : `FLETE PAGADO S/ ${s.shippingCost.toFixed(2)}`)
+        : (s.shippingCost === 0 ? 'RECOJO TIENDA' : `S/ ${s.shippingCost.toFixed(2)}`);
+
+      return [
+        s.receiptNumber,
+        s.receiptType,
+        s.formattedDate,
+        s.formattedTime,
+        `"${clientName}"`,
+        `"${docNum}"`,
+        `"${phoneNum}"`,
+        isProv ? 'PROVINCIA' : 'LIMA',
+        `"${destName}"`,
+        `"${agencyName}"`,
+        `"${detailEnvio}"`,
+        `"${fleteStr}"`,
+        s.items.reduce((acc, i) => acc + i.quantity, 0),
+        s.subtotalAmount.toFixed(2),
+        s.discountAmount.toFixed(2),
+        s.totalAmount.toFixed(2),
+        (s.advanceAmount !== undefined ? s.advanceAmount.toFixed(2) : s.totalAmount.toFixed(2)),
+        (s.pendingBalance !== undefined ? s.pendingBalance.toFixed(2) : '0.00'),
+        `"${s.paymentAccountLabel || ''}"`,
+        `"${s.payments.map((p) => p.method).join(', ')}"`,
+        s.status,
+        `"${s.sellerName}"`,
+      ];
+    });
 
     const csvContent = [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `Ventas_VANTA_${new Date().toISOString().slice(0, 10)}.csv`);
+    link.setAttribute('download', `VANTA_VENTAS_${new Date().toISOString().slice(0, 10)}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
   };
 
+  // Quick WhatsApp forward
   const handleSendWhatsApp = (sale: POSSale) => {
-    let phone = sale.customer.phone ? sale.customer.phone.replace(/[^0-9]/g, '') : '';
+    let phone = sale.shippingInfo?.provincia?.consigneePhone || sale.shippingInfo?.lima?.recipientPhone || sale.customer.phone || '';
+    phone = phone.replace(/[^0-9]/g, '');
     if (phone.length === 9) phone = `51${phone}`;
 
     let msg = `*VANTA STREETWEAR — NOTA DE VENTA*\n`;
     msg += `*Comprobante:* ${sale.receiptNumber}\n`;
     msg += `*Fecha:* ${sale.formattedDate} ${sale.formattedTime}\n`;
-    msg += `*Total:* S/ ${sale.totalAmount.toFixed(2)}\n`;
-    msg += `*Cliente:* ${sale.customer.name}\n\n`;
-    msg += `*Detalle:*\n`;
+    msg += `*Total de la Venta:* S/ ${sale.totalAmount.toFixed(2)}\n`;
+    if (sale.advanceAmount !== undefined && sale.advanceAmount < sale.totalAmount) {
+      msg += `💰 *Adelanto pagado:* S/ ${sale.advanceAmount.toFixed(2)}\n`;
+      msg += `⏳ *Saldo pendiente:* S/ ${(sale.pendingBalance ?? (sale.totalAmount - sale.advanceAmount)).toFixed(2)}\n`;
+    }
+    if (sale.paymentAccountLabel) {
+      msg += `💳 *Cuenta receptora:* ${sale.paymentAccountLabel}\n`;
+    }
+    msg += `*Cliente:* ${sale.shippingInfo?.provincia?.consigneeName || sale.shippingInfo?.lima?.recipientName || sale.customer.name}\n\n`;
+    msg += `*Detalle de prendas:*\n`;
     sale.items.forEach((item, idx) => {
       msg += `• ${item.quantity}x ${item.productName} (${item.selectedSize} / ${item.selectedColor}) - S/ ${item.subtotal.toFixed(2)}\n`;
     });
@@ -270,15 +336,20 @@ export default function POSSalesHistory({ onRefreshStats }: POSSalesHistoryProps
                   >
                     {/* Receipt Number & Destination */}
                     <td className="p-3">
-                      <div className="flex items-center gap-1.5">
+                      <div className="flex items-center gap-1.5 flex-wrap">
                         <span className="font-bold text-accent">{sale.receiptNumber}</span>
-                        <span className={`text-[8.5px] font-bold px-1.5 py-0.2 rounded-xs uppercase ${
-                          sale.destinationType === 'PROVINCIA'
-                            ? 'bg-purple-500/20 text-purple-300 border border-purple-500/30'
-                            : 'bg-zinc-700/50 text-zinc-300 border border-zinc-600'
-                        }`}>
-                          {sale.destinationType || 'LIMA'}
-                        </span>
+                        {sale.destinationType === 'PROVINCIA' || Boolean(sale.shippingInfo?.provincia) ? (
+                          <span
+                            className="text-[8.5px] font-bold px-1.5 py-0.2 rounded-xs uppercase bg-purple-500/20 text-purple-300 border border-purple-500/30"
+                            title={`Agencia: ${sale.shippingInfo?.provincia?.agency === 'OTRA' ? (sale.shippingInfo?.provincia?.otherAgencyName || 'OTRA') : (sale.shippingInfo?.provincia?.agency || 'SHALOM')}`}
+                          >
+                            📦 {sale.shippingInfo?.provincia?.agency === 'OTRA' ? (sale.shippingInfo?.provincia?.otherAgencyName || 'PROVINCIA') : (sale.shippingInfo?.provincia?.agency || 'SHALOM')}
+                          </span>
+                        ) : (
+                          <span className="text-[8.5px] font-bold px-1.5 py-0.2 rounded-xs uppercase bg-zinc-700/50 text-zinc-300 border border-zinc-600">
+                            🛵 {sale.shippingInfo?.lima?.district || 'LIMA'}
+                          </span>
+                        )}
                       </div>
                       <div className="text-[9px] text-muted uppercase mt-0.5">
                         {sale.receiptType.replace('_', ' ')}
@@ -294,15 +365,21 @@ export default function POSSalesHistory({ onRefreshStats }: POSSalesHistoryProps
                     {/* Customer */}
                     <td className="p-3">
                       <div className="font-bold truncate max-w-[180px] text-ink">
-                        {sale.customer.businessName || sale.customer.name || 'Cliente Varios'}
+                        {sale.shippingInfo?.provincia?.consigneeName ||
+                          sale.shippingInfo?.lima?.recipientName ||
+                          sale.customer.businessName ||
+                          sale.customer.name ||
+                          'Cliente Varios'}
                       </div>
-                      <div className="flex items-center gap-1.5 text-[10px] text-muted">
-                        {sale.customer.documentNumber && (
+                      <div className="flex items-center gap-1.5 text-[10px] text-muted flex-wrap">
+                        {(sale.shippingInfo?.provincia?.consigneeDni || sale.shippingInfo?.lima?.recipientDni || sale.customer.documentNumber) && (
                           <span className="font-mono text-[9px] font-semibold text-accent">
-                            {sale.customer.documentType || 'DOC'}: {sale.customer.documentNumber}
+                            DNI: {sale.shippingInfo?.provincia?.consigneeDni || sale.shippingInfo?.lima?.recipientDni || sale.customer.documentNumber}
                           </span>
                         )}
-                        {sale.customer.phone && <span>📱 {sale.customer.phone}</span>}
+                        {(sale.shippingInfo?.provincia?.consigneePhone || sale.shippingInfo?.lima?.recipientPhone || sale.customer.phone) && (
+                          <span>📱 {sale.shippingInfo?.provincia?.consigneePhone || sale.shippingInfo?.lima?.recipientPhone || sale.customer.phone}</span>
+                        )}
                       </div>
                     </td>
 
@@ -332,6 +409,16 @@ export default function POSSalesHistory({ onRefreshStats }: POSSalesHistoryProps
                       <div className="font-bold text-ink text-sm">
                         S/ {sale.totalAmount.toFixed(2)}
                       </div>
+                      {sale.advanceAmount !== undefined && sale.advanceAmount < sale.totalAmount ? (
+                        <div className="mt-0.5 space-y-0.5">
+                          <div className="text-[9px] font-mono text-emerald-400 font-semibold">
+                            Adelanto: S/ {sale.advanceAmount.toFixed(2)}
+                          </div>
+                          <div className="text-[9.5px] font-mono font-bold text-amber-400">
+                            Saldo: S/ {(sale.pendingBalance ?? (sale.totalAmount - sale.advanceAmount)).toFixed(2)}
+                          </div>
+                        </div>
+                      ) : null}
                       {sale.discountAmount > 0 && (
                         <div className="text-[9px] text-rose-500">
                           -S/ {sale.discountAmount.toFixed(2)} desc.
@@ -342,10 +429,20 @@ export default function POSSalesHistory({ onRefreshStats }: POSSalesHistoryProps
                     {/* Status */}
                     <td className="p-3 text-center">
                       {isCompleted ? (
-                        <span className="inline-flex items-center gap-1 text-[9.5px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5">
-                          <CheckCircle className="w-3 h-3" />
-                          COMPLETADA
-                        </span>
+                        sale.pendingBalance && sale.pendingBalance > 0 ? (
+                          <span
+                            className="inline-flex items-center gap-1 text-[9px] font-bold text-amber-300 bg-amber-500/15 border border-amber-500/40 px-2 py-0.5"
+                            title={`Saldo pendiente por cobrar: S/ ${sale.pendingBalance.toFixed(2)}`}
+                          >
+                            <AlertCircle className="w-3 h-3 text-amber-400" />
+                            SALDO S/ {sale.pendingBalance.toFixed(2)}
+                          </span>
+                        ) : (
+                          <span className="inline-flex items-center gap-1 text-[9.5px] font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5">
+                            <CheckCircle className="w-3 h-3" />
+                            PAGADA 100%
+                          </span>
+                        )
                       ) : (
                         <span
                           title={sale.voidReason}
@@ -360,6 +457,15 @@ export default function POSSalesHistory({ onRefreshStats }: POSSalesHistoryProps
                     {/* Actions */}
                     <td className="p-3 text-right">
                       <div className="flex items-center justify-end gap-1.5">
+                        {/* View / Download A4 Format */}
+                        <button
+                          onClick={() => setSelectedSaleForA4(sale)}
+                          className="p-1.5 bg-panel hover:bg-rose-600 hover:text-white text-muted border border-line transition-colors cursor-pointer"
+                          title="Descargar / Imprimir Nota de Venta en Formato A4 (PDF)"
+                        >
+                          <FileText className="w-3.5 h-3.5 text-rose-400 hover:text-white" />
+                        </button>
+
                         {/* View / Print Ticket */}
                         <button
                           onClick={() => setSelectedSaleForTicket(sale)}
@@ -460,6 +566,36 @@ export default function POSSalesHistory({ onRefreshStats }: POSSalesHistoryProps
             </div>
           </div>
         </div>
+      )}
+
+      {/* Formal A4 Document Preview & Download Modal */}
+      {selectedSaleForA4 && (
+        <POSProformaModal
+          isOpen={Boolean(selectedSaleForA4)}
+          onClose={() => setSelectedSaleForA4(null)}
+          items={selectedSaleForA4.items}
+          customer={selectedSaleForA4.customer}
+          destinationType={selectedSaleForA4.destinationType}
+          shippingCost={selectedSaleForA4.shippingCost}
+          discountAmount={selectedSaleForA4.discountAmount}
+          totalAmount={selectedSaleForA4.totalAmount}
+          sellerName={selectedSaleForA4.sellerName}
+          existingReceiptNumber={selectedSaleForA4.receiptNumber}
+          receiptType={selectedSaleForA4.receiptType}
+          isCompletedSale={true}
+          shippingInfo={selectedSaleForA4.shippingInfo}
+          advanceAmount={selectedSaleForA4.advanceAmount}
+          pendingBalance={selectedSaleForA4.pendingBalance}
+          isAdvancePayment={selectedSaleForA4.isAdvancePayment}
+          paymentAccountId={selectedSaleForA4.paymentAccountId}
+          paymentAccountLabel={selectedSaleForA4.paymentAccountLabel}
+          observations={selectedSaleForA4.observations}
+          onOpenTicket={() => {
+            const s = selectedSaleForA4;
+            setSelectedSaleForA4(null);
+            setSelectedSaleForTicket(s);
+          }}
+        />
       )}
     </div>
   );

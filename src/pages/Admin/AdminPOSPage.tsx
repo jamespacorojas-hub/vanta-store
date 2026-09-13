@@ -76,7 +76,10 @@ export default function AdminPOSPage({ theme = 'dark', onToggleTheme }: AdminPOS
             <img
               src="/panther-white.png"
               alt="VANTA"
-              className="w-7 h-7 sm:w-8 sm:h-8 object-contain"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full object-contain shrink-0"
+              onError={(e) => {
+                e.currentTarget.src = '/logo-oficial.png';
+              }}
             />
             <div className="flex flex-col">
               <div className="flex items-center gap-1.5">

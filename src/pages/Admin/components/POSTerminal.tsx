@@ -17,13 +17,43 @@ import {
   Building,
   Calculator,
   Edit3,
+  Truck,
+  MapPin,
+  Navigation,
+  Clock,
+  Package,
+  ShieldCheck,
+  Building2,
+  Box,
+  Copy,
+  Clipboard,
+  Coins,
+  Smartphone,
+  Banknote,
 } from 'lucide-react';
 import { Product } from '../../../types';
 import { PRODUCTS } from '../../../data';
-import { POSSaleItem, POSCustomer, ReceiptType, DestinationType, TaxMode, POSPaymentDetail, POSSale } from '../../../types/pos';
+import {
+  POSSaleItem,
+  POSCustomer,
+  ReceiptType,
+  DestinationType,
+  TaxMode,
+  PaymentMethodType,
+  POSPaymentDetail,
+  POSSale,
+  POSShippingLima,
+  POSShippingProvincia,
+  POSShippingInfo,
+  ShippingCourierLima,
+  ShippingAgencyProvincia,
+  ShippingDeliveryTypeProvincia,
+  ShippingFreightPaymentProvincia,
+  VANTA_BANK_ACCOUNTS,
+} from '../../../types/pos';
 import { getNextReceiptNumber, savePOSSale, getActiveSeller } from '../../../utils/posStorage';
 import { getGarmentPhoto } from '../../../utils/productImages';
-import POSPaymentModal from './POSPaymentModal';
+import POSPaymentModal, { POSAdvancePaymentInfo } from './POSPaymentModal';
 import POSTicketModal from './POSTicketModal';
 import POSProformaModal from './POSProformaModal';
 
@@ -40,6 +70,78 @@ const CATEGORY_TABS = [
   'Notch',
   'Polera',
 ];
+
+const LIMA_DISTRICTS = [
+  'Miraflores',
+  'San Isidro',
+  'Santiago de Surco',
+  'San Borja',
+  'La Molina',
+  'San Miguel',
+  'Jesús María',
+  'Magdalena del Mar',
+  'Lince',
+  'Pueblo Libre',
+  'Barranco',
+  'Cercado de Lima',
+  'Los Olivos',
+  'San Martín de Porres',
+  'Comas',
+  'Independencia',
+  'Ate Vitarte',
+  'Santa Anita',
+  'Chorrillos',
+  'San Juan de Lurigancho',
+  'San Juan de Miraflores',
+  'Villa El Salvador',
+  'Callao',
+  'Bellavista',
+  'La Perla',
+  'Otro Distrito',
+];
+
+const PERU_DEPARTMENTS = [
+  'Arequipa',
+  'Cusco',
+  'La Libertad',
+  'Piura',
+  'Junín',
+  'Lambayeque',
+  'Puno',
+  'Áncash',
+  'Ica',
+  'San Martín',
+  'Huánuco',
+  'Ayacucho',
+  'Cajamarca',
+  'Loreto',
+  'Ucayali',
+  'Tacna',
+  'Moquegua',
+  'Amazonas',
+  'Apurímac',
+  'Huancavelica',
+  'Madre de Dios',
+  'Pasco',
+  'Tumbes',
+];
+
+const PROVINCIA_EMPTY_TEMPLATE = `📦 *FORMULARIO DE ENVÍO – VANTA*
+🚚 *Transporte: SHALOM*
+
+👤 Nombres y apellidos:
+🪪 DNI:
+📱 Celular:
+📍 Departamento / Provincia / Distrito:
+🏢 Agencia Shalom donde recogerás tu pedido:`;
+
+const LIMA_EMPTY_TEMPLATE = `📦 *FORMULARIO DE ENVÍO A LIMA – VANTA*
+
+👤 Nombres y apellidos:
+📱 Celular:
+📍 Distrito:
+🏠 Dirección completa (número, piso o departamento):
+📌 Referencia para llegar:`;
 
 export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
   // Filters and search
@@ -59,6 +161,39 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
   const [receiptType, setReceiptType] = useState<ReceiptType>('NOTA_VENTA');
   const [taxMode, setTaxMode] = useState<TaxMode>('NO_TAX');
   const [customTargetTotal, setCustomTargetTotal] = useState<string>('');
+
+  // WhatsApp form clipboard & auto-parse helpers
+  const [copyFeedback, setCopyFeedback] = useState<string | null>(null);
+  const [pasteModalType, setPasteModalType] = useState<'LIMA' | 'PROVINCIA' | null>(null);
+  const [pasteModalText, setPasteModalText] = useState<string>('');
+
+  // Structured Shipping Forms
+  const [shippingLima, setShippingLima] = useState<POSShippingLima>({
+    recipientName: '',
+    recipientPhone: '',
+    recipientDni: '',
+    district: 'Miraflores',
+    address: '',
+    reference: '',
+    courier: 'MOTORIZADO_EXPRESS',
+    deliveryWindow: 'Cualquier horario',
+  });
+
+  const [shippingProvincia, setShippingProvincia] = useState<POSShippingProvincia>({
+    consigneeName: '',
+    consigneeDni: '',
+    consigneePhone: '',
+    departmentProvinceDistrict: '',
+    department: 'Arequipa',
+    provinceCity: '',
+    agency: 'SHALOM',
+    otherAgencyName: '',
+    deliveryType: 'AGENCIA',
+    agencyBranch: '',
+    address: '',
+    freightPayment: 'PAGO_DESTINO',
+    claveRetiro: '',
+  });
 
   // Customer details
   const [customer, setCustomer] = useState<POSCustomer>({
@@ -86,6 +221,12 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [isProformaModalOpen, setIsProformaModalOpen] = useState(false);
   const [lastCompletedSale, setLastCompletedSale] = useState<POSSale | null>(null);
+
+  // Adelanto (Pago a Cuenta) & Cuenta de la Venta state
+  const [isAdvanceMode, setIsAdvanceMode] = useState<boolean>(false);
+  const [customAdvanceAmount, setCustomAdvanceAmount] = useState<string>('');
+  const [selectedReceivingAccount, setSelectedReceivingAccount] = useState<string>('YAPE_PLIN');
+  const [copySaleAccountFeedback, setCopySaleAccountFeedback] = useState<string | null>(null);
 
   // Next receipt number
   const nextReceiptNumber = useMemo(() => getNextReceiptNumber(receiptType), [receiptType, lastCompletedSale]);
@@ -271,6 +412,80 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
     setDiscountPercent(0);
   };
 
+  // Adelanto & Saldo Pendiente (Pago a cuenta) calculations
+  const effectiveAdvanceAmount = useMemo(() => {
+    if (!isAdvanceMode) return totalAmount;
+    const parsed = parseFloat(customAdvanceAmount);
+    if (isNaN(parsed) || parsed <= 0) return Math.round(totalAmount * 0.5);
+    return Math.min(totalAmount, parsed);
+  }, [isAdvanceMode, customAdvanceAmount, totalAmount]);
+
+  const effectivePendingBalance = useMemo(() => {
+    if (!isAdvanceMode) return 0;
+    return Math.max(0, totalAmount - effectiveAdvanceAmount);
+  }, [isAdvanceMode, totalAmount, effectiveAdvanceAmount]);
+
+  // One-click copy "Cuenta de la Venta" for WhatsApp with bank details
+  const handleCopySaleAccount = () => {
+    const isProv = destinationType === 'PROVINCIA';
+    const clientName = isProv
+      ? shippingProvincia.consigneeName || customer.name || 'Cliente'
+      : shippingLima.recipientName || customer.name || 'Cliente';
+    const clientPhone = isProv
+      ? shippingProvincia.consigneePhone || customer.phone || ''
+      : shippingLima.recipientPhone || customer.phone || '';
+
+    const currentDocCode = lastCompletedSale ? lastCompletedSale.receiptNumber : nextReceiptNumber;
+    let text = `📦 *RESUMEN DE VENTA Y CUENTA — VANTA ATELIER*\n`;
+    text += `📄 *NOTA DE VENTA:* ${currentDocCode}\n`;
+    text += `👤 *Cliente:* ${clientName}\n`;
+    if (clientPhone) text += `📱 *Celular:* ${clientPhone}\n`;
+    text += `📍 *Destino:* ${isProv ? (shippingProvincia.departmentProvinceDistrict || shippingProvincia.department || 'Provincia') : (shippingLima.district || 'Lima')}\n`;
+    if (isProv) {
+      const agencyName = shippingProvincia.agency === 'OTRA' ? (shippingProvincia.otherAgencyName || 'Agencia') : shippingProvincia.agency;
+      text += `🏢 *Agencia Shalom / Courier:* ${agencyName} ${shippingProvincia.agencyBranch ? '— ' + shippingProvincia.agencyBranch : ''}\n`;
+    }
+    text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `🛍️ *PRENDAS DETALLE:*\n`;
+    cartItems.forEach((it, idx) => {
+      const sleeve = it.selectedSleeve ? ` [${it.selectedSleeve}]` : '';
+      text += `${idx + 1}. *${it.productName}*${sleeve} (${it.selectedSize} / ${it.selectedColor}) x${it.quantity} = S/ ${it.subtotal.toFixed(2)}\n`;
+    });
+    text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `💵 *Subtotal:* S/ ${rawSubtotal.toFixed(2)}\n`;
+    if (shippingCost > 0) {
+      text += `🚚 *Envío:* S/ ${shippingCost.toFixed(2)}\n`;
+    } else if (isProv && shippingProvincia.freightPayment === 'PAGO_DESTINO') {
+      text += `🚚 *Flete Agencia:* PAGO EN DESTINO (S/ 0.00 en pedido)\n`;
+    }
+    if (computedDiscount > 0) {
+      text += `🏷️ *Descuento aplicado:* -S/ ${computedDiscount.toFixed(2)}\n`;
+    }
+    text += `*TOTAL DE LA VENTA: S/ ${totalAmount.toFixed(2)}*\n`;
+    text += `----------------------------\n`;
+    if (isAdvanceMode && effectivePendingBalance > 0) {
+      text += `💰 *ADELANTO A PAGAR:* S/ ${effectiveAdvanceAmount.toFixed(2)}\n`;
+      text += `⏳ *SALDO PENDIENTE:* S/ ${effectivePendingBalance.toFixed(2)} (contraentrega o previo al despacho)\n`;
+    } else {
+      text += `💰 *TOTAL A ABONAR (100%):* S/ ${totalAmount.toFixed(2)}\n`;
+    }
+    text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `💳 *CUENTAS BANCARIAS OFICIALES — VANTA:*\n`;
+    text += `👤 *Titular:* BRYAN MICHAEL REQUENA AVILA\n`;
+    text += `🪪 *R.U.C.:* 10714931062\n\n`;
+    text += `🟣 *Yape / Plin:* 904 536 406 / 924 058 988\n`;
+    text += `🟠 *BCP Soles:* 191-0014100063-0-53 (CCI: 002-191-0014100063053-53)\n`;
+    text += `🔵 *BBVA Soles:* 0011-0175-0200543981 (CCI: 011-175-000200543981-74)\n`;
+    text += `🟢 *Interbank:* 200-3001249821 (CCI: 003-200-003001249821-39)\n`;
+    text += `🌐 *CCI Multi-banco:* 094-00141000636992-1-53\n`;
+    text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+    text += `📸 *Por favor enviar foto o captura de tu constancia de abono por este medio para proceder con la reserva y empaque de tus prendas.* ¡Muchas gracias! 🔥🖤\n`;
+
+    navigator.clipboard.writeText(text);
+    setCopySaleAccountFeedback('✓ Cuenta de la Venta copiada para WhatsApp');
+    setTimeout(() => setCopySaleAccountFeedback(null), 3000);
+  };
+
   // Filter products
   const filteredProducts = useMemo(() => {
     return PRODUCTS.filter((p) => {
@@ -284,17 +499,186 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
     });
   }, [selectedCategory, searchQuery]);
 
+  // Keep customer and shipping synced for Lima
+  const updateShippingLima = (updates: Partial<POSShippingLima>) => {
+    setShippingLima((prev) => {
+      const next = { ...prev, ...updates };
+      setCustomer((c) => ({
+        ...c,
+        name: next.recipientName || (c.name === 'Cliente Mostrador' ? 'Cliente Lima' : c.name),
+        phone: next.recipientPhone || c.phone,
+        documentType: next.recipientDni ? 'DNI' : (c.documentType === 'RUC' ? 'RUC' : 'NINGUNO'),
+        documentNumber: next.recipientDni || c.documentNumber,
+        district: next.district,
+        address: next.address
+          ? `${next.address} - ${next.district}${next.reference ? ' (Ref: ' + next.reference + ')' : ''}`
+          : c.address,
+      }));
+      return next;
+    });
+
+    if (updates.courier === 'RECOJO_SHOWROOM') {
+      setShippingCost(0);
+    } else if (updates.courier && shippingCost === 0) {
+      setShippingCost(10);
+    }
+  };
+
+  // Keep customer and shipping synced for Provincia
+  const updateShippingProvincia = (updates: Partial<POSShippingProvincia>) => {
+    setShippingProvincia((prev) => {
+      const next = { ...prev, ...updates };
+      const agencyName = next.agency === 'OTRA' ? (next.otherAgencyName || 'Agencia') : next.agency;
+      const loc = next.departmentProvinceDistrict || (next.provinceCity ? `${next.provinceCity} - ${next.department}` : next.department || 'Provincia');
+      const addrSummary = next.agencyBranch
+        ? `Agencia ${agencyName}: ${next.agencyBranch} (${loc})`
+        : `Agencia ${agencyName} (${loc})`;
+
+      setCustomer((c) => ({
+        ...c,
+        name: next.consigneeName || (c.name === 'Cliente Mostrador' ? 'Cliente Provincia' : c.name),
+        phone: next.consigneePhone || c.phone,
+        documentType: 'DNI',
+        documentNumber: next.consigneeDni || c.documentNumber,
+        district: loc,
+        address: addrSummary,
+      }));
+      return next;
+    });
+
+    if (updates.freightPayment === 'PAGO_DESTINO') {
+      setShippingCost(0);
+    } else if (updates.freightPayment === 'PAGADO' && shippingCost === 0) {
+      setShippingCost(15);
+    }
+  };
+
+  // One-click copy empty template for WhatsApp
+  const handleCopyEmptyTemplate = (type: 'LIMA' | 'PROVINCIA') => {
+    const text = type === 'PROVINCIA' ? PROVINCIA_EMPTY_TEMPLATE : LIMA_EMPTY_TEMPLATE;
+    navigator.clipboard.writeText(text);
+    setCopyFeedback(type === 'PROVINCIA' ? '✓ Formulario Provincia copiado' : '✓ Formulario Lima copiado');
+    setTimeout(() => setCopyFeedback(null), 2500);
+  };
+
+  // Auto-parse customer WhatsApp message
+  const handleApplyPastedText = () => {
+    if (!pasteModalType || !pasteModalText.trim()) {
+      setPasteModalType(null);
+      return;
+    }
+    const lines = pasteModalText.split('\n');
+    if (pasteModalType === 'PROVINCIA') {
+      const updates: Partial<POSShippingProvincia> = {};
+      for (const rawLine of lines) {
+        const line = rawLine.replace(/[*_]/g, '').trim();
+        if (!line) continue;
+
+        if (/transporte/i.test(line)) {
+          const parts = line.split(/:\s*/);
+          if (parts[1]) {
+            const val = parts[1].trim().toUpperCase();
+            if (val.includes('SHALOM')) updates.agency = 'SHALOM';
+            else if (val.includes('OLVA')) updates.agency = 'OLVA_COURIER';
+            else if (val.includes('MARVISUR')) updates.agency = 'MARVISUR';
+            else if (val.includes('CIVA')) updates.agency = 'CIVA';
+            else if (val.includes('FLORES')) updates.agency = 'FLORES';
+            else {
+              updates.agency = 'OTRA';
+              updates.otherAgencyName = val;
+            }
+          }
+        } else if (/nombres?\s*(y\s*apellidos?)?/i.test(line)) {
+          const parts = line.split(/:\s*/);
+          if (parts[1]) updates.consigneeName = parts.slice(1).join(':').trim();
+        } else if (/dni/i.test(line)) {
+          const match = line.match(/\b\d{8}\b/);
+          if (match) updates.consigneeDni = match[0];
+          else {
+            const parts = line.split(/:\s*/);
+            if (parts[1]) updates.consigneeDni = parts[1].replace(/[^0-9]/g, '').slice(0, 8);
+          }
+        } else if (/(celular|telf|tel[eé]fono|whatsapp|movil)/i.test(line)) {
+          const match = line.match(/\b9\d{8}\b/);
+          if (match) updates.consigneePhone = match[0];
+          else {
+            const parts = line.split(/:\s*/);
+            if (parts[1]) updates.consigneePhone = parts[1].replace(/[^0-9]/g, '');
+          }
+        } else if (/(departamento|provincia|distrito|destino|ciudad)/i.test(line) && !/agencia/i.test(line)) {
+          const parts = line.split(/:\s*/);
+          if (parts[1]) {
+            updates.departmentProvinceDistrict = parts.slice(1).join(':').trim();
+          }
+        } else if (/(agencia|donde\s*recoger|sucursal|sede)/i.test(line)) {
+          const parts = line.split(/:\s*/);
+          if (parts[1]) {
+            updates.agencyBranch = parts.slice(1).join(':').trim();
+          }
+        }
+      }
+      updateShippingProvincia(updates);
+    } else {
+      const updates: Partial<POSShippingLima> = {};
+      for (const rawLine of lines) {
+        const line = rawLine.replace(/[*_]/g, '').trim();
+        if (!line) continue;
+
+        if (/nombres?\s*(y\s*apellidos?)?/i.test(line)) {
+          const parts = line.split(/:\s*/);
+          if (parts[1]) updates.recipientName = parts.slice(1).join(':').trim();
+        } else if (/(celular|telf|tel[eé]fono|whatsapp|movil)/i.test(line)) {
+          const match = line.match(/\b9\d{8}\b/);
+          if (match) updates.recipientPhone = match[0];
+          else {
+            const parts = line.split(/:\s*/);
+            if (parts[1]) updates.recipientPhone = parts[1].replace(/[^0-9]/g, '');
+          }
+        } else if (/distrito/i.test(line) && !/departamento/i.test(line)) {
+          const parts = line.split(/:\s*/);
+          if (parts[1]) updates.district = parts.slice(1).join(':').trim();
+        } else if (/(direcci[oó]n|calle|av\.|jr\.|piso|dpto)/i.test(line)) {
+          const parts = line.split(/:\s*/);
+          if (parts[1]) updates.address = parts.slice(1).join(':').trim();
+        } else if (/referencia/i.test(line)) {
+          const parts = line.split(/:\s*/);
+          if (parts[1]) updates.reference = parts.slice(1).join(':').trim();
+        }
+      }
+      updateShippingLima(updates);
+    }
+    setPasteModalText('');
+    setPasteModalType(null);
+  };
+
   // Confirm payment and create Sale
-  const handleConfirmPayment = (payments: POSPaymentDetail[]) => {
+  const handleConfirmPayment = (
+    payments: POSPaymentDetail[],
+    advanceInfo?: POSAdvancePaymentInfo
+  ) => {
     const now = new Date();
     const formattedDate = now.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' });
     const formattedTime = now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+    const shippingInfo: POSShippingInfo = {
+      destination: destinationType,
+      shippingCost: shippingCost,
+      lima: destinationType === 'LIMA' ? { ...shippingLima } : undefined,
+      provincia: destinationType === 'PROVINCIA' ? { ...shippingProvincia } : undefined,
+    };
+
+    const hasAdvance = advanceInfo ? advanceInfo.isAdvance : isAdvanceMode;
+    const finalAdvanceAmount = advanceInfo ? advanceInfo.advanceAmount : (isAdvanceMode ? effectiveAdvanceAmount : totalAmount);
+    const finalPendingBalance = advanceInfo ? advanceInfo.pendingBalance : (isAdvanceMode ? effectivePendingBalance : 0);
+    const finalAccountId = advanceInfo?.accountId || selectedReceivingAccount;
+    const finalAccountLabel = advanceInfo?.accountLabel;
 
     const newSale: POSSale = {
       id: 'sale-' + Date.now(),
       receiptNumber: nextReceiptNumber,
       receiptType: receiptType,
       destinationType: destinationType,
+      shippingInfo: shippingInfo,
       createdAt: now.toISOString(),
       formattedDate,
       formattedTime,
@@ -308,6 +692,11 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
       taxAmount: taxAmount,
       taxPercent: taxPercent,
       totalAmount: totalAmount,
+      advanceAmount: hasAdvance ? finalAdvanceAmount : totalAmount,
+      pendingBalance: hasAdvance ? finalPendingBalance : 0,
+      paymentAccountId: finalAccountId,
+      paymentAccountLabel: finalAccountLabel,
+      isAdvancePayment: hasAdvance && finalPendingBalance > 0,
       payments: payments,
       status: 'COMPLETADA',
       observations: observations.trim() || undefined,
@@ -320,13 +709,119 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
     if (onSaleCompleted) onSaleCompleted(newSale);
   };
 
+  // Directly emit and register Nota de Venta, then open A4 document (or Ticket)
+  const handleCreateNotaVentaDirect = (openMode: 'A4' | 'TICKET' = 'A4') => {
+    if (cartItems.length === 0) return;
+
+    const now = new Date();
+    const formattedDate = now.toLocaleDateString('es-PE', { day: '2-digit', month: '2-digit', year: 'numeric' });
+    const formattedTime = now.toLocaleTimeString('es-PE', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
+
+    const shippingInfo: POSShippingInfo = {
+      destination: destinationType,
+      shippingCost: shippingCost,
+      lima: destinationType === 'LIMA' ? { ...shippingLima } : undefined,
+      provincia: destinationType === 'PROVINCIA' ? { ...shippingProvincia } : undefined,
+    };
+
+    const hasAdvance = isAdvanceMode;
+    const finalAdvanceAmount = isAdvanceMode ? effectiveAdvanceAmount : totalAmount;
+    const finalPendingBalance = isAdvanceMode ? effectivePendingBalance : 0;
+    const finalAccountId = selectedReceivingAccount;
+    const finalAccountLabel = VANTA_BANK_ACCOUNTS.find((a) => a.id === selectedReceivingAccount)?.name;
+
+    const paymentMethod: PaymentMethodType =
+      selectedReceivingAccount === 'YAPE_PLIN'
+        ? 'YAPE'
+        : selectedReceivingAccount === 'EFECTIVO'
+        ? 'EFECTIVO'
+        : selectedReceivingAccount === 'BBVA_SOLES'
+        ? 'TRANSFERENCIA_BBVA'
+        : selectedReceivingAccount === 'INTERBANK_SOLES'
+        ? 'TRANSFERENCIA_INTERBANK'
+        : 'TRANSFERENCIA_BCP';
+
+    const newSale: POSSale = {
+      id: 'sale-' + Date.now(),
+      receiptNumber: nextReceiptNumber,
+      receiptType: receiptType || 'NOTA_VENTA',
+      destinationType: destinationType,
+      shippingInfo: shippingInfo,
+      createdAt: now.toISOString(),
+      formattedDate,
+      formattedTime,
+      sellerName: getActiveSeller(),
+      customer: { ...customer },
+      items: [...cartItems],
+      subtotalAmount: baseAmount,
+      shippingCost: shippingCost,
+      discountAmount: computedDiscount,
+      taxMode: taxMode,
+      taxAmount: taxAmount,
+      taxPercent: taxPercent,
+      totalAmount: totalAmount,
+      advanceAmount: hasAdvance ? finalAdvanceAmount : totalAmount,
+      pendingBalance: hasAdvance ? finalPendingBalance : 0,
+      paymentAccountId: finalAccountId,
+      paymentAccountLabel: finalAccountLabel,
+      isAdvancePayment: hasAdvance && finalPendingBalance > 0,
+      payments: [
+        {
+          method: paymentMethod,
+          amount: hasAdvance ? finalAdvanceAmount : totalAmount,
+        },
+      ],
+      status: 'COMPLETADA',
+      observations: observations.trim() || undefined,
+    };
+
+    savePOSSale(newSale);
+    setLastCompletedSale(newSale);
+    if (onSaleCompleted) onSaleCompleted(newSale);
+
+    if (openMode === 'A4') {
+      setIsProformaModalOpen(true);
+    } else {
+      setIsTicketModalOpen(true);
+    }
+  };
+
   const handleNewSale = () => {
     handleClearTicket();
     setShippingCost(0);
     setObservations('');
     setDestinationType('LIMA');
     setTaxMode('NO_TAX');
+    setIsAdvanceMode(false);
+    setCustomAdvanceAmount('');
     setIsTicketModalOpen(false);
+    setIsProformaModalOpen(false);
+    setLastCompletedSale(null);
+    setShippingLima({
+      recipientName: '',
+      recipientPhone: '',
+      recipientDni: '',
+      district: 'Miraflores',
+      address: '',
+      reference: '',
+      courier: 'MOTORIZADO_EXPRESS',
+      deliveryWindow: 'Cualquier horario',
+    });
+    setShippingProvincia({
+      consigneeName: '',
+      consigneeDni: '',
+      consigneePhone: '',
+      departmentProvinceDistrict: '',
+      department: 'Arequipa',
+      provinceCity: '',
+      agency: 'SHALOM',
+      otherAgencyName: '',
+      deliveryType: 'AGENCIA',
+      agencyBranch: '',
+      address: '',
+      freightPayment: 'PAGO_DESTINO',
+      claveRetiro: '',
+    });
     setCustomer({
       name: 'Cliente Mostrador',
       businessName: '',
@@ -542,35 +1037,41 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
               ))}
             </div>
 
-            {/* Destination Toggle (Lima vs Provincia) */}
-            <div className="flex bg-panel p-0.5 border border-line rounded-xs">
+            {/* Destination Toggle Tabs: Lima vs Provincia */}
+            <div className="flex bg-panel p-1 border border-line rounded-xs gap-1">
               <button
                 type="button"
                 onClick={() => {
                   setDestinationType('LIMA');
                   if (shippingCost === 15) setShippingCost(10);
                 }}
-                className={`px-2.5 py-0.5 text-[9px] font-mono font-bold uppercase transition-colors cursor-pointer ${
+                className={`flex-1 py-1.5 px-2 flex items-center justify-center gap-1.5 font-mono text-[10px] font-bold uppercase transition-all cursor-pointer ${
                   destinationType === 'LIMA'
                     ? 'bg-accent text-white shadow-xs'
-                    : 'text-muted hover:text-ink'
+                    : 'text-muted hover:text-ink hover:bg-paper'
                 }`}
               >
-                LIMA
+                <Truck className="w-3.5 h-3.5" />
+                <span>🛵 Envío Lima</span>
               </button>
               <button
                 type="button"
                 onClick={() => {
                   setDestinationType('PROVINCIA');
-                  if (shippingCost === 0 || shippingCost === 10) setShippingCost(15);
+                  if (shippingProvincia.freightPayment === 'PAGO_DESTINO') {
+                    setShippingCost(0);
+                  } else if (shippingCost === 0 || shippingCost === 10) {
+                    setShippingCost(15);
+                  }
                 }}
-                className={`px-2.5 py-0.5 text-[9px] font-mono font-bold uppercase transition-colors cursor-pointer ${
+                className={`flex-1 py-1.5 px-2 flex items-center justify-center gap-1.5 font-mono text-[10px] font-bold uppercase transition-all cursor-pointer ${
                   destinationType === 'PROVINCIA'
                     ? 'bg-accent text-white shadow-xs'
-                    : 'text-muted hover:text-ink'
+                    : 'text-muted hover:text-ink hover:bg-paper'
                 }`}
               >
-                PROVINCIA
+                <Package className="w-3.5 h-3.5" />
+                <span>📦 Envío Provincia</span>
               </button>
             </div>
           </div>
@@ -592,15 +1093,15 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
             </span>
           </div>
 
-          {/* Customer / Company Inputs (Specialized for Facturas vs Boletas vs Notas de Venta) */}
-          <div className="space-y-1.5">
+          {/* Forms Section */}
+          <div className="space-y-2">
             {receiptType === 'FACTURA' ? (
               /* FACTURA FIELDS: RUC, Razón Social, Dirección Fiscal, Contacto */
-              <div className="space-y-1.5 bg-panel/70 p-2 border border-accent/30 rounded-xs">
+              <div className="space-y-2 bg-panel/80 p-2.5 border border-accent/40 rounded-xs">
                 <div className="flex items-center justify-between text-[10px] font-mono font-bold text-accent">
                   <span className="flex items-center gap-1">
-                    <Building className="w-3 h-3" />
-                    DATOS DE LA EMPRESA A FACTURAR:
+                    <Building className="w-3.5 h-3.5" />
+                    DATOS FISCALES (FACTURA CON RUC):
                   </span>
                   <span className="text-zinc-400 text-[9px]">RUC 11 dígitos</span>
                 </div>
@@ -662,112 +1163,460 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
                   />
                 </div>
               </div>
-            ) : (
-              /* NOTA DE VENTA / BOLETA FIELDS */
-              <>
-                <div className="flex gap-2">
-                  <div className="relative flex-1">
-                    <User className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted" />
+            ) : null}
+
+            {/* SPECIALIZED FORM 1: ENVÍO LIMA METROPOLITANA */}
+            {destinationType === 'LIMA' && (
+              <div className="bg-panel border border-line p-2.5 space-y-2.5 rounded-xs">
+                {/* Form Header */}
+                <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-line pb-1.5">
+                  <div className="flex items-center gap-1.5 text-accent font-mono text-[10.5px] font-bold uppercase">
+                    <Truck className="w-3.5 h-3.5 text-accent" />
+                    <span>📦 FORMULARIO DE ENVÍO A LIMA – VANTA</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handleCopyEmptyTemplate('LIMA')}
+                      className="px-2 py-0.5 bg-paper hover:bg-zinc-800 text-muted hover:text-ink border border-line text-[9px] font-mono flex items-center gap-1 cursor-pointer transition-colors"
+                      title="Copiar plantilla vacía para WhatsApp"
+                    >
+                      <Copy className="w-2.5 h-2.5" />
+                      <span>Copiar Plantilla</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPasteModalText('');
+                        setPasteModalType('LIMA');
+                      }}
+                      className="px-2 py-0.5 bg-accent/10 hover:bg-accent text-accent hover:text-white border border-accent/40 text-[9px] font-mono font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                      title="Pegar mensaje de WhatsApp para auto-completar"
+                    >
+                      <Clipboard className="w-2.5 h-2.5" />
+                      <span>Pegar de WhatsApp</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 1. Nombres y apellidos + Celular */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-1.5">
+                  <div className="sm:col-span-7">
+                    <label className="block text-[9px] font-mono text-muted uppercase font-bold mb-0.5">
+                      👤 Nombres y apellidos:
+                    </label>
                     <input
                       type="text"
-                      placeholder="Nombre del Cliente"
-                      value={customer.name}
-                      onChange={(e) => setCustomer({ ...customer, name: e.target.value })}
-                      className="w-full bg-panel border border-line text-[11px] font-mono py-1.5 pl-8 pr-2 text-ink focus:outline-none focus:border-accent"
+                      placeholder="Nombres y apellidos completos"
+                      value={shippingLima.recipientName}
+                      onChange={(e) => updateShippingLima({ recipientName: e.target.value })}
+                      className="w-full bg-paper border border-line text-[10.5px] font-mono py-1 px-2 text-ink font-semibold focus:outline-none focus:border-accent"
                     />
                   </div>
-                  <div className="relative w-36">
-                    <Phone className="w-3.5 h-3.5 absolute left-2.5 top-1/2 -translate-y-1/2 text-muted" />
+                  <div className="sm:col-span-5">
+                    <label className="block text-[9px] font-mono text-muted uppercase font-bold mb-0.5">
+                      📱 Celular:
+                    </label>
                     <input
                       type="text"
-                      placeholder="WhatsApp / Telf"
-                      value={customer.phone}
-                      onChange={(e) => setCustomer({ ...customer, phone: e.target.value })}
-                      className="w-full bg-panel border border-line text-[11px] font-mono py-1.5 pl-8 pr-2 text-ink focus:outline-none focus:border-accent"
+                      placeholder="9 dígitos"
+                      value={shippingLima.recipientPhone}
+                      onChange={(e) => updateShippingLima({ recipientPhone: e.target.value.replace(/[^0-9]/g, '') })}
+                      className="w-full bg-paper border border-line text-[10.5px] font-mono py-1 px-2 text-ink font-bold focus:outline-none focus:border-accent"
                     />
                   </div>
                 </div>
 
-                {/* Address & Document */}
-                <div className="flex gap-2">
+                {/* 2. Distrito */}
+                <div>
+                  <label className="block text-[9px] font-mono text-muted uppercase font-bold mb-0.5">
+                    📍 Distrito:
+                  </label>
+                  <div className="flex gap-1.5">
+                    <select
+                      value={LIMA_DISTRICTS.includes(shippingLima.district) ? shippingLima.district : 'Otro Distrito'}
+                      onChange={(e) => {
+                        if (e.target.value !== 'Otro Distrito') {
+                          updateShippingLima({ district: e.target.value });
+                        }
+                      }}
+                      className="flex-1 bg-paper border border-line text-[10px] font-mono py-1 px-1.5 text-ink focus:outline-none focus:border-accent cursor-pointer font-semibold"
+                    >
+                      {LIMA_DISTRICTS.map((d) => (
+                        <option key={d} value={d}>
+                          {d}
+                        </option>
+                      ))}
+                    </select>
+                    <input
+                      type="text"
+                      placeholder="O escribir distrito..."
+                      value={shippingLima.district}
+                      onChange={(e) => updateShippingLima({ district: e.target.value })}
+                      className="w-40 bg-paper border border-line text-[10px] font-mono py-1 px-2 text-ink focus:outline-none focus:border-accent"
+                    />
+                  </div>
+                </div>
+
+                {/* 3. Dirección completa */}
+                <div>
+                  <label className="block text-[9px] font-mono text-muted uppercase font-bold mb-0.5">
+                    🏠 Dirección completa (número, piso o departamento):
+                  </label>
                   <input
                     type="text"
-                    placeholder={
-                      destinationType === 'PROVINCIA'
-                        ? 'Dirección de Envío / Ciudad (Provincia)'
-                        : 'Dirección / Distrito (Lima)'
-                    }
-                    value={customer.address}
-                    onChange={(e) => setCustomer({ ...customer, address: e.target.value })}
-                    className="flex-1 bg-panel border border-line text-[11px] font-mono py-1 px-2.5 text-ink focus:outline-none focus:border-accent"
-                  />
-                  <input
-                    type="text"
-                    placeholder={receiptType === 'BOLETA' ? 'DNI (8 dígs)' : 'DNI / RUC'}
-                    value={customer.documentNumber}
-                    onChange={(e) => setCustomer({ ...customer, documentNumber: e.target.value })}
-                    className="w-28 bg-panel border border-line text-[11px] font-mono py-1 px-2 text-ink focus:outline-none focus:border-accent"
+                    placeholder="Calle, Jr., Av., N°, Piso, Interior o Departamento"
+                    value={shippingLima.address}
+                    onChange={(e) => updateShippingLima({ address: e.target.value })}
+                    className="w-full bg-paper border border-line text-[10.5px] font-mono py-1 px-2 text-ink focus:outline-none focus:border-accent"
                   />
                 </div>
-              </>
-            )}
 
-            {/* Shipping Cost Quick Selector */}
-            <div className="flex items-center justify-between bg-panel p-1.5 border border-line text-[10px] font-mono">
-              <span className="text-muted uppercase font-bold">
-                Envío ({destinationType}):
-              </span>
-              <div className="flex items-center gap-1">
-                <button
-                  type="button"
-                  onClick={() => setShippingCost(0)}
-                  className={`px-1.5 py-0.5 border cursor-pointer ${
-                    shippingCost === 0
-                      ? 'bg-accent text-white border-accent font-bold'
-                      : 'bg-paper text-muted border-line'
-                  }`}
-                >
-                  S/ 0 (Recojo)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShippingCost(10)}
-                  className={`px-1.5 py-0.5 border cursor-pointer ${
-                    shippingCost === 10
-                      ? 'bg-accent text-white border-accent font-bold'
-                      : 'bg-paper text-muted border-line'
-                  }`}
-                >
-                  S/ 10 (Lima)
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setShippingCost(15)}
-                  className={`px-1.5 py-0.5 border cursor-pointer ${
-                    shippingCost === 15
-                      ? 'bg-accent text-white border-accent font-bold'
-                      : 'bg-paper text-muted border-line'
-                  }`}
-                >
-                  S/ 15 (Prov)
-                </button>
-                <div className="relative w-14">
-                  <span className="absolute left-1 top-1/2 -translate-y-1/2 text-[8.5px] text-muted">S/</span>
+                {/* 4. Referencia para llegar */}
+                <div>
+                  <label className="block text-[9px] font-mono text-muted uppercase font-bold mb-0.5">
+                    📌 Referencia para llegar:
+                  </label>
                   <input
-                    type="number"
-                    value={shippingCost || ''}
-                    placeholder="0"
-                    onChange={(e) => setShippingCost(parseFloat(e.target.value) || 0)}
-                    className="w-full bg-paper border border-line text-[9.5px] py-0.5 pl-4 pr-1 text-ink focus:outline-none"
+                    type="text"
+                    placeholder="Ej. Frente al parque, reja negra, portón blanco..."
+                    value={shippingLima.reference || ''}
+                    onChange={(e) => updateShippingLima({ reference: e.target.value })}
+                    className="w-full bg-paper border border-line text-[10px] font-mono py-1 px-2 text-ink focus:outline-none focus:border-accent"
                   />
+                </div>
+
+                {/* Quick Shipping Cost Selector for Lima */}
+                <div className="flex flex-wrap items-center justify-between bg-paper p-1.5 border border-line text-[10px] font-mono gap-1.5">
+                  <span className="text-muted uppercase font-bold flex items-center gap-1">
+                    <Truck className="w-3 h-3 text-accent" />
+                    Costo Envío Lima:
+                  </span>
+                  <div className="flex items-center gap-1 flex-wrap">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        updateShippingLima({ courier: 'RECOJO_SHOWROOM' });
+                        setShippingCost(0);
+                      }}
+                      className={`px-1.5 py-0.5 border cursor-pointer ${
+                        shippingCost === 0
+                          ? 'bg-accent text-white border-accent font-bold'
+                          : 'bg-panel text-muted border-line'
+                      }`}
+                    >
+                      S/ 0 (Recojo Tienda)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        updateShippingLima({ courier: 'MOTORIZADO_EXPRESS' });
+                        setShippingCost(10);
+                      }}
+                      className={`px-1.5 py-0.5 border cursor-pointer ${
+                        shippingCost === 10
+                          ? 'bg-accent text-white border-accent font-bold'
+                          : 'bg-panel text-muted border-line'
+                      }`}
+                    >
+                      S/ 10 (Estándar)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        updateShippingLima({ courier: 'MOTORIZADO_EXPRESS' });
+                        setShippingCost(15);
+                      }}
+                      className={`px-1.5 py-0.5 border cursor-pointer ${
+                        shippingCost === 15
+                          ? 'bg-accent text-white border-accent font-bold'
+                          : 'bg-panel text-muted border-line'
+                      }`}
+                    >
+                      S/ 15 (Express)
+                    </button>
+                    <div className="relative w-16">
+                      <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[8.5px] text-muted">S/</span>
+                      <input
+                        type="number"
+                        value={shippingCost || ''}
+                        placeholder="0"
+                        onChange={(e) => setShippingCost(parseFloat(e.target.value) || 0)}
+                        className="w-full bg-panel border border-line text-[10px] font-mono font-bold py-0.5 pl-5 pr-1 text-ink focus:outline-none focus:border-accent"
+                      />
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
+
+            {/* SPECIALIZED FORM 2: ENVÍO PROVINCIA */}
+            {destinationType === 'PROVINCIA' && (
+              <div className="bg-panel border border-purple-500/30 p-2.5 space-y-2.5 rounded-xs">
+                {/* Form Header */}
+                <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-line pb-1.5">
+                  <div className="flex items-center gap-1.5 text-purple-400 font-mono text-[10.5px] font-bold uppercase">
+                    <Package className="w-3.5 h-3.5 text-purple-400" />
+                    <span>📦 FORMULARIO DE ENVÍO – VANTA</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => handleCopyEmptyTemplate('PROVINCIA')}
+                      className="px-2 py-0.5 bg-paper hover:bg-zinc-800 text-muted hover:text-ink border border-line text-[9px] font-mono flex items-center gap-1 cursor-pointer transition-colors"
+                      title="Copiar plantilla vacía para WhatsApp"
+                    >
+                      <Copy className="w-2.5 h-2.5" />
+                      <span>Copiar Plantilla</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPasteModalText('');
+                        setPasteModalType('PROVINCIA');
+                      }}
+                      className="px-2 py-0.5 bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/40 text-[9px] font-mono font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                      title="Pegar mensaje de WhatsApp para auto-completar"
+                    >
+                      <Clipboard className="w-2.5 h-2.5" />
+                      <span>Pegar de WhatsApp</span>
+                    </button>
+                  </div>
+                </div>
+
+                {/* 🚚 Transporte Selector */}
+                <div className="space-y-1 bg-paper p-1.5 border border-line">
+                  <div className="flex items-center justify-between text-[9px] font-mono">
+                    <span className="text-purple-300 font-bold uppercase">🚚 Transporte:</span>
+                    <span className="text-muted font-bold">
+                      {shippingProvincia.agency === 'OTRA' ? (shippingProvincia.otherAgencyName || 'OTRA') : shippingProvincia.agency}
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-3 sm:grid-cols-6 gap-1">
+                    {[
+                      { id: 'SHALOM' as const, label: '★ SHALOM' },
+                      { id: 'OLVA_COURIER' as const, label: 'OLVA' },
+                      { id: 'MARVISUR' as const, label: 'MARVISUR' },
+                      { id: 'CIVA' as const, label: 'CIVA' },
+                      { id: 'FLORES' as const, label: 'FLORES' },
+                      { id: 'OTRA' as const, label: 'OTRA' },
+                    ].map((ag) => (
+                      <button
+                        key={ag.id}
+                        type="button"
+                        onClick={() => updateShippingProvincia({ agency: ag.id })}
+                        className={`py-1 text-[9px] font-mono font-bold border transition-colors cursor-pointer text-center ${
+                          shippingProvincia.agency === ag.id
+                            ? 'bg-purple-600 text-white border-purple-500 shadow-xs'
+                            : 'bg-paper text-muted hover:text-ink border-line'
+                        }`}
+                      >
+                        {ag.label}
+                      </button>
+                    ))}
+                  </div>
+                  {shippingProvincia.agency === 'OTRA' && (
+                    <input
+                      type="text"
+                      placeholder="Nombre de la agencia de transporte (ej: Expreso Ancash, Molina...)"
+                      value={shippingProvincia.otherAgencyName || ''}
+                      onChange={(e) => updateShippingProvincia({ otherAgencyName: e.target.value })}
+                      className="w-full bg-panel border border-line text-[10px] font-mono py-1 px-2 text-ink focus:outline-none focus:border-purple-400 mt-1"
+                    />
+                  )}
+                </div>
+
+                {/* 1. Nombres y apellidos + DNI + Celular */}
+                <div className="grid grid-cols-1 sm:grid-cols-12 gap-1.5">
+                  <div className="sm:col-span-5">
+                    <label className="block text-[9px] font-mono text-muted uppercase font-bold mb-0.5">
+                      👤 Nombres y apellidos:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="Quien retira en agencia"
+                      value={shippingProvincia.consigneeName}
+                      onChange={(e) => updateShippingProvincia({ consigneeName: e.target.value })}
+                      className="w-full bg-paper border border-line text-[10.5px] font-mono py-1 px-2 text-ink font-semibold focus:outline-none focus:border-purple-400"
+                    />
+                  </div>
+                  <div className="sm:col-span-4">
+                    <label className="block text-[9px] font-mono text-purple-400 uppercase font-bold mb-0.5">
+                      🪪 DNI:
+                    </label>
+                    <input
+                      type="text"
+                      maxLength={8}
+                      placeholder="8 dígitos"
+                      value={shippingProvincia.consigneeDni}
+                      onChange={(e) =>
+                        updateShippingProvincia({
+                          consigneeDni: e.target.value.replace(/[^0-9]/g, ''),
+                        })
+                      }
+                      className="w-full bg-paper border border-purple-500/50 text-[10.5px] font-mono font-bold py-1 px-2 text-purple-300 focus:outline-none focus:border-purple-400"
+                    />
+                  </div>
+                  <div className="sm:col-span-3">
+                    <label className="block text-[9px] font-mono text-muted uppercase font-bold mb-0.5">
+                      📱 Celular:
+                    </label>
+                    <input
+                      type="text"
+                      placeholder="9 dígitos"
+                      value={shippingProvincia.consigneePhone}
+                      onChange={(e) =>
+                        updateShippingProvincia({
+                          consigneePhone: e.target.value.replace(/[^0-9]/g, ''),
+                        })
+                      }
+                      className="w-full bg-paper border border-line text-[10.5px] font-mono py-1 px-2 text-ink focus:outline-none focus:border-purple-400"
+                    />
+                  </div>
+                </div>
+
+                {/* 2. Departamento / Provincia / Distrito */}
+                <div>
+                  <div className="flex items-center justify-between mb-0.5">
+                    <label className="text-[9px] font-mono text-muted uppercase font-bold">
+                      📍 Departamento / Provincia / Distrito:
+                    </label>
+                    <select
+                      onChange={(e) => {
+                        const dep = e.target.value;
+                        if (!dep) return;
+                        updateShippingProvincia({
+                          department: dep,
+                          departmentProvinceDistrict: shippingProvincia.departmentProvinceDistrict
+                            ? `${dep} / ${shippingProvincia.departmentProvinceDistrict.split('/').slice(1).join('/').trim()}`
+                            : `${dep} / `
+                        });
+                      }}
+                      className="bg-paper border border-line text-[9px] font-mono px-1 py-0.5 text-muted hover:text-ink cursor-pointer"
+                    >
+                      <option value="">Región rápida...</option>
+                      {PERU_DEPARTMENTS.map((d) => (
+                        <option key={d} value={d}>
+                          {d}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                  <input
+                    type="text"
+                    placeholder="Ej: Junín / Huancayo / El Tambo (o Cusco / San Jerónimo)"
+                    value={shippingProvincia.departmentProvinceDistrict || ''}
+                    onChange={(e) => updateShippingProvincia({ departmentProvinceDistrict: e.target.value })}
+                    className="w-full bg-paper border border-line text-[10.5px] font-mono py-1 px-2 text-ink focus:outline-none focus:border-purple-400 font-semibold"
+                  />
+                </div>
+
+                {/* 3. Agencia Shalom / Transporte donde recogerás tu pedido */}
+                <div>
+                  <label className="block text-[9px] font-mono text-muted uppercase font-bold mb-0.5">
+                    🏢 Agencia {shippingProvincia.agency === 'OTRA' ? (shippingProvincia.otherAgencyName || 'de Transporte') : shippingProvincia.agency === 'SHALOM' ? 'Shalom' : shippingProvincia.agency} donde recogerás tu pedido:
+                  </label>
+                  <input
+                    type="text"
+                    placeholder="Ej: Shalom Huancayo Ferrocarril / Sede Central / Agencia Grau..."
+                    value={shippingProvincia.agencyBranch || ''}
+                    onChange={(e) => updateShippingProvincia({ agencyBranch: e.target.value })}
+                    className="w-full bg-paper border border-line text-[10.5px] font-mono py-1 px-2 text-ink focus:outline-none focus:border-purple-400 font-semibold"
+                  />
+                </div>
+
+                {/* Freight Payment Mode */}
+                <div className="bg-paper p-1.5 border border-line space-y-1.5">
+                  <div className="flex items-center justify-between text-[9.5px] font-mono">
+                    <span className="text-muted uppercase font-bold">Modalidad del Flete:</span>
+                    <span className="text-purple-400 font-bold">
+                      {shippingProvincia.freightPayment === 'PAGO_DESTINO'
+                        ? '🏷️ Pago en Destino (S/ 0 en comprobante)'
+                        : '💳 Flete Pagado en la Venta'}
+                    </span>
+                  </div>
+
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        updateShippingProvincia({ freightPayment: 'PAGO_DESTINO' });
+                        setShippingCost(0);
+                      }}
+                      className={`flex-1 py-1 px-2 text-[9px] font-mono font-bold border cursor-pointer text-center ${
+                        shippingProvincia.freightPayment === 'PAGO_DESTINO'
+                          ? 'bg-emerald-600 text-white border-emerald-500 shadow-xs'
+                          : 'bg-panel text-muted border-line hover:text-ink'
+                      }`}
+                    >
+                      ✓ PAGO EN DESTINO (Cliente paga al recoger en agencia)
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        updateShippingProvincia({ freightPayment: 'PAGADO' });
+                        if (shippingCost === 0) setShippingCost(15);
+                      }}
+                      className={`py-1 px-2 text-[9px] font-mono font-bold border cursor-pointer text-center ${
+                        shippingProvincia.freightPayment === 'PAGADO'
+                          ? 'bg-purple-600 text-white border-purple-500 shadow-xs'
+                          : 'bg-panel text-muted border-line hover:text-ink'
+                      }`}
+                    >
+                      FLETE PAGADO
+                    </button>
+                  </div>
+
+                  {shippingProvincia.freightPayment === 'PAGADO' && (
+                    <div className="flex items-center justify-between pt-1 border-t border-line text-[10px] font-mono">
+                      <span className="text-muted">Monto de Flete Cobrado:</span>
+                      <div className="flex items-center gap-1">
+                        {[15, 20, 25].map((amt) => (
+                          <button
+                            key={amt}
+                            type="button"
+                            onClick={() => setShippingCost(amt)}
+                            className={`px-1.5 py-0.5 border cursor-pointer ${
+                              shippingCost === amt
+                                ? 'bg-purple-600 text-white border-purple-500 font-bold'
+                                : 'bg-panel text-muted border-line'
+                            }`}
+                          >
+                            S/ {amt}
+                          </button>
+                        ))}
+                        <div className="relative w-16">
+                          <span className="absolute left-1.5 top-1/2 -translate-y-1/2 text-[8.5px] text-muted">S/</span>
+                          <input
+                            type="number"
+                            value={shippingCost || ''}
+                            placeholder="0"
+                            onChange={(e) => setShippingCost(parseFloat(e.target.value) || 0)}
+                            className="w-full bg-panel border border-line text-[10px] font-mono font-bold py-0.5 pl-5 pr-1 text-ink focus:outline-none focus:border-purple-400"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Optional Clave de Retiro */}
+                  <div className="pt-1">
+                    <input
+                      type="text"
+                      placeholder="Clave de retiro de encomienda (Opcional, si la agencia lo requiere)"
+                      value={shippingProvincia.claveRetiro || ''}
+                      onChange={(e) => updateShippingProvincia({ claveRetiro: e.target.value })}
+                      className="w-full bg-panel border border-line text-[9.5px] font-mono py-1 px-2 text-ink focus:outline-none focus:border-purple-400"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
 
             {/* Observations input */}
             <input
               type="text"
-              placeholder="Observaciones de la venta / envío (Opcional)..."
+              placeholder="Observaciones de la venta / notas de empaque y rotulado (Opcional)..."
               value={observations}
               onChange={(e) => setObservations(e.target.value)}
               className="w-full bg-panel border border-line text-[10.5px] font-mono py-1 px-2.5 text-ink focus:outline-none focus:border-accent"
@@ -1042,6 +1891,174 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
                 />
               </div>
             </div>
+
+            {/* Adelanto & Saldo Pendiente (Cuenta de la Venta) Card */}
+            <div className="bg-panel border border-line p-3 space-y-2.5 mt-2.5 shadow-xs">
+              <div className="flex items-center justify-between">
+                <span className="text-[10.5px] font-mono uppercase font-bold text-accent tracking-wider flex items-center gap-1.5">
+                  <Coins className="w-3.5 h-3.5 text-accent" />
+                  ADELANTO Y SALDO (PAGO A CUENTA):
+                </span>
+                {isAdvanceMode && effectivePendingBalance > 0 && (
+                  <span className="text-[9px] font-mono font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 px-1.5 py-0.5">
+                    CON SALDO PENDIENTE
+                  </span>
+                )}
+              </div>
+
+              {/* Mode Toggle Buttons */}
+              <div className="grid grid-cols-2 gap-1.5">
+                <button
+                  type="button"
+                  onClick={() => setIsAdvanceMode(false)}
+                  className={`py-1.5 px-2 text-[10px] font-mono uppercase font-bold border transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                    !isAdvanceMode
+                      ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500 font-black shadow-xs'
+                      : 'bg-paper text-muted border-line hover:text-ink hover:bg-paper-soft'
+                  }`}
+                >
+                  <Check className="w-3 h-3" />
+                  <span>Pago Total (100%)</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsAdvanceMode(true);
+                    if (!customAdvanceAmount) {
+                      setCustomAdvanceAmount(Math.round(totalAmount * 0.5).toString());
+                    }
+                  }}
+                  className={`py-1.5 px-2 text-[10px] font-mono uppercase font-bold border transition-all cursor-pointer flex items-center justify-center gap-1 ${
+                    isAdvanceMode
+                      ? 'bg-amber-500/20 text-amber-300 border-amber-500 font-black shadow-xs'
+                      : 'bg-paper text-muted border-line hover:text-ink hover:bg-paper-soft'
+                  }`}
+                >
+                  <Coins className="w-3 h-3" />
+                  <span>Con Adelanto / A Cuenta</span>
+                </button>
+              </div>
+
+              {/* Expanded details when isAdvanceMode is true */}
+              {isAdvanceMode && (
+                <div className="space-y-2 pt-1 border-t border-line/60">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-[9.5px] font-mono uppercase tracking-wider text-muted mb-1 font-bold">
+                        Monto de Adelanto (S/):
+                      </label>
+                      <div className="relative">
+                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-amber-400">
+                          S/
+                        </span>
+                        <input
+                          type="number"
+                          step="any"
+                          value={customAdvanceAmount}
+                          placeholder={Math.round(totalAmount * 0.5).toString()}
+                          onChange={(e) => setCustomAdvanceAmount(e.target.value)}
+                          className="w-full bg-paper border border-amber-500/60 focus:border-amber-400 py-1 pl-7 pr-2 text-xs font-mono font-black text-amber-300 focus:outline-none"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="bg-paper border border-line p-1.5 flex flex-col justify-center">
+                      <span className="text-[8.5px] font-mono uppercase tracking-wider text-muted">
+                        Saldo Pendiente:
+                      </span>
+                      <span className="font-mono text-sm font-black text-rose-500">
+                        S/ {effectivePendingBalance.toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Quick Preset Buttons */}
+                  <div className="flex flex-wrap items-center gap-1">
+                    <span className="text-[8.5px] font-mono text-muted uppercase mr-0.5">Atajos:</span>
+                    <button
+                      type="button"
+                      onClick={() => setCustomAdvanceAmount(Math.round(totalAmount * 0.5).toString())}
+                      className="text-[9px] font-mono px-1.5 py-0.5 bg-paper hover:bg-zinc-700 text-amber-300 border border-amber-500/30 cursor-pointer font-bold"
+                    >
+                      50% (S/ {Math.round(totalAmount * 0.5)})
+                    </button>
+                    {[20, 30, 50, 70, 100].map((amt) => {
+                      if (amt >= totalAmount) return null;
+                      return (
+                        <button
+                          key={amt}
+                          type="button"
+                          onClick={() => setCustomAdvanceAmount(amt.toString())}
+                          className="text-[9px] font-mono px-1.5 py-0.5 bg-paper hover:bg-zinc-700 text-ink border border-line cursor-pointer"
+                        >
+                          S/ {amt}
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Receiving Account selector */}
+                  <div>
+                    <label className="block text-[9.5px] font-mono uppercase tracking-wider text-muted mb-1 font-bold">
+                      Cuenta Receptora / Banco de la Venta:
+                    </label>
+                    <div className="grid grid-cols-3 gap-1">
+                      {VANTA_BANK_ACCOUNTS.map((acc) => {
+                        const isAccSelected = selectedReceivingAccount === acc.id;
+                        return (
+                          <button
+                            key={acc.id}
+                            type="button"
+                            onClick={() => setSelectedReceivingAccount(acc.id)}
+                            className={`p-1.5 text-left text-[9px] font-mono border transition-all cursor-pointer truncate ${
+                              isAccSelected
+                                ? 'bg-accent/15 text-accent border-accent font-bold'
+                                : 'bg-paper text-muted border-line hover:text-ink hover:border-zinc-500'
+                            }`}
+                            title={`${acc.name} - ${acc.holder}`}
+                          >
+                            <div className="font-bold truncate">{acc.name}</div>
+                            <div className="text-[8px] text-muted truncate">{acc.number}</div>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* One-Click Actions: Emit Nota de Venta A4 & Copy WhatsApp */}
+              <div className="pt-1.5 space-y-1.5">
+                <button
+                  id="pos-direct-emit-a4-btn"
+                  type="button"
+                  onClick={() => handleCreateNotaVentaDirect('A4')}
+                  disabled={cartItems.length === 0}
+                  className="w-full bg-rose-600 hover:bg-rose-500 text-white font-mono text-xs font-bold uppercase tracking-wider py-2.5 px-3 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-rose-950/30 rounded-xs"
+                  title="Crear y registrar inmediatamente la Nota de Venta en el sistema y abrir para descargar en formato A4 (PDF)"
+                >
+                  <FileText className="w-4 h-4" />
+                  <span>CREAR NOTA DE VENTA Y DESCARGAR A4</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={handleCopySaleAccount}
+                  disabled={cartItems.length === 0}
+                  className="w-full bg-paper hover:bg-paper-soft text-ink hover:text-accent border border-line hover:border-accent text-[10px] font-mono uppercase font-bold py-2 px-3 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-xs"
+                  title="Copiar resumen comercial de la venta con cuentas bancarias para enviar al cliente por WhatsApp"
+                >
+                  <Copy className="w-3.5 h-3.5 text-accent" />
+                  <span>COPIAR CUENTA DE LA VENTA (WHATSAPP)</span>
+                </button>
+                {copySaleAccountFeedback && (
+                  <span className="block text-[9.5px] font-mono text-emerald-400 font-bold text-center mt-0.5 animate-fade-in">
+                    {copySaleAccountFeedback}
+                  </span>
+                )}
+              </div>
+            </div>
           </div>
 
           {/* Action Buttons */}
@@ -1061,12 +2078,18 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
                 id="pos-open-proforma-btn"
                 type="button"
                 disabled={cartItems.length === 0}
-                onClick={() => setIsProformaModalOpen(true)}
+                onClick={() => {
+                  if (lastCompletedSale) {
+                    setIsProformaModalOpen(true);
+                  } else {
+                    handleCreateNotaVentaDirect('A4');
+                  }
+                }}
                 className="flex-1 bg-panel hover:bg-paper border border-line hover:border-accent hover:text-accent text-ink font-mono text-xs font-bold uppercase tracking-wider py-2.5 px-3 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-xs"
-                title="Generar Proforma / Cotización A4 en PDF para el cliente"
+                title="Emitir y ver Nota de Venta oficial en Formato A4 (PDF)"
               >
                 <FileText className="w-4 h-4 text-accent" />
-                <span>COTIZAR / PROFORMA A4</span>
+                <span>NOTA DE VENTA A4</span>
               </button>
             </div>
 
@@ -1074,10 +2097,20 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
               type="button"
               disabled={cartItems.length === 0}
               onClick={() => setIsPaymentModalOpen(true)}
-              className="w-full bg-accent hover:bg-rose-600 disabled:bg-panel disabled:text-muted disabled:cursor-not-allowed text-white font-mono text-xs font-bold uppercase tracking-wider py-3.5 px-4 transition-all flex items-center justify-center gap-2 shadow-lg shadow-rose-950/40 cursor-pointer"
+              className={`w-full ${
+                isAdvanceMode && effectivePendingBalance > 0
+                  ? 'bg-amber-600 hover:bg-amber-500 text-white'
+                  : 'bg-accent hover:bg-rose-600 text-white'
+              } disabled:bg-panel disabled:text-muted disabled:cursor-not-allowed font-mono text-xs font-bold uppercase tracking-wider py-3.5 px-4 transition-all flex items-center justify-center gap-2 shadow-lg shadow-rose-950/40 cursor-pointer`}
             >
               <CreditCard className="w-4 h-4" />
-              <span>COBRAR S/ {totalAmount.toFixed(2)} (F4)</span>
+              {isAdvanceMode && effectivePendingBalance > 0 ? (
+                <span>
+                  COBRAR ADELANTO S/ {effectiveAdvanceAmount.toFixed(2)} (SALDO: S/ {effectivePendingBalance.toFixed(2)})
+                </span>
+              ) : (
+                <span>COBRAR S/ {totalAmount.toFixed(2)} (F4)</span>
+              )}
             </button>
           </div>
         </div>
@@ -1325,6 +2358,9 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
         totalAmount={totalAmount}
         onClose={() => setIsPaymentModalOpen(false)}
         onConfirmPayment={handleConfirmPayment}
+        initialIsAdvance={isAdvanceMode}
+        initialAdvanceAmount={effectiveAdvanceAmount}
+        initialAccountId={selectedReceivingAccount}
       />
 
       {/* POSTicket Modal */}
@@ -1335,18 +2371,140 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
         onNewSale={handleNewSale}
       />
 
-      {/* POS Proforma / Cotización A4 Modal */}
+      {/* POS Nota de Venta / Proforma A4 Modal */}
       <POSProformaModal
         isOpen={isProformaModalOpen}
         onClose={() => setIsProformaModalOpen(false)}
-        items={cartItems}
-        customer={customer}
-        destinationType={destinationType}
-        shippingCost={shippingCost}
-        discountAmount={computedDiscount}
-        totalAmount={totalAmount}
-        sellerName={getActiveSeller()}
+        items={lastCompletedSale?.items || cartItems}
+        customer={lastCompletedSale?.customer || customer}
+        destinationType={lastCompletedSale?.destinationType || destinationType}
+        shippingCost={lastCompletedSale?.shippingCost ?? shippingCost}
+        discountAmount={lastCompletedSale?.discountAmount ?? computedDiscount}
+        totalAmount={lastCompletedSale?.totalAmount ?? totalAmount}
+        sellerName={lastCompletedSale?.sellerName || getActiveSeller()}
+        existingReceiptNumber={lastCompletedSale?.receiptNumber || nextReceiptNumber}
+        receiptType={lastCompletedSale?.receiptType || receiptType}
+        isCompletedSale={Boolean(lastCompletedSale)}
+        shippingInfo={
+          lastCompletedSale?.shippingInfo || {
+            destination: destinationType,
+            shippingCost: shippingCost,
+            lima: destinationType === 'LIMA' ? shippingLima : undefined,
+            provincia: destinationType === 'PROVINCIA' ? shippingProvincia : undefined,
+          }
+        }
+        advanceAmount={
+          lastCompletedSale?.advanceAmount !== undefined
+            ? lastCompletedSale.advanceAmount
+            : isAdvanceMode
+            ? effectiveAdvanceAmount
+            : undefined
+        }
+        pendingBalance={
+          lastCompletedSale?.pendingBalance !== undefined
+            ? lastCompletedSale.pendingBalance
+            : isAdvanceMode
+            ? effectivePendingBalance
+            : undefined
+        }
+        isAdvancePayment={
+          lastCompletedSale?.isAdvancePayment ??
+          (isAdvanceMode && effectivePendingBalance > 0)
+        }
+        paymentAccountId={lastCompletedSale?.paymentAccountId || selectedReceivingAccount}
+        paymentAccountLabel={
+          lastCompletedSale?.paymentAccountLabel ||
+          VANTA_BANK_ACCOUNTS.find((a) => a.id === selectedReceivingAccount)?.name
+        }
+        observations={lastCompletedSale?.observations || observations}
+        onOpenTicket={() => {
+          setIsProformaModalOpen(false);
+          setIsTicketModalOpen(true);
+        }}
+        onNewSale={handleNewSale}
+        onRegisterSale={() => handleCreateNotaVentaDirect('A4')}
       />
+
+      {/* WhatsApp Quick Paste Auto-Fill Modal */}
+      {pasteModalType && (
+        <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="w-full max-w-lg bg-[#0e0e15] border border-zinc-700 p-5 text-white shadow-2xl space-y-4 rounded-xs">
+            <div className="flex items-center justify-between border-b border-zinc-800 pb-2">
+              <div className="flex items-center gap-2 text-accent font-mono text-xs font-bold uppercase">
+                <Clipboard className="w-4 h-4 text-accent" />
+                <span>Pegar datos desde WhatsApp — {pasteModalType === 'PROVINCIA' ? 'Envío Provincia' : 'Envío Lima'}</span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setPasteModalType(null)}
+                className="text-zinc-400 hover:text-white text-xs font-mono cursor-pointer"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-[11px] font-mono text-zinc-400">
+              Pega a continuación el mensaje que te envió el cliente con sus datos. El sistema extraerá automáticamente el nombre, celular, DNI, dirección o agencia:
+            </p>
+
+            <textarea
+              rows={7}
+              value={pasteModalText}
+              onChange={(e) => setPasteModalText(e.target.value)}
+              placeholder={pasteModalType === 'PROVINCIA' ? PROVINCIA_EMPTY_TEMPLATE : LIMA_EMPTY_TEMPLATE}
+              className="w-full bg-[#161622] border border-zinc-700 p-2.5 text-xs font-mono text-white focus:outline-none focus:border-accent"
+              autoFocus
+            />
+
+            <div className="flex items-center justify-between pt-1">
+              <button
+                type="button"
+                onClick={async () => {
+                  try {
+                    const text = await navigator.clipboard.readText();
+                    if (text) setPasteModalText(text);
+                  } catch (err) {
+                    console.error('Clipboard access denied', err);
+                  }
+                }}
+                className="text-[10.5px] font-mono text-accent hover:underline flex items-center gap-1 cursor-pointer"
+              >
+                <Clipboard className="w-3 h-3" />
+                <span>Pegar desde Portapapeles</span>
+              </button>
+
+              <div className="flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setPasteModalText('');
+                    setPasteModalType(null);
+                  }}
+                  className="px-3 py-1.5 text-xs font-mono text-zinc-400 hover:text-white border border-zinc-700 bg-zinc-800 cursor-pointer"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={handleApplyPastedText}
+                  disabled={!pasteModalText.trim()}
+                  className="px-4 py-1.5 text-xs font-mono font-bold text-white bg-accent hover:bg-rose-500 disabled:opacity-50 cursor-pointer shadow-md"
+                >
+                  ✓ Auto-completar Formulario
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Copy Feedback Toast */}
+      {copyFeedback && (
+        <div className="fixed bottom-6 right-6 z-50 bg-emerald-600 text-white font-mono text-xs px-4 py-2.5 shadow-2xl rounded-xs flex items-center gap-2 animate-bounce">
+          <Check className="w-4 h-4" />
+          <span>{copyFeedback}</span>
+        </div>
+      )}
     </div>
   );
 }

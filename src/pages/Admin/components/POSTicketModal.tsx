@@ -173,15 +173,50 @@ export default function POSTicketModal({ sale, isOpen, onClose, onNewSale }: POS
         msg += `*DIR. FISCAL:* ${sale.customer.fiscalAddress || sale.customer.address}\n`;
       if (sale.customer.phone) msg += `*TELÉFONO:* ${sale.customer.phone}\n`;
     } else {
-      msg += `*CLIENTE:* ${sale.customer.name || 'Cliente Varios'}\n`;
-      if (sale.customer.documentNumber)
-        msg += `*DNI / RUC:* ${sale.customer.documentNumber}\n`;
-      if (sale.customer.phone) msg += `*TELÉFONO:* ${sale.customer.phone}\n`;
-      if (sale.customer.address || sale.customer.district)
-        msg += `*DIRECCIÓN:* ${sale.customer.address || ''} ${sale.customer.district || ''}\n`;
+      const consigneeName = sale.shippingInfo?.provincia?.consigneeName || sale.shippingInfo?.lima?.recipientName || sale.customer.name;
+      const docNum = sale.shippingInfo?.provincia?.consigneeDni || sale.shippingInfo?.lima?.recipientDni || sale.customer.documentNumber;
+      const phoneNum = sale.shippingInfo?.provincia?.consigneePhone || sale.shippingInfo?.lima?.recipientPhone || sale.customer.phone;
+
+      msg += `*CLIENTE / CONSIGNADO:* ${consigneeName || 'Cliente Varios'}\n`;
+      if (docNum) msg += `*DNI / RUC:* ${docNum}\n`;
+      if (phoneNum) msg += `*TELÉFONO:* ${phoneNum}\n`;
     }
 
-    msg += `*DESTINO:* ${activeDestination} - PERÚ\n`;
+    if (activeDestination === 'PROVINCIA' || sale.shippingInfo?.provincia) {
+      const prov = sale.shippingInfo?.provincia;
+      const agencyName = prov?.agency === 'OTRA' ? (prov.otherAgencyName || 'OTRA') : (prov?.agency || 'SHALOM');
+      const location = prov?.departmentProvinceDistrict || (prov?.provinceCity ? `${prov.provinceCity} - ${prov.department}` : prov?.department) || sale.customer.district || 'Provincia';
+      const branch = prov?.agencyBranch || (prov?.deliveryType === 'DOMICILIO' ? (prov?.address || sale.customer.address) : 'Sede Central');
+      
+      msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `📦 *FORMULARIO DE ENVÍO – VANTA*\n`;
+      msg += `🚚 *Transporte: ${agencyName}*\n\n`;
+      msg += `👤 Nombres y apellidos: ${prov?.consigneeName || sale.customer.name}\n`;
+      msg += `🪪 DNI: ${prov?.consigneeDni || sale.customer.documentNumber || '—'}\n`;
+      msg += `📱 Celular: ${prov?.consigneePhone || sale.customer.phone || '—'}\n`;
+      msg += `📍 Departamento / Provincia / Distrito: ${location}\n`;
+      msg += `🏢 Agencia ${agencyName === 'SHALOM' ? 'Shalom' : agencyName} donde recogerás tu pedido: ${branch}\n`;
+      if (prov?.freightPayment === 'PAGO_DESTINO') {
+        msg += `🏷️ *Flete:* PAGO EN DESTINO (Pagas al recoger en agencia)\n`;
+      } else if (shipping > 0) {
+        msg += `💳 *Flete:* PAGADO (S/ ${shipping.toFixed(2)})\n`;
+      }
+      if (prov?.claveRetiro) msg += `🔐 *Clave de Retiro:* ${prov.claveRetiro}\n`;
+    } else {
+      const lima = sale.shippingInfo?.lima;
+      msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `📦 *FORMULARIO DE ENVÍO A LIMA – VANTA*\n\n`;
+      msg += `👤 Nombres y apellidos: ${lima?.recipientName || sale.customer.name}\n`;
+      msg += `📱 Celular: ${lima?.recipientPhone || sale.customer.phone || '—'}\n`;
+      msg += `📍 Distrito: ${lima?.district || sale.customer.district || 'Lima'}\n`;
+      msg += `🏠 Dirección completa (número, piso o departamento): ${lima?.address || sale.customer.address || '—'}\n`;
+      msg += `📌 Referencia para llegar: ${lima?.reference || '—'}\n`;
+      if (shipping > 0) {
+        msg += `🛵 *Costo de Envío:* S/ ${shipping.toFixed(2)}\n`;
+      } else {
+        msg += `🛵 *Modalidad:* Recojo en Tienda / Envío Gratis\n`;
+      }
+    }
     msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
     msg += `*DETALLE DE PRENDAS:*\n`;
 
@@ -206,11 +241,32 @@ export default function POSTicketModal({ sale, isOpen, onClose, onNewSale }: POS
     if (sale.discountAmount > 0) {
       msg += `*DESCUENTO / AJUSTE:* -S/ ${sale.discountAmount.toFixed(2)}\n`;
     }
-    msg += `*TOTAL A PAGAR: S/ ${total.toFixed(2)}*\n`;
-    msg += `*FORMA DE PAGO:* ${sale.payments.map((p) => p.method.replace('_', ' ')).join(', ')}\n`;
+    msg += `*TOTAL DE LA VENTA: S/ ${total.toFixed(2)}*\n`;
+    if (sale.advanceAmount !== undefined && sale.advanceAmount < total) {
+      msg += `💰 *ADELANTO RECIBIDO (A CUENTA):* S/ ${sale.advanceAmount.toFixed(2)}\n`;
+      msg += `⏳ *SALDO PENDIENTE POR COBRAR:* S/ ${(sale.pendingBalance ?? (total - sale.advanceAmount)).toFixed(2)}\n`;
+    } else {
+      msg += `💰 *ESTADO DE PAGO:* PAGADO AL 100%\n`;
+    }
+    msg += `*FORMA / CUENTA DE PAGO:* ${sale.paymentAccountLabel || sale.payments.map((p) => p.method.replace('_', ' ')).join(', ')}\n`;
+    const refNum = sale.payments.find((p) => p.referenceNumber)?.referenceNumber;
+    if (refNum) {
+      msg += `🔖 *N° Operación / Ref:* ${refNum}\n`;
+    }
 
     if (sale.observations) {
       msg += `*OBSERVACIONES:* ${sale.observations}\n`;
+    }
+
+    if (sale.pendingBalance && sale.pendingBalance > 0) {
+      msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
+      msg += `💳 *CUENTAS BANCARIAS PARA DEPOSITAR EL SALDO:*\n`;
+      msg += `👤 Titular: BRYAN MICHAEL REQUENA AVILA\n`;
+      msg += `🪪 R.U.C.: 10714931062\n`;
+      msg += `🟣 Yape / Plin: 904 536 406 / 924 058 988\n`;
+      msg += `🟠 BCP Soles: 191-0014100063-0-53 (CCI: 002-191-0014100063053-53)\n`;
+      msg += `🔵 BBVA Soles: 0011-0175-0200543981 (CCI: 011-175-000200543981-74)\n`;
+      msg += `🟢 Interbank: 200-3001249821 (CCI: 003-200-003001249821-39)\n`;
     }
 
     msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
@@ -402,6 +458,9 @@ export default function POSTicketModal({ sale, isOpen, onClose, onNewSale }: POS
                 <img
                   src="/vanta-logo.png"
                   alt="VANTA STREETWEAR"
+                  onError={(e) => {
+                    e.currentTarget.src = '/logo-oficial.png';
+                  }}
                   style={{
                     width: '68px',
                     height: '68px',
@@ -633,37 +692,48 @@ export default function POSTicketModal({ sale, isOpen, onClose, onNewSale }: POS
                   <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
                     <div>
                       <span style={{ fontSize: '9.5px', color: isDark ? '#A1A1AA' : '#71717A', display: 'block', fontWeight: 'bold' }}>
-                        CLIENTE:
+                        {isProvincia ? 'CONSIGNADO (QUIEN RETIRA):' : 'DESTINATARIO / CLIENTE:'}
                       </span>
                       <span style={{ fontWeight: 'bold', fontSize: '11.5px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
-                        {sale.customer.name || 'Cliente Varios'}
+                        {sale.shippingInfo?.provincia?.consigneeName ||
+                          sale.shippingInfo?.lima?.recipientName ||
+                          sale.customer.name ||
+                          'Cliente Varios'}
                       </span>
                     </div>
 
                     <div>
                       <span style={{ fontSize: '9.5px', color: isDark ? '#A1A1AA' : '#71717A', display: 'block', fontWeight: 'bold' }}>
-                        DNI / RUC:
+                        {isProvincia ? 'DNI RETIRO EN AGENCIA:' : 'DNI / RUC:'}
+                      </span>
+                      <span style={{ fontFamily: 'monospace', fontWeight: 700, color: isProvincia ? (isDark ? '#FDA4AF' : '#E11D48') : 'inherit' }}>
+                        {sale.shippingInfo?.provincia?.consigneeDni ||
+                          sale.shippingInfo?.lima?.recipientDni ||
+                          sale.customer.documentNumber ||
+                          '-'}
+                      </span>
+                    </div>
+
+                    <div>
+                      <span style={{ fontSize: '9.5px', color: isDark ? '#A1A1AA' : '#71717A', display: 'block', fontWeight: 'bold' }}>
+                        TELÉFONO / WHATSAPP:
                       </span>
                       <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>
-                        {sale.customer.documentNumber || '-'}
+                        {sale.shippingInfo?.provincia?.consigneePhone ||
+                          sale.shippingInfo?.lima?.recipientPhone ||
+                          sale.customer.phone ||
+                          '-'}
                       </span>
                     </div>
 
                     <div>
                       <span style={{ fontSize: '9.5px', color: isDark ? '#A1A1AA' : '#71717A', display: 'block', fontWeight: 'bold' }}>
-                        TELÉFONO:
-                      </span>
-                      <span style={{ fontFamily: 'monospace', fontWeight: 600 }}>
-                        {sale.customer.phone || '-'}
-                      </span>
-                    </div>
-
-                    <div>
-                      <span style={{ fontSize: '9.5px', color: isDark ? '#A1A1AA' : '#71717A', display: 'block', fontWeight: 'bold' }}>
-                        {isProvincia ? 'DIRECCIÓN DE ENVÍO:' : 'DIRECCIÓN / DISTRITO:'}
+                        {isProvincia ? 'DESTINO & AGENCIA:' : 'DIRECCIÓN & DISTRITO:'}
                       </span>
                       <span style={{ fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', display: 'block' }}>
-                        {sale.customer.address || sale.customer.district || '-'}
+                        {isProvincia
+                          ? `${sale.shippingInfo?.provincia?.agency === 'OTRA' ? (sale.shippingInfo?.provincia?.otherAgencyName || 'Agencia') : (sale.shippingInfo?.provincia?.agency || 'SHALOM')} • ${sale.shippingInfo?.provincia?.provinceCity || ''} - ${sale.shippingInfo?.provincia?.department || ''}`
+                          : `${sale.shippingInfo?.lima?.district || ''} - ${sale.shippingInfo?.lima?.address || sale.customer.address || '-'}`}
                       </span>
                     </div>
                   </div>
@@ -938,6 +1008,27 @@ export default function POSTicketModal({ sale, isOpen, onClose, onNewSale }: POS
                         </span>
                       </div>
                     </div>
+
+                    {(sale.paymentAccountLabel || sale.payments[0]?.referenceNumber) && (
+                      <div
+                        style={{
+                          marginTop: '6px',
+                          paddingTop: '6px',
+                          borderTop: isDark ? '1px dashed #272730' : '1px dashed #E4E4E7',
+                          fontSize: '8.5px',
+                          fontFamily: 'monospace',
+                          color: isDark ? '#FDA4AF' : '#E11D48',
+                          lineHeight: '1.3',
+                        }}
+                      >
+                        {sale.paymentAccountLabel && (
+                          <div><strong>CUENTA RECEPTORA:</strong> {sale.paymentAccountLabel}</div>
+                        )}
+                        {sale.payments[0]?.referenceNumber && (
+                          <div><strong>N° OPERACIÓN:</strong> {sale.payments[0].referenceNumber}</div>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Observations Box */}
@@ -958,27 +1049,71 @@ export default function POSTicketModal({ sale, isOpen, onClose, onNewSale }: POS
                     </span>
                   </div>
 
-                  {/* Provincia Special Guarantee */}
-                  {isProvincia && (
+                  {/* Specialized Shipping / Encomienda Card */}
+                  {isProvincia || sale.shippingInfo?.provincia ? (
                     <div
                       style={{
-                        border: isDark ? '1px solid #E11D48' : '1.5px solid #000000',
+                        border: isDark ? '1.5px solid #E11D48' : '1.5px solid #000000',
                         borderRadius: '10px',
-                        padding: '8px 12px',
+                        padding: '10px 12px',
+                        backgroundColor: isDark ? '#200812' : '#FDF2F8',
                         display: 'flex',
-                        alignItems: 'center',
-                        gap: '10px',
-                        backgroundColor: isDark ? '#200812' : '#FAFAFA',
+                        flexDirection: 'column',
+                        gap: '5px',
                       }}
                     >
-                      <Truck style={{ width: '22px', height: '22px', color: isDark ? '#FB7185' : '#000000', flexShrink: 0 }} />
-                      <div style={{ fontSize: '8.5px', lineHeight: '1.2' }}>
-                        <div style={{ fontWeight: 'bold', textTransform: 'uppercase', color: isDark ? '#FDA4AF' : '#000000' }}>
-                          ENVÍO A PROVINCIA ASEGURADO
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: isDark ? '1px solid #881337' : '1px solid #FBCFE8', paddingBottom: '4px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Package style={{ width: '16px', height: '16px', color: isDark ? '#FB7185' : '#BE123C' }} />
+                          <span style={{ fontWeight: 900, fontSize: '10px', letterSpacing: '0.05em', color: isDark ? '#FDA4AF' : '#9F1239' }}>
+                            📦 FORMULARIO DE ENVÍO – VANTA
+                          </span>
                         </div>
-                        <div style={{ color: isDark ? '#E4E4E7' : '#52525B' }}>
-                          Despacho en 24h hábiles con seguimiento en tiempo real.
+                        <span style={{ fontSize: '9px', fontFamily: 'monospace', fontWeight: 'bold', color: isDark ? '#FECDD3' : '#BE123C', textTransform: 'uppercase' }}>
+                          🚚 Transporte: {sale.shippingInfo?.provincia?.agency === 'OTRA' ? (sale.shippingInfo?.provincia?.otherAgencyName || 'OTRA') : (sale.shippingInfo?.provincia?.agency || 'SHALOM')}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '9.5px', lineHeight: '1.45', color: isDark ? '#FFE4E6' : '#881337' }}>
+                        <div><strong>👤 Nombres y apellidos:</strong> {sale.shippingInfo?.provincia?.consigneeName || sale.customer.name}</div>
+                        <div><strong>🪪 DNI:</strong> {sale.shippingInfo?.provincia?.consigneeDni || sale.customer.documentNumber || '—'}</div>
+                        <div><strong>📱 Celular:</strong> {sale.shippingInfo?.provincia?.consigneePhone || sale.customer.phone || '—'}</div>
+                        <div><strong>📍 Departamento / Provincia / Distrito:</strong> {sale.shippingInfo?.provincia?.departmentProvinceDistrict || (sale.shippingInfo?.provincia?.provinceCity ? `${sale.shippingInfo.provincia.provinceCity} - ${sale.shippingInfo.provincia.department}` : sale.shippingInfo?.provincia?.department) || sale.customer.district || '—'}</div>
+                        <div><strong>🏢 Agencia {sale.shippingInfo?.provincia?.agency === 'OTRA' ? (sale.shippingInfo?.provincia?.otherAgencyName || 'Agencia') : (sale.shippingInfo?.provincia?.agency || 'Shalom')} donde recogerás tu pedido:</strong> {sale.shippingInfo?.provincia?.agencyBranch || (sale.shippingInfo?.provincia?.deliveryType === 'DOMICILIO' ? (sale.shippingInfo?.provincia?.address || 'Entrega a domicilio') : 'Sede Central')}</div>
+                        <div style={{ marginTop: '3px', paddingTop: '3px', borderTop: isDark ? '1px dashed #881337' : '1px dashed #FBCFE8', display: 'flex', justifyContent: 'space-between', fontSize: '8.5px', fontFamily: 'monospace' }}>
+                          <span>FLETE: {sale.shippingInfo?.provincia?.freightPayment === 'PAGO_DESTINO' ? 'PAGO EN DESTINO (S/ 0.00)' : `PAGADO EN VENTA (S/ ${sale.shippingCost.toFixed(2)})`}</span>
+                          {sale.shippingInfo?.provincia?.claveRetiro && <span>CLAVE: {sale.shippingInfo.provincia.claveRetiro}</span>}
                         </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div
+                      style={{
+                        border: isDark ? '1px solid #272730' : '1.5px solid #000000',
+                        borderRadius: '10px',
+                        padding: '10px 12px',
+                        backgroundColor: isDark ? '#14141E' : '#FAFAFA',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        gap: '5px',
+                      }}
+                    >
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: isDark ? '1px solid #272730' : '1px solid #E4E4E7', paddingBottom: '4px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                          <Truck style={{ width: '16px', height: '16px', color: isDark ? '#FDA4AF' : '#000000' }} />
+                          <span style={{ fontWeight: 900, fontSize: '10px', letterSpacing: '0.05em', color: isDark ? '#FDA4AF' : '#000000' }}>
+                            📦 FORMULARIO DE ENVÍO A LIMA – VANTA
+                          </span>
+                        </div>
+                        <span style={{ fontSize: '9px', fontFamily: 'monospace', fontWeight: 'bold', color: isDark ? '#A1A1AA' : '#52525B', textTransform: 'uppercase' }}>
+                          {sale.shippingCost === 0 ? 'RECOJO EN TIENDA' : `DELIVERY S/ ${sale.shippingCost.toFixed(2)}`}
+                        </span>
+                      </div>
+                      <div style={{ fontSize: '9.5px', lineHeight: '1.45', color: isDark ? '#D4D4D8' : '#3F3F46' }}>
+                        <div><strong>👤 Nombres y apellidos:</strong> {sale.shippingInfo?.lima?.recipientName || sale.customer.name}</div>
+                        <div><strong>📱 Celular:</strong> {sale.shippingInfo?.lima?.recipientPhone || sale.customer.phone || '—'}</div>
+                        <div><strong>📍 Distrito:</strong> {sale.shippingInfo?.lima?.district || sale.customer.district || 'Lima'}</div>
+                        <div><strong>🏠 Dirección completa (número, piso o departamento):</strong> {sale.shippingInfo?.lima?.address || sale.customer.address || '—'}</div>
+                        <div><strong>📌 Referencia para llegar:</strong> {sale.shippingInfo?.lima?.reference || '—'}</div>
                       </div>
                     </div>
                   )}
@@ -1069,30 +1204,98 @@ export default function POSTicketModal({ sale, isOpen, onClose, onNewSale }: POS
                     </div>
                   )}
 
-                  {/* High Impact Total Box */}
+                  {/* Financial Totals Breakdown */}
                   <div
-                    className="vanta-ticket-total-row"
                     style={{
                       display: 'flex',
                       justifyContent: 'space-between',
                       alignItems: 'center',
-                      padding: '10px 12px',
-                      backgroundColor: isDark ? '#E11D48' : '#000000',
-                      background: isDark ? '#E11D48' : '#000000',
+                      padding: '8px 12px',
+                      backgroundColor: isDark ? '#1F1F2E' : '#27272A',
                       color: '#FFFFFF',
                       fontWeight: 'bold',
-                      fontSize: '14px',
-                      WebkitPrintColorAdjust: 'exact',
-                      printColorAdjust: 'exact',
+                      fontSize: '11px',
+                      borderTop: isDark ? '1px solid #272730' : '1px solid #3F3F46',
                     }}
                   >
-                    <span style={{ textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '11px' }}>
-                      TOTAL A PAGAR:
+                    <span style={{ textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '10px' }}>
+                      TOTAL DE LA VENTA:
                     </span>
-                    <span style={{ fontWeight: 900, fontSize: '16px' }}>
+                    <span style={{ fontWeight: 800, fontSize: '13px' }}>
                       S/. {total.toFixed(2)}
                     </span>
                   </div>
+
+                  {sale.advanceAmount !== undefined && sale.advanceAmount < total ? (
+                    <>
+                      <div
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          padding: '6px 12px',
+                          backgroundColor: isDark ? '#064E3B' : '#ECFDF5',
+                          color: isDark ? '#6EE7B7' : '#047857',
+                          fontSize: '10.5px',
+                          borderTop: '1px solid #10B981',
+                        }}
+                      >
+                        <span style={{ fontWeight: 'bold', textTransform: 'uppercase' }}>
+                          ADELANTO RECIBIDO:
+                        </span>
+                        <span style={{ fontWeight: 'bold', fontFamily: 'monospace' }}>
+                          S/. {sale.advanceAmount.toFixed(2)}
+                        </span>
+                      </div>
+
+                      <div
+                        className="vanta-ticket-total-row"
+                        style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          alignItems: 'center',
+                          padding: '8px 12px',
+                          backgroundColor: isDark ? '#E11D48' : '#000000',
+                          background: isDark ? '#E11D48' : '#000000',
+                          color: '#FFFFFF',
+                          fontWeight: 'bold',
+                          fontSize: '13px',
+                          WebkitPrintColorAdjust: 'exact',
+                          printColorAdjust: 'exact',
+                        }}
+                      >
+                        <span style={{ textTransform: 'uppercase', letterSpacing: '0.08em', fontSize: '10px' }}>
+                          SALDO PENDIENTE:
+                        </span>
+                        <span style={{ fontWeight: 900, fontSize: '15px', color: '#FDA4AF' }}>
+                          S/. {(sale.pendingBalance ?? (total - sale.advanceAmount)).toFixed(2)}
+                        </span>
+                      </div>
+                    </>
+                  ) : (
+                    <div
+                      className="vanta-ticket-total-row"
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '10px 12px',
+                        backgroundColor: isDark ? '#E11D48' : '#000000',
+                        background: isDark ? '#E11D48' : '#000000',
+                        color: '#FFFFFF',
+                        fontWeight: 'bold',
+                        fontSize: '14px',
+                        WebkitPrintColorAdjust: 'exact',
+                        printColorAdjust: 'exact',
+                      }}
+                    >
+                      <span style={{ textTransform: 'uppercase', letterSpacing: '0.1em', fontSize: '11px' }}>
+                        TOTAL PAGADO:
+                      </span>
+                      <span style={{ fontWeight: 900, fontSize: '16px' }}>
+                        S/. {total.toFixed(2)}
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -1210,7 +1413,16 @@ export default function POSTicketModal({ sale, isOpen, onClose, onNewSale }: POS
           totalAmount={sale.totalAmount}
           sellerName={sale.sellerName}
           existingReceiptNumber={sale.receiptNumber}
+          receiptType={sale.receiptType}
           isCompletedSale={true}
+          shippingInfo={sale.shippingInfo}
+          advanceAmount={sale.advanceAmount}
+          pendingBalance={sale.pendingBalance}
+          isAdvancePayment={sale.isAdvancePayment}
+          paymentAccountId={sale.paymentAccountId}
+          paymentAccountLabel={sale.paymentAccountLabel}
+          observations={sale.observations}
+          onNewSale={onNewSale}
         />
       )}
     </div>
