@@ -67,7 +67,7 @@ export default function POSTicketModal({ sale, isOpen, onClose, onNewSale }: POS
           <title>${isFactura ? 'Factura' : isBoleta ? 'Boleta' : 'Nota_Venta'}_${sale.receiptNumber}_VANTA</title>
           <link rel="preconnect" href="https://fonts.googleapis.com">
           <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-          <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700;900&family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800;900&family=Syne:wght@700;800;900&family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
           <style>
             * {
               margin: 0;
@@ -473,7 +473,7 @@ export default function POSTicketModal({ sale, isOpen, onClose, onNewSale }: POS
                 <div>
                   <div
                     style={{
-                      fontFamily: "'Cinzel', 'Cinzel Decorative', serif",
+                      fontFamily: "'Syne', 'Plus Jakarta Sans', sans-serif",
                       fontWeight: 900,
                       fontSize: '18px',
                       letterSpacing: '0.22em',
@@ -1386,14 +1386,14 @@ export default function POSTicketModal({ sale, isOpen, onClose, onNewSale }: POS
                   paddingTop: '6px',
                   borderTop: '1px solid #272730',
                   fontSize: '8px',
-                  fontFamily: "'Cinzel', serif",
+                  fontFamily: "'Syne', 'Plus Jakarta Sans', sans-serif",
                   letterSpacing: '0.35em',
                   textTransform: 'uppercase',
                   color: isDark ? '#FDA4AF' : '#D4D4D8',
                   fontWeight: 'bold',
                 }}
               >
-                V A N T A &nbsp; S T R E E T W E A R &nbsp; ✦ &nbsp; P E R Ú
+                V A N T A &nbsp; S T R E E T W E A R &nbsp; // &nbsp; P E R Ú
               </div>
             </div>
           </div>

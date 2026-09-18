@@ -15,6 +15,9 @@ export interface Product {
   stock: number;
   fabrics: string[];
   sleeves: string[];
+  promoBadge?: string;
+  promoSavings?: string;
+  promoDetail?: string;
 }
 
 export interface SaleProduct extends Product {

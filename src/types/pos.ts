@@ -112,8 +112,8 @@ export interface POSSale {
   taxAmount: number; // Monto de IGV 18%
   taxPercent: number; // 18 o 0
   totalAmount: number;
-  advanceAmount?: number; // Monto de adelanto recibido (a cuenta)
-  pendingBalance?: number; // Saldo pendiente por cobrar (totalAmount - advanceAmount)
+  advanceAmount?: number; // Monto de adelanto recibido (a cuenta) / Separación
+  pendingBalance?: number; // Saldo pendiente por cobrar (Cuenta Cliente = totalAmount - advanceAmount)
   paymentAccountId?: string; // Cuenta / banco receptor (ej. YAPE_PLIN, BCP, etc.)
   paymentAccountLabel?: string; // Etiqueta descriptiva (ej. Yape Bryan Requena)
   isAdvancePayment?: boolean; // Flag si fue venta con pago parcial / a cuenta
@@ -123,6 +123,19 @@ export interface POSSale {
   voidedAt?: string;
   observations?: string;
   notes?: string;
+
+  // Campos específicos para módulo Finanzas y Tesorería > Cobranzas
+  vantaCode?: string; // ej. "VANTA/064898"
+  customerDisplayName?: string; // ej. "VANTA"
+  collectedAmount?: number | null; // Monto cobrado (null o "-" si no ha sido cobrado)
+  collectionMethod?: string; // ej. "Sin cobrar", "Yape", "Plin", "BCP Soles"
+  collectionStatus?: 'SEPARO_VERIFICADO' | 'COBRADA' | 'PENDIENTE' | 'ANULADA';
+  verifiedDate?: string; // Fecha en formato dd/mm/aaaa
+  imagesCount?: number; // Cantidad de imágenes/vouchers asociados (ej. 1)
+  hasWarning?: boolean; // Flag para icono de advertencia
+  voucherImageUrl?: string; // URL de la imagen del comprobante
+  shippingType?: string; // ej. "Provincia", "Lima", "Tienda"
+  agencyName?: string; // ej. "Shalom", "Olva Courier", "Marvisur"
 }
 
 export interface VantaBankAccount {

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, X, ShoppingBag, Heart, Search, ChevronDown, Sun, Moon } from 'lucide-react';
+import { Menu, X, ShoppingBag, Heart, Search, ChevronDown, Sun, Moon, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'motion/react';
 import { CATEGORIES } from '../../data';
 import TikTokIcon from '../shared/TikTokIcon';
@@ -76,14 +76,17 @@ export default function Header({
           : 'bg-paper/98 backdrop-blur-md border-b border-line/80'
       }`}
     >
-      {/* Gothic Luxury Promo banner - High Legibility */}
+      {/* Modern Luxury Announcement Banner */}
       <div
         id="promo-banner"
-        className="bg-panel text-muted border-b border-line text-[9px] sm:text-[11px] uppercase tracking-[0.25em] py-1.5 sm:py-2 text-center font-mono select-none flex items-center justify-center gap-2"
+        className="bg-panel/90 backdrop-blur-md text-muted border-b border-line text-[10px] sm:text-xs uppercase tracking-widest py-2 text-center font-sans select-none flex items-center justify-center gap-2.5"
       >
-        <span className="text-accent font-bold text-[8px] sm:text-xs">✦</span>
-        <span className="font-semibold text-ink">ENVIOS A TODO EL PERU • COMPRA POR WHATSAPP • 10% OFF</span>
-        <span className="text-accent font-bold text-[8px] sm:text-xs">✦</span>
+        <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
+        <span className="font-bold text-ink">ENVÍOS A TODO EL PERÚ</span>
+        <span className="text-muted/40">•</span>
+        <span className="font-medium">COMPRA DIRECTA POR WHATSAPP</span>
+        <span className="text-muted/40">•</span>
+        <span className="text-accent font-bold">10% OFF PRIMERA COMPRA</span>
       </div>
 
       {/* Main Header Container */}
@@ -119,13 +122,13 @@ export default function Header({
                 placeholder="Buscar prenda..."
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full text-xs py-1.5 px-3 border border-line focus:outline-none focus:border-accent font-mono bg-panel text-ink placeholder:text-muted rounded-xs"
+                className="w-full text-xs py-2 px-4 border border-line focus:outline-none focus:border-accent bg-panel text-ink placeholder:text-muted rounded-full shadow-inner font-sans"
               />
               {searchQuery && (
                 <button
                   id="clear-search-btn-desktop"
                   onClick={() => onSearchChange('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-ink font-mono cursor-pointer"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-ink font-medium cursor-pointer"
                 >
                   Limpiar
                 </button>
@@ -229,15 +232,15 @@ export default function Header({
                 value={searchQuery}
                 onChange={(e) => onSearchChange(e.target.value)}
                 autoFocus
-                className="w-full text-xs py-2 pl-9 pr-8 border border-line bg-panel text-ink focus:outline-none focus:border-accent font-mono placeholder:text-muted rounded-xs"
+                className="w-full text-xs py-2.5 pl-10 pr-9 border border-line bg-panel text-ink focus:outline-none focus:border-accent font-sans placeholder:text-muted rounded-full shadow-inner"
               />
               {searchQuery && (
                 <button
                   id="clear-search-btn-mobile"
                   onClick={() => onSearchChange('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-ink font-mono"
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-ink font-medium"
                 >
-                  <X className="w-3.5 h-3.5" />
+                  <X className="w-4 h-4" />
                 </button>
               )}
             </div>
@@ -280,12 +283,13 @@ export default function Header({
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: 8 }}
                         transition={{ duration: 0.15 }}
-                        className="absolute left-1/2 -translate-x-1/2 mt-2 w-[540px] bg-paper-soft border border-line shadow-xl z-50 p-5 rounded-none"
+                        className="absolute left-1/2 -translate-x-1/2 mt-2 w-[560px] bg-paper/95 backdrop-blur-2xl border border-line shadow-2xl z-50 p-6 rounded-3xl"
                       >
-                        <div className="text-[9px] tracking-widest text-muted uppercase mb-3 border-b border-line pb-2">
-                          SILUETAS Y VARIANTES DE TELA
+                        <div className="text-xs font-semibold tracking-wider text-muted uppercase mb-4 border-b border-line pb-3 flex items-center justify-between">
+                          <span>SILUETAS Y VARIANTES DE TELA</span>
+                          <span className="text-[10px] text-accent font-bold">ATELIER 2026</span>
                         </div>
-                        <div className="grid grid-cols-2 gap-2">
+                        <div className="grid grid-cols-2 gap-2.5">
                           {PRODUCT_CATEGORIES_WITH_FABRICS.map((pCat) => {
                             const isSubActive = activeCategory === pCat.name;
                             return (
@@ -295,21 +299,21 @@ export default function Header({
                                   onSelectCategory(pCat.name);
                                   setIsDropdownOpen(false);
                                 }}
-                                className={`text-left p-2.5 transition-all duration-250 border border-transparent hover:bg-paper hover:border-line group/drop flex flex-col ${
-                                  isSubActive ? 'bg-accent-soft border-accent/30' : ''
+                                className={`text-left p-3.5 transition-all duration-200 border rounded-2xl group/drop flex flex-col ${
+                                  isSubActive
+                                    ? 'bg-accent/10 border-accent/30 text-accent'
+                                    : 'border-line/60 bg-panel/60 hover:bg-paper-soft hover:border-accent/30'
                                 }`}
                               >
                                 <div className="flex items-center justify-between w-full">
-                                  <span className={`font-sans text-[11px] font-bold tracking-wider uppercase transition-colors ${
-                                    isSubActive ? 'text-ink' : 'text-ink/80 group-hover/drop:text-ink'
-                                  }`}>
+                                  <span className="font-heading text-xs sm:text-sm font-bold tracking-tight uppercase text-ink group-hover/drop:text-accent transition-colors">
                                     {pCat.name}
                                   </span>
                                   {isSubActive && (
-                                    <span className="w-1.5 h-1.5 bg-accent rounded-full" />
+                                    <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
                                   )}
                                 </div>
-                                <div className="text-[9px] text-muted group-hover/drop:text-ink/70 mt-1 uppercase tracking-wide">
+                                <div className="text-[11px] text-muted mt-1 tracking-wide">
                                   Telas: {pCat.fabrics.join(' • ')}
                                 </div>
                               </button>
@@ -343,6 +347,19 @@ export default function Header({
               </li>
             );
           })}
+
+          {/* Standalone Interactive Catalog (External Lookbook) */}
+          <li>
+            <a
+              href="/catalogo-interactivo"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 hover:text-rose-400 border border-rose-500/30 text-[10.5px] font-bold tracking-wider transition-all"
+            >
+              <Sparkles className="w-3 h-3 text-rose-500" />
+              <span>CATÁLOGO INTERACTIVO ↗</span>
+            </a>
+          </li>
         </ul>
       </nav>
 
@@ -444,6 +461,25 @@ export default function Header({
               NAVEGACIÓN // DROP 2026
             </p>
             <ul className="space-y-1.5 text-xs font-mono uppercase tracking-wider">
+              {/* Standalone Interactive Catalog (External Lookbook) */}
+              <li>
+                <a
+                  href="/catalogo-interactivo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  onClick={() => setIsMobileMenuOpen(false)}
+                  className="w-full text-left py-2.5 px-3 rounded-xs transition-colors flex items-center justify-between font-bold bg-rose-500/10 text-rose-500 border border-rose-500/30 mb-2"
+                >
+                  <div className="flex items-center gap-2">
+                    <Sparkles className="w-3.5 h-3.5 text-rose-500" />
+                    <span>CATÁLOGO INTERACTIVO 2026</span>
+                  </div>
+                  <span className="text-[9px] font-mono font-bold bg-rose-500 text-white px-1.5 py-0.5 rounded">
+                    VER ↗
+                  </span>
+                </a>
+              </li>
+
               {/* Home / Inicio */}
               <li>
                 <button

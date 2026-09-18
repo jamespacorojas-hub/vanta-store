@@ -141,7 +141,7 @@ export default function Filters({
                 id={`filter-size-${size.toLowerCase()}`}
                 key={size}
                 onClick={() => onToggleSize(size)}
-                className={`text-[10px] sm:text-xs font-mono py-2 text-center transition-all ${
+                className={`text-[10px] sm:text-xs font-mono py-2 text-center rounded-xl transition-all cursor-pointer ${
                   isSelected
                     ? 'bg-accent text-white font-bold shadow-[0_0_8px_rgba(225,29,72,0.4)]'
                     : 'bg-panel text-muted hover:bg-paper border border-line hover:border-accent hover:text-ink'
@@ -165,7 +165,7 @@ export default function Filters({
                 id={`filter-color-${col.toLowerCase().replace(/\s+/g, '-')}`}
                 key={col}
                 onClick={() => onToggleColor(col)}
-                className={`text-[10px] px-2.5 py-1.5 border transition-all flex items-center space-x-1 ${
+                className={`text-[10px] px-3 py-1.5 rounded-full border transition-all flex items-center space-x-1 cursor-pointer ${
                   isSelected
                     ? 'border-accent bg-accent text-white font-bold shadow-[0_0_8px_rgba(225,29,72,0.3)]'
                     : 'border-line bg-panel text-muted hover:border-accent hover:text-ink'
@@ -190,7 +190,7 @@ export default function Filters({
                 id={`filter-fabric-${fab.toLowerCase()}`}
                 key={fab}
                 onClick={() => onToggleFabric(fab)}
-                className={`text-[10px] px-2.5 py-1.5 border transition-all flex items-center space-x-1 ${
+                className={`text-[10px] px-3 py-1.5 rounded-full border transition-all flex items-center space-x-1 cursor-pointer ${
                   isSelected
                     ? 'border-accent bg-accent text-white font-bold shadow-[0_0_8px_rgba(225,29,72,0.3)]'
                     : 'border-line bg-panel text-muted hover:border-accent hover:text-ink'
@@ -270,19 +270,19 @@ export default function Filters({
       >
         <div
           id="mobile-filters-container"
-          className={`fixed bottom-0 left-0 w-full max-h-[85vh] overflow-y-auto bg-paper border-t border-line rounded-t-2xl z-50 p-6 flex flex-col transition-transform duration-300 transform ${
+          className={`fixed bottom-0 left-0 w-full max-h-[85vh] overflow-y-auto bg-paper border-t border-line rounded-t-3xl z-50 p-6 flex flex-col transition-transform duration-300 transform ${
             isMobileOpen ? 'translate-y-0' : 'translate-y-full'
           }`}
           onClick={(e) => e.stopPropagation()}
         >
           <div className="flex items-center justify-between border-b border-line pb-3 mb-4">
             <span className="text-xs uppercase tracking-widest font-mono font-bold text-ink">
-              ✦ FILTRAR PRENDAS ✦
+              FILTRAR COLECCIÓN
             </span>
             <button
               id="close-mobile-filters"
               onClick={() => setIsMobileOpen(false)}
-              className="p-1.5 text-muted hover:text-ink hover:bg-panel rounded-full transition-all"
+              className="p-1.5 text-muted hover:text-ink hover:bg-panel rounded-full transition-all cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -299,14 +299,14 @@ export default function Filters({
                 onResetFilters();
                 setIsMobileOpen(false);
               }}
-              className="w-1/3 py-3 border border-line text-xs font-mono uppercase tracking-widest text-muted hover:text-ink hover:border-accent transition-all"
+              className="w-1/3 py-3 border border-line rounded-full text-xs font-mono uppercase tracking-widest text-muted hover:text-ink hover:border-accent transition-all cursor-pointer"
             >
               LIMPIAR
             </button>
             <button
               id="mobile-filters-apply-btn"
               onClick={() => setIsMobileOpen(false)}
-              className="w-2/3 py-3 bg-accent text-white text-xs font-mono font-bold uppercase tracking-widest transition-all hover:bg-rose-600 shadow-[0_0_15px_rgba(225,29,72,0.3)]"
+              className="w-2/3 py-3 bg-accent text-white text-xs font-mono font-bold uppercase tracking-widest rounded-full transition-all hover:bg-rose-600 shadow-[0_0_15px_rgba(225,29,72,0.3)] cursor-pointer"
             >
               VER {totalProductsCount} PRENDAS
             </button>

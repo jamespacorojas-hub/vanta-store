@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { X } from 'lucide-react';
+import { X, Sparkles, Shirt } from 'lucide-react';
 
 // Every weave we offer is spun in these three yarn counts (Ne) — shown once, in the detail modal.
 const YARN_COUNTS = ['30/1', '24/1', '20/1'];
@@ -92,23 +92,50 @@ export default function MaterialesSection() {
 
   return (
     <section id="interactive-fabrics" className="py-16 sm:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 bg-paper border-b border-line scroll-mt-48">
-      <div className="text-center space-y-2 mb-10 sm:mb-16">
-        <span className="text-[10px] font-mono tracking-[0.35em] text-muted font-bold block uppercase flex items-center justify-center gap-2">
-          <span className="text-accent">✦</span> CÁTEDRA DE MATERIALES & INGENIERÍA TEXTIL <span className="text-accent">✦</span>
+      <div className="text-center space-y-2 mb-12 sm:mb-16">
+        <span className="text-xs font-sans tracking-widest text-muted font-bold uppercase flex items-center justify-center gap-2">
+          <Shirt className="w-3.5 h-3.5 text-accent" />
+          LABORATORIO TEXTIL • HIGH-END ATELIER
         </span>
-        <h2 className="font-display font-black text-3xl sm:text-4xl text-ink tracking-wide uppercase">
-          Cuadros por tejido
+        <h2 className="font-heading font-extrabold text-3xl sm:text-5xl text-ink tracking-tight uppercase">
+          Ingeniería Textil & Tejidos
         </h2>
-        <p className="text-[11px] font-sans font-light text-muted max-w-md mx-auto">
-          Conoce la textura, el peso y las características de cada tejido que usamos en nuestras prendas. Toca un cuadro para ver el detalle.
+        <p className="text-sm font-normal text-muted max-w-lg mx-auto">
+          Fibras de alto gramaje con texturas rústicas y alveolares seleccionadas para brindar una caída pesada y máxima durabilidad.
         </p>
+      </div>
+
+      {/* Featured Textile Atelier Banner (banner-11) */}
+      <div className="mb-10 sm:mb-14 rounded-3xl overflow-hidden border border-line shadow-2xl relative bg-paper-soft group select-none">
+        <img
+          src="/banners/banner-11.png"
+          alt="Ingeniería Textil & Trama Táctil VANTA"
+          className="w-full h-auto object-contain block transition-transform duration-700 group-hover:scale-[1.008]"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+        <div className="absolute bottom-4 left-4 right-4 sm:bottom-6 sm:left-8 sm:right-8 flex flex-col sm:flex-row sm:items-end justify-between gap-3 text-white">
+          <div>
+            <span className="bg-black/60 backdrop-blur-md px-3 py-1 border border-white/15 text-[10px] sm:text-xs font-mono font-bold uppercase rounded-full inline-block mb-1 text-accent">
+              420 GSM // TEXTURA & TACTO PREMIUM
+            </span>
+            <h3 className="font-heading font-extrabold text-base sm:text-2xl uppercase tracking-tight">
+              Entramado & Tacto Táctil Real
+            </h3>
+            <p className="text-zinc-300 text-xs sm:text-sm font-light max-w-md hidden sm:block">
+              Cada prenda pasa por un control estricto de densidad, torsión de hilado y teñido reactivo para resistir lavados continuos.
+            </p>
+          </div>
+          <span className="bg-white/10 backdrop-blur-md px-3.5 py-1.5 rounded-full text-[11px] font-sans font-semibold border border-white/20 self-start sm:self-auto">
+            100% Algodón Peinado
+          </span>
+        </div>
       </div>
 
       {/* Mobile: swipeable carousel, active card highlighted */}
       <div className="sm:hidden">
         <div
           ref={scrollerRef}
-          className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory -mx-4 px-[14%] pb-1"
+          className="flex gap-4 overflow-x-auto no-scrollbar snap-x snap-mandatory -mx-4 px-[12%] pb-2"
         >
           {WEAVES.map((weave, i) => (
             <div
@@ -116,21 +143,23 @@ export default function MaterialesSection() {
               key={weave.name}
               ref={(el) => { itemRefs.current[i] = el; }}
               onClick={() => setOpenIndex(i)}
-              className={`snap-center shrink-0 w-[72%] flex flex-col bg-panel border overflow-hidden cursor-pointer transition-all duration-300 ${
-                activeIndex === i ? 'border-accent shadow-[0_0_20px_rgba(225,29,72,0.3)] scale-100 opacity-100' : 'border-line opacity-55 scale-95'
+              className={`snap-center shrink-0 w-[78%] flex flex-col bg-paper-soft border rounded-3xl overflow-hidden cursor-pointer transition-all duration-300 shadow-md ${
+                activeIndex === i ? 'border-accent shadow-xl scale-100 opacity-100' : 'border-line opacity-60 scale-95'
               }`}
             >
-              <div className="aspect-square w-full overflow-hidden bg-paper">
+              <div className="aspect-square w-full overflow-hidden bg-panel">
                 <img
                   src={weave.photo}
                   alt={`Textura de tela ${weave.name}`}
                   className="w-full h-full object-cover"
                 />
               </div>
-              <div className="p-4">
-                <span className="font-mono text-[9px] text-accent font-bold block uppercase">{weave.gsm}</span>
-                <h3 className="font-display text-base font-bold text-ink">{weave.name}</h3>
-                <p className="text-[10px] font-sans font-light text-muted leading-relaxed mt-2 line-clamp-2">
+              <div className="p-5">
+                <span className="bg-accent/10 text-accent font-bold text-[10px] px-2.5 py-0.5 rounded-full inline-block uppercase mb-1.5">
+                  {weave.gsm}
+                </span>
+                <h3 className="font-heading text-lg font-bold text-ink">{weave.name}</h3>
+                <p className="text-xs text-muted leading-relaxed mt-1.5 line-clamp-2">
                   {weave.desc}
                 </p>
               </div>
@@ -147,7 +176,7 @@ export default function MaterialesSection() {
               onClick={() => scrollToIndex(i)}
               aria-label={`Ver tejido ${weave.name}`}
               className={`h-1.5 rounded-full transition-all duration-300 ${
-                activeIndex === i ? 'w-5 bg-accent shadow-[0_0_8px_rgba(225,29,72,0.6)]' : 'w-1.5 bg-line'
+                activeIndex === i ? 'w-6 bg-accent' : 'w-1.5 bg-line'
               }`}
             />
           ))}
@@ -155,29 +184,33 @@ export default function MaterialesSection() {
       </div>
 
       {/* Desktop / tablet: full grid */}
-      <div className="hidden sm:grid grid-cols-2 lg:grid-cols-5 gap-4">
+      <div className="hidden sm:grid grid-cols-2 lg:grid-cols-5 gap-5">
         {WEAVES.map((weave, i) => (
           <div
             id={`fabric-card-${weave.name}`}
             key={weave.name}
             onClick={() => setOpenIndex(i)}
-            className="group flex flex-col bg-panel border border-line overflow-hidden cursor-pointer hover:border-accent/60 hover:shadow-[0_0_25px_rgba(225,29,72,0.15)] hover:-translate-y-1 transition-all duration-300 ease-out"
+            className="group flex flex-col bg-paper-soft border border-line rounded-3xl overflow-hidden cursor-pointer hover:border-accent/50 hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300"
           >
-            <div className="aspect-square w-full overflow-hidden bg-paper">
+            <div className="aspect-square w-full overflow-hidden bg-panel">
               <img
                 src={weave.photo}
                 alt={`Textura de tela ${weave.name}`}
-                className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
+                className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
               />
             </div>
 
             <div className="flex flex-col justify-between flex-1 p-5">
-              <div className="space-y-1">
-                <span className="font-mono text-[9px] text-accent font-bold block uppercase">{weave.gsm}</span>
-                <h3 className="font-display text-base font-bold text-ink group-hover:text-accent transition-colors">{weave.name}</h3>
+              <div className="space-y-1.5">
+                <span className="bg-accent/10 text-accent font-bold text-[10px] px-2.5 py-0.5 rounded-full inline-block uppercase">
+                  {weave.gsm}
+                </span>
+                <h3 className="font-heading text-lg font-bold text-ink group-hover:text-accent transition-colors">
+                  {weave.name}
+                </h3>
               </div>
 
-              <p className="text-[10px] font-sans font-light text-muted leading-relaxed mt-4">
+              <p className="text-xs text-muted leading-relaxed mt-3 line-clamp-3">
                 {weave.desc}
               </p>
             </div>
@@ -189,18 +222,18 @@ export default function MaterialesSection() {
       {openWeave && (
         <div
           id="fabric-detail-overlay"
-          className="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex items-center justify-center p-4"
+          className="fixed inset-0 z-50 bg-black/80 backdrop-blur-xl flex items-center justify-center p-4"
           onClick={() => setOpenIndex(null)}
         >
           <div
             id="fabric-detail-card"
-            className="relative bg-paper w-full max-w-sm max-h-[88vh] border border-line shadow-2xl flex flex-col animate-in fade-in zoom-in duration-200"
+            className="relative bg-paper w-full max-w-md max-h-[90vh] border border-line rounded-3xl shadow-2xl flex flex-col overflow-hidden animate-in fade-in zoom-in duration-200"
             onClick={(e) => e.stopPropagation()}
           >
             <button
               id="fabric-detail-close-btn"
               onClick={() => setOpenIndex(null)}
-              className="absolute top-3 right-3 z-10 bg-panel text-muted border border-line p-1.5 hover:text-ink hover:bg-paper-soft transition-colors cursor-pointer"
+              className="absolute top-3 right-3 z-10 bg-paper/80 backdrop-blur-md text-muted border border-line p-2 rounded-full hover:text-ink hover:bg-paper transition-all cursor-pointer shadow-md"
               aria-label="Cerrar detalle de tejido"
             >
               <X className="w-4 h-4" />
@@ -215,30 +248,32 @@ export default function MaterialesSection() {
                 />
               </div>
 
-              <div className="p-5 sm:p-6 space-y-4">
+              <div className="p-6 space-y-4">
                 <div>
-                  <span className="font-mono text-[10px] text-muted uppercase tracking-widest font-bold">{openWeave.gsm}</span>
-                  <h3 className="font-display text-2xl font-bold text-ink mt-0.5">{openWeave.name}</h3>
+                  <span className="bg-accent/10 text-accent font-bold text-xs px-3 py-1 rounded-full uppercase">
+                    {openWeave.gsm}
+                  </span>
+                  <h3 className="font-heading text-2xl font-extrabold text-ink mt-2">{openWeave.name}</h3>
                 </div>
 
-                <p className="text-ink/85 text-xs font-light leading-relaxed">
+                <p className="text-ink/85 text-xs sm:text-sm font-normal leading-relaxed">
                   {openWeave.detail}
                 </p>
 
-                <div className="border-t border-line pt-3.5 space-y-3">
+                <div className="border-t border-line pt-4 space-y-3">
                   <div>
-                    <span className="text-[10px] uppercase tracking-widest text-ink font-bold">Ideal para</span>
-                    <p className="text-muted text-xs font-light leading-relaxed mt-1">{openWeave.idealFor}</p>
+                    <span className="text-xs uppercase tracking-wider text-ink font-bold">Ideal para</span>
+                    <p className="text-muted text-xs sm:text-sm leading-relaxed mt-1">{openWeave.idealFor}</p>
                   </div>
                   <div>
-                    <span className="text-[10px] uppercase tracking-widest text-ink font-bold">Cuidados</span>
-                    <p className="text-muted text-xs font-light leading-relaxed mt-1">{openWeave.care}</p>
+                    <span className="text-xs uppercase tracking-wider text-ink font-bold">Cuidados recomendados</span>
+                    <p className="text-muted text-xs sm:text-sm leading-relaxed mt-1">{openWeave.care}</p>
                   </div>
                 </div>
 
-                <p className="text-[9px] font-mono text-muted uppercase tracking-wide border-t border-line pt-3.5">
-                  Gramajes de hilado disponibles en todas nuestras telas:{' '}
-                  <span className="text-ink font-bold">{YARN_COUNTS.join(' · ')}</span>
+                <p className="text-xs text-muted border-t border-line pt-4 flex items-center gap-1.5">
+                  <Sparkles className="w-3.5 h-3.5 text-accent" />
+                  <span>Gramajes de hilado disponibles: <strong className="text-ink">{YARN_COUNTS.join(' · ')}</strong></span>
                 </p>
               </div>
             </div>

@@ -52,20 +52,20 @@ export default function FAQAndPolicies() {
     <section id="faq-and-policies" className="py-12 sm:py-20 bg-paper text-ink border-b border-line scroll-mt-24">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Section Header */}
-        <div className="text-center max-w-2xl mx-auto mb-8 sm:mb-12 space-y-2">
-          <span className="text-[9.5px] sm:text-[10px] font-mono tracking-[0.3em] text-muted font-bold uppercase block">
-            ✦ INFORMACIÓN OFICIAL // VANTA ATELIER ✦
+        <div className="text-center max-w-2xl mx-auto mb-10 sm:mb-14 space-y-3">
+          <span className="text-xs font-sans tracking-widest text-muted font-bold uppercase block">
+            TRANSPARENCIA & RESPALDO • DROP 2026
           </span>
-          <h2 className="font-display font-black text-2xl sm:text-4xl text-ink tracking-tight uppercase">
-            Políticas & Términos
+          <h2 className="font-heading font-extrabold text-2xl sm:text-4xl text-ink tracking-tight uppercase">
+            Centro de Ayuda & Políticas
           </h2>
-          <p className="text-muted text-xs sm:text-sm font-light">
-            Transparencia, seguridad en cada pedido y respaldo de calidad en cada prenda.
+          <p className="text-muted text-xs sm:text-sm font-normal">
+            Transparencia, seguridad en cada pedido y garantía de confección pesada en cada prenda.
           </p>
         </div>
 
         {/* Tab Navigation (Responsive Horizontal Slider on Mobile) */}
-        <div className="flex items-center justify-start sm:justify-center overflow-x-auto no-scrollbar gap-1.5 sm:gap-2 pb-4 mb-8 border-b border-line">
+        <div className="flex items-center justify-start sm:justify-center overflow-x-auto no-scrollbar gap-2 pb-4 mb-8 border-b border-line">
           {tabs.map((tab) => {
             const isSel = activeTab === tab.id;
             return (
@@ -73,10 +73,10 @@ export default function FAQAndPolicies() {
                 key={tab.id}
                 id={`tab-${tab.id}-btn`}
                 onClick={() => setActiveTab(tab.id)}
-                className={`flex-shrink-0 px-3.5 sm:px-4 py-2 sm:py-2.5 font-mono text-[10.5px] sm:text-xs uppercase tracking-wider font-bold transition-all rounded-xs border flex items-center gap-1.5 cursor-pointer ${
+                className={`flex-shrink-0 px-4 py-2.5 font-sans text-xs uppercase tracking-wider font-semibold transition-all rounded-full border flex items-center gap-2 cursor-pointer ${
                   isSel
-                    ? 'bg-ink text-paper border-ink shadow-sm'
-                    : 'bg-panel text-muted border-line hover:text-ink hover:border-ink/40'
+                    ? 'bg-ink text-paper border-ink shadow-md scale-[1.02]'
+                    : 'bg-panel text-muted border-line hover:text-ink hover:border-accent/40'
                 }`}
               >
                 <span className={isSel ? 'text-accent' : 'text-muted'}>{tab.icon}</span>
@@ -95,14 +95,14 @@ export default function FAQAndPolicies() {
                 <div
                   id={`faq-item-${idx}`}
                   key={idx}
-                  className="bg-panel border border-line rounded-xs overflow-hidden transition-all hover:border-ink/40"
+                  className="bg-paper-soft border border-line rounded-2xl overflow-hidden transition-all hover:border-accent/40 shadow-xs"
                 >
                   <button
                     id={`faq-toggle-btn-${idx}`}
                     onClick={() => toggleFaq(idx)}
-                    className="w-full text-left p-4 sm:p-5 flex items-center justify-between transition-colors hover:bg-paper-soft cursor-pointer gap-3"
+                    className="w-full text-left p-4 sm:p-5 flex items-center justify-between transition-colors hover:bg-panel cursor-pointer gap-3"
                   >
-                    <span className="font-mono font-bold text-xs sm:text-sm text-ink uppercase tracking-wide">
+                    <span className="font-heading font-bold text-xs sm:text-sm text-ink tracking-tight">
                       {faq.question}
                     </span>
                     <ChevronRight

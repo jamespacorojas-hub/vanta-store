@@ -21,6 +21,7 @@ import HomePage from './pages/Home/HomePage';
 import NuevosIngresosPage from './pages/NuevosIngresos/NuevosIngresosPage';
 import OfertasPage from './pages/Ofertas/OfertasPage';
 import CatalogoPage from './pages/Catalogo/CatalogoPage';
+import CatalogoInteractivoPage from './pages/Catalogo/CatalogoInteractivoPage';
 import AdminPOSPage from './pages/Admin/AdminPOSPage';
 
 export default function App() {
@@ -241,8 +242,22 @@ export default function App() {
 
   const totalCartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 
+  // If viewing the Standalone Interactive Lookbook / Catalog, bypass all store chrome
+  if (
+    location.pathname === '/catalogo-interactivo' ||
+    location.pathname === '/catalogo-externo' ||
+    location.pathname === '/lookbook'
+  ) {
+    return <CatalogoInteractivoPage />;
+  }
+
   // If viewing the Admin POS module, render dedicated POS terminal interface
-  if (location.pathname === '/admin' || location.pathname === '/pos') {
+  if (
+    location.pathname === '/admin' ||
+    location.pathname === '/pos' ||
+    location.pathname === '/cobranzas' ||
+    location.pathname === '/finanzas'
+  ) {
     return <AdminPOSPage theme={theme} onToggleTheme={handleToggleTheme} />;
   }
 

@@ -30,6 +30,8 @@ import {
   Coins,
   Smartphone,
   Banknote,
+  LayoutGrid,
+  List,
 } from 'lucide-react';
 import { Product } from '../../../types';
 import { PRODUCTS } from '../../../data';
@@ -150,6 +152,8 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
 
   // Mobile / Tablet pane view ('catalog' vs 'register')
   const [mobilePane, setMobilePane] = useState<'catalog' | 'register'>('catalog');
+  // Visual layout mode for product catalog ('compact' grid vs 'list' table rows)
+  const [catalogViewMode, setCatalogViewMode] = useState<'compact' | 'list'>('compact');
 
   // Cart / Sale items
   const [cartItems, setCartItems] = useState<POSSaleItem[]>([]);
@@ -910,68 +914,147 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
             )}
           </div>
 
-          {/* Category Filter Pills */}
-          <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
-            {CATEGORY_TABS.map((cat) => (
+          {/* Category Filter Pills & View Mode Switcher */}
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
+              {CATEGORY_TABS.map((cat) => (
+                <button
+                  key={cat}
+                  onClick={() => setSelectedCategory(cat)}
+                  className={`px-2.5 py-1 text-[11px] font-mono uppercase tracking-wider whitespace-nowrap transition-colors cursor-pointer border rounded-md ${
+                    selectedCategory === cat
+                      ? 'bg-accent text-white border-accent font-bold shadow-xs'
+                      : 'bg-panel text-muted hover:text-ink border-line hover:border-muted/40'
+                  }`}
+                >
+                  {cat}
+                </button>
+              ))}
+            </div>
+
+            {/* View Mode Toggle */}
+            <div className="flex items-center bg-panel border border-line rounded-md p-0.5 shrink-0">
               <button
-                key={cat}
-                onClick={() => setSelectedCategory(cat)}
-                className={`px-3 py-1.5 text-[11px] font-mono uppercase tracking-wider whitespace-nowrap transition-colors cursor-pointer border ${
-                  selectedCategory === cat
-                    ? 'bg-accent text-white border-accent font-bold shadow-xs'
-                    : 'bg-panel text-muted hover:text-ink border-line hover:border-muted/40'
+                type="button"
+                onClick={() => setCatalogViewMode('compact')}
+                className={`p-1.5 rounded transition-all cursor-pointer ${
+                  catalogViewMode === 'compact' ? 'bg-accent text-white shadow-xs' : 'text-muted hover:text-ink'
                 }`}
+                title="Cuadrícula Compacta"
               >
-                {cat}
+                <LayoutGrid className="w-3.5 h-3.5" />
               </button>
-            ))}
+              <button
+                type="button"
+                onClick={() => setCatalogViewMode('list')}
+                className={`p-1.5 rounded transition-all cursor-pointer ${
+                  catalogViewMode === 'list' ? 'bg-accent text-white shadow-xs' : 'text-muted hover:text-ink'
+                }`}
+                title="Lista Rápida (Filas)"
+              >
+                <List className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Product Grid */}
-        <div className="flex-1 overflow-y-auto p-3 sm:p-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-4 gap-2.5 sm:gap-3 content-start">
-          {filteredProducts.map((product) => {
-            const defaultPhoto = product.images[0] || '';
-            return (
-              <button
-                key={product.id}
-                type="button"
-                onClick={() => handleSelectProduct(product)}
-                className="bg-panel border border-line hover:border-accent/70 transition-all text-left p-2.5 flex flex-col justify-between group cursor-pointer hover:shadow-md relative overflow-hidden"
-              >
-                {/* Image */}
-                <div className="relative w-full aspect-square bg-paper-soft overflow-hidden mb-2">
-                  <img
-                    src={defaultPhoto}
-                    alt={product.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                    loading="lazy"
-                  />
-                  <div className="absolute top-1.5 right-1.5 bg-paper/90 border border-line text-[9px] font-mono font-bold px-1.5 py-0.5 text-accent">
-                    Stock: {product.stock}
-                  </div>
-                </div>
+        {/* Product Catalog Display (Compact Grid or Fast List) */}
+        <div className="flex-1 overflow-y-auto p-3 sm:p-4">
+          {catalogViewMode === 'compact' ? (
+            /* Cuadrícula Compacta Optimizada para POS */
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 xl:grid-cols-4 gap-2.5 content-start">
+              {filteredProducts.map((product) => {
+                const defaultPhoto = product.images[0] || '';
+                return (
+                  <button
+                    key={product.id}
+                    type="button"
+                    onClick={() => handleSelectProduct(product)}
+                    className="bg-panel border border-line hover:border-accent transition-all text-left p-2 rounded-xl flex flex-col justify-between group cursor-pointer hover:shadow-md relative overflow-hidden"
+                  >
+                    {/* Compact Image */}
+                    <div className="relative w-full h-24 sm:h-28 bg-paper-soft rounded-lg overflow-hidden mb-1.5">
+                      <img
+                        src={defaultPhoto}
+                        alt={product.name}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        loading="lazy"
+                      />
+                      <div className="absolute top-1 right-1 bg-black/75 backdrop-blur-xs border border-white/10 text-[8.5px] font-mono font-bold px-1.5 py-0.2 rounded text-emerald-400">
+                        Stock: {product.stock}
+                      </div>
+                      {product.promoBadge && (
+                        <div className="absolute bottom-1 left-1 bg-accent/90 backdrop-blur-xs text-white text-[8px] font-bold px-1.5 py-0.2 rounded uppercase">
+                          Promo
+                        </div>
+                      )}
+                    </div>
 
-                {/* Info */}
-                <div>
-                  <span className="text-[9px] font-mono text-muted uppercase tracking-wider block">
-                    {product.category}
-                  </span>
-                  <h3 className="font-mono text-xs font-bold text-ink uppercase truncate">
-                    {product.name}
-                  </h3>
-                  <div className="flex items-center justify-between mt-1.5 pt-1.5 border-t border-line/60">
-                    <span className="font-mono text-xs font-bold text-accent">
+                    {/* Info */}
+                    <div className="space-y-1">
+                      <span className="text-[8.5px] font-mono text-muted uppercase tracking-wider block truncate">
+                        {product.category}
+                      </span>
+                      <h3 className="font-mono text-xs font-bold text-ink uppercase truncate leading-tight group-hover:text-accent transition-colors">
+                        {product.name}
+                      </h3>
+                      <div className="flex items-center justify-between pt-1 border-t border-line/60">
+                        <span className="font-mono text-xs font-black text-accent">
+                          S/ {product.price.toFixed(2)}
+                        </span>
+                        <span className="text-[8.5px] font-mono bg-paper px-1.5 py-0.2 rounded border border-line text-muted uppercase">
+                          {product.colors.length} col.
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          ) : (
+            /* Modo Lista Rápida (Filas ultra-ágiles para cajero) */
+            <div className="flex flex-col gap-1.5">
+              {filteredProducts.map((product) => (
+                <div
+                  key={product.id}
+                  onClick={() => handleSelectProduct(product)}
+                  className="bg-panel border border-line hover:border-accent p-2 rounded-xl flex items-center justify-between gap-3 cursor-pointer group transition-all"
+                >
+                  <div className="flex items-center gap-2.5 min-w-0">
+                    <img
+                      src={product.images[0]}
+                      alt={product.name}
+                      className="w-11 h-11 rounded-lg object-cover shrink-0 border border-line"
+                      loading="lazy"
+                    />
+                    <div className="min-w-0">
+                      <div className="font-mono text-xs font-bold text-ink uppercase truncate group-hover:text-accent transition-colors">
+                        {product.name}
+                      </div>
+                      <div className="text-[9.5px] font-mono text-muted flex items-center gap-2 mt-0.5">
+                        <span className="uppercase">{product.category}</span>
+                        <span>•</span>
+                        <span className="text-emerald-400 font-semibold">Stock: {product.stock}</span>
+                        <span>•</span>
+                        <span>{product.colors.length} col.</span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3 shrink-0">
+                    <span className="font-mono text-xs font-black text-accent">
                       S/ {product.price.toFixed(2)}
                     </span>
-                    <span className="text-[9px] font-mono bg-paper px-1.5 py-0.5 border border-line text-muted uppercase">
-                      {product.colors.length} col.
-                    </span>
+                    <button
+                      type="button"
+                      className="bg-accent hover:bg-rose-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-mono font-bold uppercase tracking-wider transition-colors shadow-xs"
+                    >
+                      + Agregar
+                    </button>
                   </div>
                 </div>
-              </button>
-            );
-          })}
+              ))}
+            </div>
+          )}
 
           {filteredProducts.length === 0 && (
             <div className="col-span-full py-16 text-center text-muted font-mono text-xs">

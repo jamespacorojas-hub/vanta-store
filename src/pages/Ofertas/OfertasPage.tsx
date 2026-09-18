@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowLeft, ArrowRight, Percent, Wallet, Flame } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Percent, Wallet, Flame, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product, SaleProduct } from '../../types';
 import DealProductCard from '../../components/cards/DealProductCard';
 import ProductCard from '../../components/cards/ProductCard';
@@ -16,6 +16,27 @@ interface OfertasPageProps {
 
 type SortMode = 'discount' | 'savings' | 'price';
 
+const OFERTAS_HERO_BANNERS = [
+  {
+    image: '/banners/banner-3.png',
+    tag: 'CAMPAÑA DROP 2026',
+    title: 'Drop & Ofertas Exclusivas',
+    subtitle: 'Precios directos sobre hilados pesados',
+  },
+  {
+    image: '/banners/banner-8.png',
+    tag: 'EDICIÓN ESPECIAL',
+    title: 'Minimalist Urban Wear',
+    subtitle: 'Algodón peinado y corte relajado',
+  },
+  {
+    image: '/banners/banner-4.png',
+    tag: 'DROP DE TEMPORADA',
+    title: 'Cultura Callejera & Arquitectura',
+    subtitle: 'Prendas con estructura indeformable',
+  },
+];
+
 export default function OfertasPage({
   saleProducts,
   crossSellProducts,
@@ -25,9 +46,20 @@ export default function OfertasPage({
   onExploreCatalog,
 }: OfertasPageProps) {
   const [sortMode, setSortMode] = useState<SortMode>('discount');
+  const [activeBannerIdx, setActiveBannerIdx] = useState(0);
+  const [isBannerHovered, setIsBannerHovered] = useState(false);
 
   const maxDiscountPct = saleProducts.length > 0 ? Math.max(...saleProducts.map((p) => p.discountPct)) : 0;
   const maxSavings = saleProducts.length > 0 ? Math.max(...saleProducts.map((p) => p.savingsAmount)) : 0;
+
+  // Auto rotate banners every 5 seconds
+  useEffect(() => {
+    if (isBannerHovered) return;
+    const timer = setInterval(() => {
+      setActiveBannerIdx((prev) => (prev + 1) % OFERTAS_HERO_BANNERS.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [isBannerHovered]);
 
   const sortedDeals = useMemo(() => {
     const list = [...saleProducts];
@@ -69,61 +101,118 @@ export default function OfertasPage({
 
             {/* Real stats bar */}
             <div className="grid grid-cols-3 gap-2.5 sm:gap-4 max-w-lg">
-              <div className="bg-paper-soft border border-line p-3 sm:p-4 rounded-xs">
-                <div className="flex items-center gap-1.5 text-muted mb-1">
-                  <Flame className="w-3.5 h-3.5 text-accent" />
-                  <span className="text-[8px] sm:text-[9px] font-mono uppercase tracking-widest font-bold">En oferta</span>
+              <div className="bg-paper-soft border border-line p-3.5 sm:p-5 rounded-2xl shadow-xs">
+                <div className="flex items-center gap-1.5 text-muted mb-1.5">
+                  <Flame className="w-4 h-4 text-accent" />
+                  <span className="text-xs uppercase tracking-wider font-semibold">En oferta</span>
                 </div>
-                <span className="font-mono text-xl sm:text-3xl font-black text-ink">{saleProducts.length}</span>
+                <span className="font-sans text-2xl sm:text-3xl font-extrabold text-ink">{saleProducts.length}</span>
               </div>
-              <div className="bg-paper-soft border border-line p-3 sm:p-4 rounded-xs">
-                <div className="flex items-center gap-1.5 text-muted mb-1">
-                  <Percent className="w-3.5 h-3.5 text-accent" />
-                  <span className="text-[8px] sm:text-[9px] font-mono uppercase tracking-widest font-bold">Desc. máx.</span>
+              <div className="bg-paper-soft border border-line p-3.5 sm:p-5 rounded-2xl shadow-xs">
+                <div className="flex items-center gap-1.5 text-muted mb-1.5">
+                  <Percent className="w-4 h-4 text-accent" />
+                  <span className="text-xs uppercase tracking-wider font-semibold">Desc. máx.</span>
                 </div>
-                <span className="font-mono text-xl sm:text-3xl font-black text-accent">-{maxDiscountPct}%</span>
+                <span className="font-sans text-2xl sm:text-3xl font-extrabold text-accent">-{maxDiscountPct}%</span>
               </div>
-              <div className="bg-paper-soft border border-line p-3 sm:p-4 rounded-xs">
-                <div className="flex items-center gap-1.5 text-muted mb-1">
-                  <Wallet className="w-3.5 h-3.5 text-accent" />
-                  <span className="text-[8px] sm:text-[9px] font-mono uppercase tracking-widest font-bold">Ahorro máx.</span>
+              <div className="bg-paper-soft border border-line p-3.5 sm:p-5 rounded-2xl shadow-xs">
+                <div className="flex items-center gap-1.5 text-muted mb-1.5">
+                  <Wallet className="w-4 h-4 text-accent" />
+                  <span className="text-xs uppercase tracking-wider font-semibold">Ahorro máx.</span>
                 </div>
-                <span className="font-mono text-xl sm:text-3xl font-black text-ink">S/.{maxSavings.toFixed(0)}</span>
+                <span className="font-sans text-2xl sm:text-3xl font-extrabold text-ink">S/.{maxSavings.toFixed(0)}</span>
               </div>
             </div>
           </div>
 
-          {/* Right Column: Campaign Banner (5 cols) */}
-          <div className="lg:col-span-5 relative min-h-[260px] sm:min-h-[340px] lg:min-h-full bg-black overflow-hidden flex items-center justify-center border-t lg:border-t-0 lg:border-l border-line group">
-            <img
-              src="/imagenes/banner-3.png"
-              alt="Campaña Ofertas Especiales VANTA"
-              className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
-            />
-            {/* Dark vignette overlay */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+          {/* Right Column: Interactive Auto-rotating Campaign Banner (5 cols) */}
+          <div
+            className="lg:col-span-5 relative min-h-[300px] sm:min-h-[380px] lg:min-h-full bg-black overflow-hidden flex items-center justify-center border-t lg:border-t-0 lg:border-l border-line group"
+            onMouseEnter={() => setIsBannerHovered(true)}
+            onMouseLeave={() => setIsBannerHovered(false)}
+          >
+            {OFERTAS_HERO_BANNERS.map((banner, idx) => (
+              <div
+                key={banner.image}
+                className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                  idx === activeBannerIdx ? 'opacity-100 z-1' : 'opacity-0 pointer-events-none'
+                }`}
+              >
+                <img
+                  src={banner.image}
+                  alt={banner.title}
+                  className="w-full h-full object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/10 pointer-events-none" />
+                
+                {/* Banner Caption */}
+                <div className="absolute top-4 left-4 z-10">
+                  <span className="bg-black/60 backdrop-blur-md border border-white/15 text-white font-mono text-[10px] font-bold px-2.5 py-1 rounded-full uppercase tracking-wider">
+                    {banner.tag}
+                  </span>
+                </div>
+              </div>
+            ))}
 
-            {/* Campaign pill */}
-            <div className="absolute bottom-5 left-5 right-5 flex items-center justify-between gap-2 z-10">
-              <span className="bg-black/90 backdrop-blur-md border border-[#D1C2A5]/40 text-[#D1C2A5] px-3 py-1 font-mono text-[9px] sm:text-[10px] uppercase tracking-widest rounded-xs font-bold shadow-lg">
-                ✦ DROP ESPECIAL REBAJAS ✦
-              </span>
-              <span className="bg-accent text-white px-2.5 py-1 font-mono text-[9px] sm:text-[10px] uppercase tracking-widest rounded-xs font-black">
-                HASTA -{maxDiscountPct}%
-              </span>
+            {/* Bottom Info & Slide Controls */}
+            <div className="absolute bottom-5 left-5 right-5 flex flex-col gap-3 z-10 text-white">
+              <div className="flex items-center justify-between">
+                <span className="bg-rose-600 text-white font-extrabold text-xs px-3 py-1 rounded-full uppercase tracking-wider shadow-md">
+                  HASTA -{maxDiscountPct}% OFF
+                </span>
+                <span className="text-xs text-zinc-300 font-medium tracking-wide">
+                  Stock Limitado 2026
+                </span>
+              </div>
+
+              {/* Dots navigation */}
+              <div className="flex items-center justify-between pt-1">
+                <div className="flex items-center gap-1.5">
+                  {OFERTAS_HERO_BANNERS.map((_, dotIdx) => (
+                    <button
+                      key={dotIdx}
+                      onClick={() => setActiveBannerIdx(dotIdx)}
+                      className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                        dotIdx === activeBannerIdx
+                          ? 'w-6 bg-accent'
+                          : 'w-2 bg-white/40 hover:bg-white/70'
+                      }`}
+                      aria-label={`Ir al banner ${dotIdx + 1}`}
+                    />
+                  ))}
+                </div>
+
+                {/* Arrow navigation */}
+                <div className="flex items-center gap-1">
+                  <button
+                    onClick={() => setActiveBannerIdx((prev) => (prev - 1 + OFERTAS_HERO_BANNERS.length) % OFERTAS_HERO_BANNERS.length)}
+                    className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center hover:bg-white hover:text-black transition-all cursor-pointer"
+                    aria-label="Banner anterior"
+                  >
+                    <ChevronLeft className="w-3.5 h-3.5" />
+                  </button>
+                  <button
+                    onClick={() => setActiveBannerIdx((prev) => (prev + 1) % OFERTAS_HERO_BANNERS.length)}
+                    className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center hover:bg-white hover:text-black transition-all cursor-pointer"
+                    aria-label="Siguiente banner"
+                  >
+                    <ChevronRight className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         </div>
       </section>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 space-y-20">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 space-y-16">
         {/* Deals grid — sort controls instead of a full filter sidebar (the set is small and curated) */}
         <div>
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-line pb-4 mb-10">
-            <h2 className="font-display text-xl sm:text-2xl font-medium text-ink">
+            <h2 className="font-heading font-extrabold text-xl sm:text-3xl text-ink">
               {saleProducts.length} {saleProducts.length === 1 ? 'prenda rebajada' : 'prendas rebajadas'}
             </h2>
-            <div className="flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold">
+            <div className="flex items-center gap-2 text-xs font-semibold">
               {[
                 { id: 'discount' as const, label: 'Mayor descuento' },
                 { id: 'savings' as const, label: 'Mayor ahorro' },
@@ -133,10 +222,10 @@ export default function OfertasPage({
                   key={opt.id}
                   id={`ofertas-sort-${opt.id}`}
                   onClick={() => setSortMode(opt.id)}
-                  className={`px-3 py-2 border transition-colors ${
+                  className={`px-4 py-2 rounded-full border transition-all cursor-pointer ${
                     sortMode === opt.id
-                      ? 'bg-ink text-paper-soft border-ink'
-                      : 'bg-paper-soft text-muted border-line hover:text-ink'
+                      ? 'bg-ink text-paper-soft border-ink shadow-sm'
+                      : 'bg-paper-soft text-muted border-line hover:text-ink hover:border-accent/40'
                   }`}
                 >
                   {opt.label}

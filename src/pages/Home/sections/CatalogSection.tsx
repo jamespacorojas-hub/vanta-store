@@ -168,7 +168,7 @@ export default function CatalogSection({
           <button
             id="mobile-filters-trigger"
             onClick={() => setIsFiltersMobileOpen(true)}
-            className="lg:hidden flex items-center space-x-2 border border-line px-4 py-2.5 bg-paper-soft text-xs uppercase tracking-wider text-ink font-semibold"
+            className="lg:hidden flex items-center space-x-2 border border-line px-4 py-2 bg-paper-soft text-xs uppercase tracking-wider text-ink font-semibold rounded-full hover:border-accent transition-all cursor-pointer"
           >
             <SlidersHorizontal className="w-4 h-4" />
             <span>Filtros</span>
@@ -176,14 +176,14 @@ export default function CatalogSection({
 
           {/* Sorting selector */}
           <div className="flex items-center space-x-2">
-            <label htmlFor="sorting-select-box" className="hidden sm:block text-[10px] uppercase tracking-widest text-muted">
+            <label htmlFor="sorting-select-box" className="hidden sm:block text-[10px] uppercase tracking-widest text-muted font-medium">
               Ordenar:
             </label>
             <select
               id="sorting-select-box"
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value as SortBy)}
-              className="text-xs font-mono border border-line bg-paper-soft py-2 px-3 text-ink focus:outline-none focus:border-accent rounded-none"
+              className="text-xs font-mono border border-line bg-paper-soft py-2 px-3.5 text-ink focus:outline-none focus:border-accent rounded-full cursor-pointer"
             >
               <option value="popular">Popularidad</option>
               <option value="newest">Novedades Primero</option>
@@ -222,7 +222,7 @@ export default function CatalogSection({
         {/* Right: Products list grid */}
         <div className="flex-1">
           {sortedProducts.length === 0 ? (
-            <div id="no-products-found" className="text-center py-20 bg-paper-soft border border-line p-8">
+            <div id="no-products-found" className="text-center py-20 bg-panel/70 backdrop-blur-md border border-line rounded-3xl p-8 shadow-sm">
               <p className="text-xs uppercase tracking-widest font-black text-ink">Ningún artículo coincide con los filtros</p>
               <p className="text-muted text-xs mt-1.5 max-w-sm mx-auto font-light leading-relaxed">
                 Intenta cambiar el rango de precios, eliminar filtros de tallas/colores o reinicia la búsqueda de prendas.
@@ -230,7 +230,7 @@ export default function CatalogSection({
               <button
                 id="catalog-reset-filters-btn"
                 onClick={handleResetFilters}
-                className="bg-accent text-white px-6 py-3 text-xs font-mono font-bold tracking-widest uppercase mt-6 hover:bg-rose-600 shadow-[0_0_15px_rgba(225,29,72,0.3)] transition-all"
+                className="bg-accent text-white px-6 py-3 text-xs font-mono font-bold tracking-widest uppercase mt-6 hover:bg-rose-600 shadow-[0_0_15px_rgba(225,29,72,0.3)] rounded-full transition-all cursor-pointer"
               >
                 Reiniciar todos los filtros
               </button>

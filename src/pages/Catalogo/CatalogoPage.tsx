@@ -300,10 +300,10 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
                   key={p.id}
                   id={`coverflow-card-${p.id}`}
                   onClick={() => !isActive && setProductIndex(i)}
-                  className={`absolute top-1/2 left-1/2 flex flex-col justify-between p-4 border transition-all duration-500 ease-out overflow-hidden rounded-lg shadow-xl ${
+                  className={`absolute top-1/2 left-1/2 flex flex-col justify-between p-4 border transition-all duration-500 ease-out overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl ${
                     isActive
-                      ? 'border-accent shadow-[0_10px_35px_rgba(225,29,72,0.25)] bg-paper-soft cursor-default'
-                      : 'border-line bg-panel cursor-pointer hover:border-muted'
+                      ? 'border-accent/40 shadow-[0_12px_40px_rgba(225,29,72,0.2)] bg-panel/90 backdrop-blur-md cursor-default'
+                      : 'border-line/60 bg-panel/60 backdrop-blur-xs cursor-pointer hover:border-muted'
                   }`}
                   style={{
                     width: `${cardW}px`,
@@ -317,13 +317,13 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
                   }}
                 >
                   {/* Photo Display */}
-                  <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden">
+                  <div className="relative flex-1 w-full flex items-center justify-center overflow-hidden rounded-xl bg-paper/40">
                     {cardPhoto ? (
                       <img
                         key={cardPhoto}
                         src={cardPhoto}
                         alt={`${p.name} - ${currentColor}`}
-                        className="w-full h-full object-contain transition-transform duration-500"
+                        className="w-full h-full object-contain transition-transform duration-500 hover:scale-105"
                         referrerPolicy="no-referrer"
                       />
                     ) : (
@@ -334,7 +334,7 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
                   </div>
 
                   {/* Card Bottom Meta */}
-                  <div className="pt-3 border-t border-line text-center space-y-1">
+                  <div className="pt-3 border-t border-line/60 text-center space-y-1">
                     <h3 className="font-display text-sm font-bold uppercase tracking-wider text-ink">
                       {p.name}
                     </h3>
@@ -377,17 +377,17 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
         </div>
 
         {/* ── CLEAN STUDIO CONTROL CONSOLE ── */}
-        <div className="max-w-4xl mx-auto bg-paper-soft border border-line rounded-lg shadow-xl overflow-hidden">
+        <div className="max-w-4xl mx-auto bg-panel/80 backdrop-blur-md border border-line/70 rounded-3xl shadow-2xl overflow-hidden">
           {/* Header Strip */}
-          <div className="bg-panel px-6 py-3 border-b border-line flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-accent" />
+          <div className="bg-paper/50 px-6 py-3.5 border-b border-line/60 flex items-center justify-between">
+            <div className="flex items-center gap-2.5">
+              <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
               <span className="font-mono text-xs font-bold uppercase tracking-wider text-ink">
                 PERSONALIZAR // {product.name}
               </span>
             </div>
             <span className="font-mono text-[11px] text-muted">
-              Stock: <strong className="text-ink">{product.stock} unidades</strong>
+              Stock: <strong className="text-ink font-semibold">{product.stock} unidades</strong>
             </span>
           </div>
 
@@ -405,7 +405,7 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
               </div>
 
               {/* Swatches */}
-              <div className="p-2.5 bg-panel/50 border border-line rounded-sm flex flex-wrap gap-2.5 items-center">
+              <div className="p-3 bg-paper/60 border border-line/60 rounded-2xl flex flex-wrap gap-2.5 items-center">
                 {product.colors.map((color, i) => {
                   const isSel = i === colorIndex;
                   const hex = COLOR_HEX[color] || '#18181b';
@@ -416,7 +416,7 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
                       title={color}
                       className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full transition-all cursor-pointer p-0.5 relative flex items-center justify-center ${
                         isSel
-                          ? 'ring-2 ring-accent ring-offset-2 ring-offset-paper-soft shadow-sm'
+                          ? 'ring-2 ring-accent ring-offset-2 ring-offset-paper shadow-sm scale-105'
                           : 'border border-line hover:border-ink/50 opacity-80 hover:opacity-100 hover:scale-105'
                       }`}
                     >
@@ -443,10 +443,10 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
                     <button
                       key={sz}
                       onClick={() => setSelectedSize(sz)}
-                      className={`flex-1 py-2 font-mono text-xs font-bold uppercase transition-all cursor-pointer rounded-sm border ${
+                      className={`flex-1 py-2 font-mono text-xs font-bold uppercase transition-all cursor-pointer rounded-xl border ${
                         selectedSize === sz
                           ? 'bg-accent text-white border-accent shadow-sm'
-                          : 'bg-panel text-muted border-line hover:border-ink/40 hover:text-ink'
+                          : 'bg-paper/80 text-muted border-line/70 hover:border-ink/40 hover:text-ink'
                       }`}
                     >
                       {sz}
@@ -476,10 +476,10 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
                       <button
                         key={fab}
                         onClick={() => setFabricIndex(i)}
-                        className={`px-3.5 py-1.5 text-xs font-mono uppercase font-bold transition-all cursor-pointer rounded-sm border ${
+                        className={`px-3.5 py-1.5 text-xs font-mono uppercase font-bold transition-all cursor-pointer rounded-xl border ${
                           isSel
                             ? 'bg-ink text-paper border-ink shadow-sm'
-                            : 'bg-panel text-muted border-line hover:border-ink/40 hover:text-ink'
+                            : 'bg-paper/80 text-muted border-line/70 hover:border-ink/40 hover:text-ink'
                         }`}
                       >
                         {fab}
@@ -490,7 +490,7 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
               </div>
 
               {/* Price & Action Buttons */}
-              <div className="space-y-3 pt-3 border-t border-line">
+              <div className="space-y-3 pt-3 border-t border-line/60">
                 <div className="flex items-baseline justify-between">
                   <span className="text-xs font-mono text-muted uppercase">PRECIO:</span>
                   <span className="font-mono text-2xl font-black text-ink">
@@ -499,15 +499,15 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
                 </div>
 
                 {addedToast && (
-                  <div className="py-1.5 px-3 bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs font-mono font-bold text-center rounded-sm animate-in fade-in">
+                  <div className="py-2 px-3 bg-emerald-950/80 border border-emerald-600/60 text-emerald-300 text-xs font-mono font-bold text-center rounded-xl animate-in fade-in">
                     {addedToast}
                   </div>
                 )}
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
                   <button
                     onClick={handleAddToCartClick}
-                    className="w-full bg-ink text-paper hover:opacity-90 font-mono font-bold text-xs uppercase tracking-wider py-3 px-3 flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md rounded-sm"
+                    className="w-full bg-ink text-paper hover:opacity-90 font-mono font-bold text-xs uppercase tracking-wider py-3.5 px-4 flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md rounded-full"
                   >
                     <ShoppingBag className="w-4 h-4" />
                     <span>Añadir a la Bolsa</span>
@@ -515,7 +515,7 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
 
                   <button
                     onClick={handleBuyOnWhatsApp}
-                    className="w-full bg-[#161620] hover:bg-[#20202e] text-white border border-zinc-700 font-mono font-bold text-xs uppercase tracking-wider py-3 px-3 flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md rounded-sm"
+                    className="w-full bg-[#161620] hover:bg-[#20202e] text-white border border-zinc-700/80 font-mono font-bold text-xs uppercase tracking-wider py-3.5 px-4 flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md rounded-full"
                   >
                     <Send className="w-4 h-4 text-emerald-400" />
                     <span>WhatsApp</span>
@@ -524,7 +524,7 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
 
                 <button
                   onClick={() => onQuickView(product)}
-                  className="w-full text-center text-xs font-mono text-muted hover:text-accent flex items-center justify-center gap-1 pt-1 cursor-pointer"
+                  className="w-full text-center text-xs font-mono text-muted hover:text-accent flex items-center justify-center gap-1.5 pt-1 cursor-pointer transition-colors"
                 >
                   <Eye className="w-3.5 h-3.5" />
                   <span>Ver ficha técnica y guía de medidas</span>

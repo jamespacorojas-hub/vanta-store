@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, ShoppingBag, Eye } from 'lucide-react';
+import { Heart, ShoppingBag, Eye, Sparkles } from 'lucide-react';
 import { Product } from '../../types';
 import { getColorClass } from '../../utils/colorSwatch';
 import { getProductImageByColor } from '../../utils/productImages';
@@ -28,40 +28,39 @@ export default function FeaturedSpotlightCard({
   return (
     <div
       id={`spotlight-card-${product.id}`}
-      className="group flex flex-col h-full bg-paper-soft text-ink border border-line shadow-xl hover:border-accent transition-all duration-500 rounded-sm overflow-hidden"
+      className="group flex flex-col h-full bg-paper-soft text-ink border border-line rounded-3xl overflow-hidden shadow-xl hover:border-accent/40 transition-all duration-500"
     >
       {/* Product Photo Stage */}
-      <div className="relative flex-1 min-h-[260px] sm:min-h-[360px] bg-panel p-4 sm:p-7 flex flex-col justify-between border-b border-line overflow-hidden">
+      <div className="relative flex-1 min-h-[300px] sm:min-h-[420px] bg-panel flex flex-col justify-between overflow-hidden">
         {activeImage && (
           <img
             src={activeImage}
             alt={`${product.name} - ${activeColorName}`}
-            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+            className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.03]"
             referrerPolicy="no-referrer"
           />
         )}
-        <div className="absolute inset-0 bg-gradient-to-b from-black/50 via-transparent to-black/75 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/15 to-black/30 pointer-events-none" />
 
-        {/* Rank marker */}
-        <div className="flex items-start justify-between z-10">
-          <div className="space-y-0.5">
-            <span className="font-display text-3xl sm:text-5xl font-black text-white leading-none drop-shadow-md">
-              N.º 01
-            </span>
-            <span className="text-[8.5px] sm:text-[9.5px] font-mono tracking-[0.28em] text-zinc-300 uppercase font-bold block drop-shadow">
-              ✦ MÁS VENDIDO ✦
+        {/* Top Floating Row: Pill badge & Favorite */}
+        <div className="flex items-center justify-between p-4 sm:p-5 z-10">
+          <div className="flex items-center gap-1.5 bg-black/60 backdrop-blur-md text-white border border-white/15 px-3 py-1 rounded-full shadow-lg">
+            <Sparkles className="w-3.5 h-3.5 text-accent animate-pulse" />
+            <span className="text-[10px] sm:text-[11px] font-sans font-bold tracking-wide uppercase">
+              DROP DESTACADO #01
             </span>
           </div>
+
           <button
             id={`spotlight-favorite-btn-${product.id}`}
             onClick={(e) => {
               e.stopPropagation();
               onToggleFavorite(product);
             }}
-            className={`p-2 rounded-full transition-all duration-300 shrink-0 backdrop-blur-md cursor-pointer ${
+            className={`w-9 h-9 rounded-full flex items-center justify-center transition-all duration-300 backdrop-blur-md cursor-pointer ${
               isFavorite
-                ? 'bg-rose-600 text-white shadow-md'
-                : 'bg-black/60 text-zinc-300 hover:text-white border border-white/20'
+                ? 'bg-rose-600 text-white shadow-lg scale-105'
+                : 'bg-black/50 text-white hover:bg-white hover:text-black border border-white/20'
             }`}
             aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
           >
@@ -69,94 +68,101 @@ export default function FeaturedSpotlightCard({
           </button>
         </div>
 
-        {/* Category / fabric tag */}
-        <div className="flex flex-col items-center justify-center my-auto z-10 space-y-1 text-center py-4">
-          <span className="text-[11px] font-mono tracking-[0.25em] text-white uppercase drop-shadow bg-black/60 px-3 py-1 border border-white/15">
-            {product.category}
-          </span>
-          <span className="text-[9.5px] font-mono tracking-widest text-zinc-300 uppercase drop-shadow">
-            {product.fabrics.join(' / ')}
-          </span>
+        {/* Bottom Floating Info Over Image */}
+        <div className="p-4 sm:p-6 z-10 space-y-1">
+          <div className="flex items-center gap-2">
+            <span className="bg-white/90 backdrop-blur-md text-black font-extrabold text-[9.5px] uppercase tracking-wider px-2.5 py-0.5 rounded-full">
+              {product.category}
+            </span>
+            <span className="text-white/80 text-[11px] font-medium tracking-wide">
+              {product.fabrics.join(' • ')}
+            </span>
+          </div>
+          <p className="text-zinc-200 text-xs sm:text-sm line-clamp-2 drop-shadow-sm pt-1">
+            {product.description}
+          </p>
         </div>
-
-        {/* Curator note */}
-        <p className="text-[11px] text-zinc-200 italic leading-relaxed max-w-md mx-auto text-center z-10 line-clamp-2 drop-shadow">
-          "{product.description}"
-        </p>
       </div>
 
-      {/* Info + actions */}
-      <div className="p-4 sm:p-6 flex-1 flex flex-col justify-between font-sans">
+      {/* Info + Actions */}
+      <div className="p-4 sm:p-6 flex-1 flex flex-col justify-between font-sans bg-paper-soft">
         <div>
-          {/* Interactive Color Swatches */}
-          <div className="space-y-1.5 mb-3">
-            <div className="flex items-center justify-between text-[8.5px] font-mono uppercase text-muted">
-              <span>Color: <strong className="text-ink">{activeColorName}</strong></span>
-              <span>{product.colors.length} colores</span>
-            </div>
-
-            <div className="flex gap-1.5 flex-wrap items-center">
-              {product.colors.slice(0, 8).map((color) => {
-                const isColorActive = activeColorName === color;
-                return (
-                  <button
-                    key={color}
-                    type="button"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setPreviewColor(color);
-                    }}
-                    onMouseEnter={() => setPreviewColor(color)}
-                    title={`Ver en color ${color}`}
-                    className={`w-4 h-4 rounded-full border transition-all cursor-pointer ${getColorClass(
-                      color
-                    )} ${
-                      isColorActive
-                        ? 'ring-2 ring-accent scale-110 shadow-sm'
-                        : 'opacity-70 hover:opacity-100 hover:scale-105'
-                    }`}
-                  />
-                );
-              })}
-            </div>
+          {/* Swatches Header */}
+          <div className="flex items-center justify-between text-xs text-muted mb-2">
+            <span>Color: <strong className="text-ink font-semibold">{activeColorName}</strong></span>
+            <span>{product.colors.length} variantes</span>
           </div>
 
-          <h3 className="font-display text-lg sm:text-xl font-bold text-ink tracking-wide leading-tight mb-1">
+          {/* Swatches List */}
+          <div className="flex gap-2 flex-wrap items-center mb-3">
+            {product.colors.slice(0, 8).map((color) => {
+              const isColorActive = activeColorName === color;
+              return (
+                <button
+                  key={color}
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setPreviewColor(color);
+                  }}
+                  onMouseEnter={() => setPreviewColor(color)}
+                  title={`Color: ${color}`}
+                  className={`w-5 h-5 rounded-full border transition-all cursor-pointer ${getColorClass(
+                    color
+                  )} ${
+                    isColorActive
+                      ? 'ring-2 ring-accent scale-110 shadow-sm'
+                      : 'opacity-70 hover:opacity-100 hover:scale-105'
+                  }`}
+                />
+              );
+            })}
+          </div>
+
+          {/* Product Name */}
+          <h3 className="font-heading font-extrabold text-lg sm:text-xl text-ink tracking-tight leading-snug mb-1">
             {product.name}
           </h3>
-          <p className="text-[11px] text-muted mb-3 font-mono">
-            Tallas: <span className="text-ink font-semibold">{product.sizes.join(' • ')}</span>
+          <p className="text-xs text-muted mb-4">
+            Tallas disponibles: <span className="text-ink font-semibold">{product.sizes.join(' • ')}</span>
           </p>
         </div>
 
         <div>
-          <div className="flex items-baseline space-x-2 mb-3.5 pt-2.5 border-t border-line">
-            <span className="font-mono text-xl sm:text-2xl font-black text-ink">
+          {/* Price Tag */}
+          <div className="flex items-baseline gap-2 mb-4 pt-3 border-t border-line">
+            <span className="font-sans font-extrabold text-2xl sm:text-3xl text-ink tracking-tight">
               S/. {product.price.toFixed(2)}
             </span>
             {product.oldPrice && (
-              <span className="font-mono text-sm text-muted line-through">
+              <span className="text-sm text-muted line-through">
                 S/. {product.oldPrice.toFixed(2)}
+              </span>
+            )}
+            {product.oldPrice && (
+              <span className="ml-auto bg-rose-500/10 text-accent font-bold text-xs px-2.5 py-0.5 rounded-full">
+                AHORRA S/. {(product.oldPrice - product.price).toFixed(2)}
               </span>
             )}
           </div>
 
-          <div className="grid grid-cols-2 gap-2">
+          {/* Action Buttons */}
+          <div className="grid grid-cols-2 gap-2.5">
             <button
               id={`spotlight-quick-view-${product.id}`}
               onClick={() => onQuickView(product)}
-              className="bg-panel text-ink border border-line hover:border-ink/50 text-[10px] uppercase tracking-wider py-2.5 transition-all flex items-center justify-center gap-1.5 font-mono font-semibold cursor-pointer rounded-xs"
+              className="bg-panel hover:bg-paper text-ink border border-line text-xs font-semibold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 cursor-pointer shadow-xs"
             >
-              <Eye className="w-3.5 h-3.5" />
-              <span>Ver detalle</span>
+              <Eye className="w-4 h-4 text-muted" />
+              <span>Ver Detalle</span>
             </button>
             <button
               id={`spotlight-add-to-cart-${product.id}`}
               onClick={() => onQuickView(product)}
               disabled={product.stock === 0}
-              className="bg-ink text-paper hover:opacity-90 text-[10px] uppercase tracking-wider py-2.5 transition-all flex items-center justify-center gap-1.5 font-mono font-bold shadow-md cursor-pointer disabled:bg-panel disabled:text-muted rounded-xs"
+              className="bg-accent hover:bg-rose-600 text-white text-xs font-bold py-3 px-4 rounded-xl transition-all flex items-center justify-center gap-2 shadow-md cursor-pointer disabled:bg-panel disabled:text-muted"
             >
-              <ShoppingBag className="w-3.5 h-3.5" />
+              <ShoppingBag className="w-4 h-4" />
               <span>Comprar</span>
             </button>
           </div>

@@ -44,8 +44,6 @@ export default function CustomerReviews() {
   const [visibleReviews, setVisibleReviews] = useState(() => shuffle(REVIEW_POOL).slice(0, REVIEWS_PER_BATCH));
 
   useEffect(() => {
-    // A shuffled "deck" of the whole pool — draw 4 at a time so every review appears
-    // once before any repeat, then reshuffle for the next full pass.
     let deck = shuffle(REVIEW_POOL);
     let cursor = REVIEWS_PER_BATCH;
 
@@ -66,77 +64,78 @@ export default function CustomerReviews() {
   )}`;
 
   return (
-    <section id="social-integration" className="py-14 sm:py-24 bg-paper border-b border-line relative overflow-hidden">
+    <section id="social-integration" className="py-16 sm:py-24 bg-paper border-b border-line relative overflow-hidden">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         {/* Section Header */}
-        <div className="text-center space-y-2 mb-10 sm:mb-16">
-          <span className="text-[10px] uppercase tracking-[0.35em] text-muted font-bold block flex items-center justify-center gap-2">
-            <span className="text-accent">✦</span> RESEÑAS VERIFICADAS <span className="text-accent">✦</span>
+        <div className="text-center space-y-3 mb-12 sm:mb-16">
+          <span className="text-xs uppercase tracking-widest text-muted font-bold block flex items-center justify-center gap-2">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            FEEDBACK REAL • COMUNIDAD VANTA
           </span>
-          <h2 className="font-display font-black text-2xl sm:text-4xl text-ink tracking-wide uppercase">
-            Clientes con pedido entregado
+          <h2 className="font-heading font-extrabold text-2xl sm:text-4xl text-ink tracking-tight uppercase">
+            Clientes con Pedido Entregado
           </h2>
-          <p className="text-muted text-xs sm:text-sm font-light max-w-md mx-auto leading-relaxed">
-            Reseñas enviadas por WhatsApp después de cada entrega confirmada. Sin filtros, solo la palabra de quien ya recibió su pedido.
+          <p className="text-muted text-xs sm:text-sm font-normal max-w-lg mx-auto leading-relaxed">
+            Opiniones directas enviadas por WhatsApp tras recibir su pedido. Transparencia total sobre nuestro calce, caída y textiles.
           </p>
-          <div className="pt-3">
+          <div className="pt-2">
             <a
               id="review-whatsapp-btn"
               href={reviewWhatsAppUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center space-x-2 bg-ink text-paper hover:opacity-90 px-6 py-3 text-xs tracking-widest uppercase font-mono font-bold shadow-md transition-all cursor-pointer"
+              className="inline-flex items-center space-x-2 bg-ink text-paper hover:opacity-95 px-6 py-3.5 text-xs tracking-wider uppercase font-sans font-bold rounded-full shadow-lg hover:shadow-xl hover:scale-[1.02] transition-all cursor-pointer"
             >
               <MessageCircle className="w-4 h-4" />
-              <span>DEJA TU RESEÑA POR WHATSAPP</span>
+              <span>Deja tu reseña por WhatsApp</span>
             </a>
           </div>
         </div>
 
-        {/* Reviews Grid — rotates to a fresh batch every 5 minutes */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {/* Reviews Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {visibleReviews.map((post) => (
             <div
               id={`review-card-${post.id}`}
               key={post.id}
-              className="relative min-h-[240px] p-5 bg-panel border border-line flex flex-col justify-between text-ink transition-all duration-500 hover:border-accent/40 hover:shadow-lg group"
+              className="relative min-h-[250px] p-6 bg-paper-soft border border-line rounded-3xl flex flex-col justify-between text-ink transition-all duration-300 hover:border-accent/40 hover:shadow-xl hover:-translate-y-1 group"
             >
               {/* Header with name and location */}
               <div className="flex justify-between items-start z-10">
                 <div className="space-y-0.5">
-                  <span className="text-[10px] text-ink font-mono font-bold block">{post.name}</span>
-                  <span className="text-[7.5px] text-muted font-mono block">{post.location}</span>
+                  <span className="text-xs text-ink font-bold block">{post.name}</span>
+                  <span className="text-[10px] text-muted block">{post.location}</span>
                 </div>
-                <div className="flex items-center space-x-1 text-accent" title="Pedido entregado">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
+                <div className="flex items-center space-x-1 text-emerald-500" title="Pedido entregado y verificado">
+                  <CheckCircle2 className="w-4 h-4" />
                 </div>
               </div>
 
               {/* Quote Review */}
-              <div className="z-10 my-auto py-2">
-                <div className="flex gap-0.5 mb-2">
+              <div className="z-10 my-auto py-3">
+                <div className="flex gap-1 mb-2.5">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star
                       key={i}
-                      className={`w-3 h-3 ${i < post.rating ? 'text-amber-400 fill-current' : 'text-line fill-current'}`}
+                      className={`w-3.5 h-3.5 ${i < post.rating ? 'text-amber-400 fill-current' : 'text-line fill-current'}`}
                     />
                   ))}
                 </div>
-                <p className="text-[10.5px] sm:text-xs font-light text-ink/85 leading-relaxed italic">
+                <p className="text-xs sm:text-sm font-normal text-ink/85 leading-relaxed">
                   "{post.review}"
                 </p>
-                <div className="mt-3 pt-2 border-t border-line text-[8px] font-mono text-muted uppercase tracking-wider">
-                  FIT: <span className="text-ink font-semibold">{post.outfit}</span>
+                <div className="mt-3.5 pt-2.5 border-t border-line text-[10px] text-muted uppercase tracking-wider">
+                  Prenda: <span className="text-ink font-semibold">{post.outfit}</span>
                 </div>
               </div>
 
               {/* Bottom Bar */}
-              <div className="flex items-center justify-between z-10 border-t border-line pt-2 text-muted font-mono text-[9px]">
-                <div className="flex items-center space-x-1">
-                  <MessageCircle className="w-3 h-3 text-muted" />
+              <div className="flex items-center justify-between z-10 border-t border-line pt-3 text-muted text-[11px]">
+                <div className="flex items-center space-x-1.5 text-muted">
+                  <MessageCircle className="w-3.5 h-3.5" />
                   <span>Vía WhatsApp</span>
                 </div>
-                <span>{post.date}</span>
+                <span className="text-[10px]">{post.date}</span>
               </div>
             </div>
           ))}

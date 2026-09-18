@@ -203,22 +203,22 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
     >
       <div
         id="product-detail-modal-card"
-        className="relative bg-paper-soft text-ink border border-line w-full max-w-5xl max-h-[94vh] overflow-y-auto shadow-2xl flex flex-col rounded-md"
+        className="relative bg-paper-soft text-ink border border-line w-full max-w-5xl max-h-[94vh] overflow-y-auto shadow-2xl flex flex-col rounded-3xl"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Floating Bar */}
-        <div className="sticky top-0 z-30 bg-paper-soft/95 backdrop-blur-md border-b border-line px-4 sm:px-6 py-3 flex items-center justify-between">
+        <div className="sticky top-0 z-30 bg-paper-soft/95 backdrop-blur-md border-b border-line px-4 sm:px-6 py-3.5 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-accent" />
-            <span className="font-mono text-xs font-bold uppercase tracking-wider text-ink">
-              FICHA TÉCNICA // {product.name}
+            <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+            <span className="font-sans text-xs font-bold uppercase tracking-wider text-ink">
+              Detalle de Prenda • {product.name}
             </span>
           </div>
 
           <div className="flex items-center gap-2">
             <button
               onClick={() => onToggleFavorite(product)}
-              className={`p-2 rounded-full border transition-all cursor-pointer ${
+              className={`p-2.5 rounded-full border transition-all cursor-pointer ${
                 isFavorite
                   ? 'bg-accent text-white border-accent'
                   : 'bg-paper text-muted border-line hover:text-ink hover:border-ink/40'
@@ -231,7 +231,7 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
 
             <button
               onClick={onClose}
-              className="p-2 bg-paper text-muted hover:text-ink border border-line rounded-full hover:border-ink/40 transition-all cursor-pointer"
+              className="p-2.5 bg-paper text-muted hover:text-ink border border-line rounded-full hover:border-ink/40 transition-all cursor-pointer"
               aria-label="Cerrar modal"
             >
               <X className="w-4 h-4" />
@@ -242,12 +242,12 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
         {/* Modal Main Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-12 min-h-0">
           {/* ── LEFT: MULTI-VIEW MEDIA STAGE (6 cols) ── */}
-          <div className="lg:col-span-6 bg-panel p-4 sm:p-6 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-line">
+          <div className="lg:col-span-6 bg-panel/50 p-4 sm:p-6 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-line">
             {/* View Mode Switcher Tabs */}
-            <div className="flex items-center gap-1.5 p-1 bg-paper border border-line rounded-sm mb-4">
+            <div className="flex items-center gap-1.5 p-1.5 bg-paper border border-line rounded-full mb-4">
               <button
                 onClick={() => setActiveMediaTab('photo')}
-                className={`flex-1 py-1.5 px-2 text-[11px] font-mono font-bold uppercase tracking-wider rounded-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                className={`flex-1 py-2 px-3 text-xs font-sans font-bold uppercase tracking-wider rounded-full transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                   activeMediaTab === 'photo'
                     ? 'bg-ink text-paper shadow-sm'
                     : 'text-muted hover:text-ink'
@@ -259,7 +259,7 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
 
               <button
                 onClick={() => setActiveMediaTab('blueprint')}
-                className={`flex-1 py-1.5 px-2 text-[11px] font-mono font-bold uppercase tracking-wider rounded-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                className={`flex-1 py-2 px-3 text-xs font-sans font-bold uppercase tracking-wider rounded-full transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                   activeMediaTab === 'blueprint'
                     ? 'bg-accent text-white shadow-sm'
                     : 'text-muted hover:text-ink'
@@ -271,7 +271,7 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
 
               <button
                 onClick={() => setActiveMediaTab('texture')}
-                className={`flex-1 py-1.5 px-2 text-[11px] font-mono font-bold uppercase tracking-wider rounded-xs transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
+                className={`flex-1 py-2 px-3 text-xs font-sans font-bold uppercase tracking-wider rounded-full transition-all flex items-center justify-center gap-1.5 cursor-pointer ${
                   activeMediaTab === 'texture'
                     ? 'bg-ink text-paper shadow-sm'
                     : 'text-muted hover:text-ink'
@@ -283,7 +283,7 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
             </div>
 
             {/* Stage Viewer */}
-            <div className="relative w-full aspect-[4/4] sm:aspect-[4/5] max-h-[380px] sm:max-h-[460px] bg-paper border border-line rounded-sm flex items-center justify-center overflow-hidden p-3 group">
+            <div className="relative w-full aspect-[4/4] sm:aspect-[4/5] max-h-[380px] sm:max-h-[460px] bg-paper border border-line rounded-2xl flex items-center justify-center overflow-hidden p-3 group">
               {activeMediaTab === 'photo' && (
                 <>
                   {garmentPhoto ? (
@@ -295,13 +295,13 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
                       referrerPolicy="no-referrer"
                     />
                   ) : (
-                    <div className="w-full h-full flex items-center justify-center font-display text-6xl font-bold text-muted/20">
+                    <div className="w-full h-full flex items-center justify-center font-heading text-6xl font-bold text-muted/20">
                       {product.name[0]}
                     </div>
                   )}
 
                   {/* Active Photo Pill */}
-                  <div className="absolute bottom-3 left-3 bg-paper/90 backdrop-blur-md border border-line px-2.5 py-1 text-[10px] font-mono text-ink rounded-full flex items-center gap-1.5 shadow-sm">
+                  <div className="absolute bottom-3 left-3 bg-paper/90 backdrop-blur-md border border-line px-3 py-1 text-xs text-ink rounded-full flex items-center gap-2 shadow-sm font-sans font-medium">
                     <span
                       className="w-2.5 h-2.5 rounded-full border border-line"
                       style={{ backgroundColor: activeColorHex }}
@@ -314,7 +314,7 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
               )}
 
               {activeMediaTab === 'blueprint' && (
-                <div className="w-full h-full flex flex-col items-center justify-center p-1 bg-black rounded-xs relative overflow-hidden">
+                <div className="w-full h-full flex flex-col items-center justify-center p-1 bg-black rounded-xl relative overflow-hidden">
                   <img
                     src={blueprintImage}
                     alt={`Plano técnico de medidas - ${product.name}`}
@@ -323,9 +323,9 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
                       (e.currentTarget as HTMLElement).style.display = 'none';
                     }}
                   />
-                  <div className="absolute bottom-2.5 bg-black/90 backdrop-blur-md px-3 py-1 border border-[#3a3224] rounded-xs shadow-md">
-                    <span className="text-[9.5px] font-mono text-[#D1C2A5] uppercase tracking-wider font-bold">
-                      ✦ CUADRO OFICIAL DE MEDIDAS (cm) ✦
+                  <div className="absolute bottom-3 bg-black/90 backdrop-blur-md px-3.5 py-1 border border-white/10 rounded-full shadow-md">
+                    <span className="text-xs text-white uppercase tracking-wider font-semibold">
+                      Guía Oficial de Medidas (cm)
                     </span>
                   </div>
                 </div>
@@ -336,16 +336,16 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
                   <img
                     src={textureImage}
                     alt={`Macro textura de ${activeFabric}`}
-                    className="w-full h-full object-contain rounded-xs drop-shadow-sm"
+                    className="w-full h-full object-contain rounded-xl drop-shadow-sm"
                     onError={(e) => {
                       (e.currentTarget as HTMLElement).style.display = 'none';
                     }}
                   />
-                  <div className="absolute bottom-3 bg-paper/90 backdrop-blur-md border border-line px-3 py-1 text-center rounded-sm">
-                    <span className="font-mono text-xs font-bold text-accent uppercase block">
+                  <div className="absolute bottom-3 bg-paper/90 backdrop-blur-md border border-line px-4 py-1.5 text-center rounded-2xl shadow-md">
+                    <span className="text-xs font-bold text-accent uppercase block font-heading">
                       {activeFabric} · {fabricData.gsm}
                     </span>
-                    <span className="font-mono text-[9px] text-muted uppercase">
+                    <span className="text-[10px] text-muted uppercase">
                       {fabricData.weave}
                     </span>
                   </div>
@@ -354,18 +354,18 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
             </div>
 
             {/* Quick Micro Spec Strip */}
-            <div className="mt-3 grid grid-cols-3 gap-2 text-center text-[10px] font-mono">
-              <div className="bg-paper border border-line p-2 rounded-xs">
-                <span className="text-muted block text-[9px]">GRAMAJE</span>
-                <strong className="text-ink text-xs">{fabricData.gsm}</strong>
+            <div className="mt-3 grid grid-cols-3 gap-2 text-center text-xs font-sans">
+              <div className="bg-paper border border-line p-2.5 rounded-2xl shadow-2xs">
+                <span className="text-muted block text-[10px] font-medium">GRAMAJE</span>
+                <strong className="text-ink text-xs font-bold">{fabricData.gsm}</strong>
               </div>
-              <div className="bg-paper border border-line p-2 rounded-xs">
-                <span className="text-muted block text-[9px]">CORTE</span>
-                <strong className="text-ink text-xs">BOXY OVERSIZED</strong>
+              <div className="bg-paper border border-line p-2.5 rounded-2xl shadow-2xs">
+                <span className="text-muted block text-[10px] font-medium">CORTE</span>
+                <strong className="text-ink text-xs font-bold">BOXY FIT</strong>
               </div>
-              <div className="bg-paper border border-line p-2 rounded-xs">
-                <span className="text-muted block text-[9px]">ORIGEN</span>
-                <strong className="text-ink text-xs">100% PERUANO</strong>
+              <div className="bg-paper border border-line p-2.5 rounded-2xl shadow-2xs">
+                <span className="text-muted block text-[10px] font-medium">ORIGEN</span>
+                <strong className="text-ink text-xs font-bold">100% PERUANO</strong>
               </div>
             </div>
           </div>
@@ -376,33 +376,48 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
               {/* Product Title & Pricing */}
               <div className="space-y-1.5 border-b border-line pb-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-muted font-bold">
-                    VANTA ATELIER · DROP 2026
+                  <span className="text-xs font-sans tracking-wider uppercase text-muted font-semibold">
+                    VANTA STUDIO • DROP 2026
                   </span>
-                  <span className="bg-panel border border-line text-muted font-mono text-[9px] px-2 py-0.5 uppercase">
-                    STOCK: {product.stock} DISP.
+                  <span className="bg-panel border border-line text-muted font-sans text-xs px-2.5 py-0.5 rounded-full uppercase">
+                    Stock: {product.stock} disp.
                   </span>
                 </div>
 
-                <h1 className="font-display font-black text-2xl sm:text-3xl text-ink tracking-tight">
+                <h1 className="font-heading font-extrabold text-2xl sm:text-3xl text-ink tracking-tight">
                   {product.name}
                 </h1>
 
                 <div className="flex items-baseline gap-3 pt-1">
-                  <span className="font-mono text-2xl sm:text-3xl font-black text-ink">
+                  <span className="font-sans font-extrabold text-2xl sm:text-3xl text-ink tracking-tight">
                     S/ {product.price.toFixed(2)}
                   </span>
                   {product.oldPrice && (
-                    <span className="font-mono text-sm sm:text-base text-muted line-through">
+                    <span className="font-sans text-sm sm:text-base text-muted line-through">
                       S/ {product.oldPrice.toFixed(2)}
                     </span>
                   )}
                   {product.oldPrice && (
-                    <span className="text-[10px] font-mono font-bold text-accent bg-accent-soft px-2 py-0.5 rounded-full border border-accent/20">
+                    <span className="text-xs font-bold text-accent bg-rose-500/10 px-2.5 py-0.5 rounded-full">
                       -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}% OFF
                     </span>
                   )}
                 </div>
+
+                {/* Active promotion banner if configured */}
+                {product.promoBadge && (
+                  <div className="flex items-center gap-2 pt-2">
+                    <span className="inline-flex items-center gap-1.5 text-xs font-sans font-bold text-accent bg-accent/15 border border-accent/30 px-3 py-1 rounded-full shadow-xs">
+                      <Sparkles className="w-3.5 h-3.5" />
+                      {product.promoBadge}
+                    </span>
+                    {product.promoSavings && (
+                      <span className="text-xs font-semibold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-0.5 rounded-full">
+                        {product.promoSavings}
+                      </span>
+                    )}
+                  </div>
+                )}
               </div>
 
               {/* 1. Fabric Selection (Tejido) */}
@@ -494,9 +509,9 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
                       <button
                         key={sz}
                         onClick={() => setSelectedSize(sz)}
-                        className={`flex-1 py-2.5 text-xs font-mono font-bold uppercase rounded-xs border transition-all cursor-pointer ${
+                        className={`flex-1 py-2.5 text-xs font-sans font-bold uppercase rounded-xl border transition-all cursor-pointer ${
                           isSel
-                            ? 'bg-ink text-paper border-ink shadow-sm'
+                            ? 'bg-ink text-paper border-ink shadow-sm scale-[1.02]'
                             : 'bg-panel text-muted border-line hover:border-ink/40 hover:text-ink'
                         }`}
                       >
@@ -509,16 +524,16 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
 
               {/* 4. Sleeve Selection (Manga Corta vs Manga Larga) */}
               <div className="space-y-2">
-                <div className="flex justify-between items-center text-xs font-mono">
+                <div className="flex justify-between items-center text-xs">
                   <span className="text-muted">
                     4. TIPO DE MANGA: <strong className="text-ink">{activeSleeve}</strong>
                   </span>
-                  <span className="text-[10px] font-mono text-accent font-bold">
-                    {activeSleeve === 'Manga Larga' ? '✦ COBERTURA COMPLETA' : '✦ CORTE VERANO'}
+                  <span className="text-[11px] text-accent font-bold">
+                    {activeSleeve === 'Manga Larga' ? 'Cobertura completa' : 'Corte verano'}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2">
+                <div className="grid grid-cols-2 gap-2.5">
                   {['Manga Corta', 'Manga Larga'].map((sleeveOption) => {
                     const isSel = activeSleeve === sleeveOption;
                     return (
@@ -526,9 +541,9 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
                         key={sleeveOption}
                         type="button"
                         onClick={() => setSelectedSleeve(sleeveOption)}
-                        className={`py-2.5 px-3 text-xs font-mono font-bold uppercase rounded-xs border transition-all cursor-pointer flex items-center justify-center gap-2 ${
+                        className={`py-2.5 px-4 text-xs font-sans font-bold uppercase rounded-xl border transition-all cursor-pointer flex items-center justify-center gap-2 ${
                           isSel
-                            ? 'bg-accent text-white border-accent shadow-sm'
+                            ? 'bg-accent text-white border-accent shadow-sm scale-[1.02]'
                             : 'bg-panel text-muted border-line hover:border-ink/40 hover:text-ink'
                         }`}
                       >
@@ -541,15 +556,15 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
               </div>
 
               {/* Technical Specifications Summary Box */}
-              <div className="bg-panel border border-line p-3.5 rounded-sm space-y-2 text-xs">
-                <div className="flex items-center gap-1.5 text-accent font-mono font-bold text-[10px] uppercase">
-                  <Sparkles className="w-3 h-3" />
-                  <span>ESPECIFICACIONES DE CONFECCIÓN:</span>
+              <div className="bg-panel/70 border border-line p-4 rounded-2xl space-y-2 text-xs">
+                <div className="flex items-center gap-1.5 text-accent font-sans font-bold text-xs uppercase">
+                  <Sparkles className="w-3.5 h-3.5" />
+                  <span>Especificaciones de Confección:</span>
                 </div>
                 <p className="text-muted leading-relaxed font-sans text-xs">
                   {fabricData.description}
                 </p>
-                <div className="grid grid-cols-2 gap-x-2 gap-y-1 font-mono text-[10px] text-muted pt-1 border-t border-line/60">
+                <div className="grid grid-cols-2 gap-x-3 gap-y-1 text-xs text-muted pt-2 border-t border-line/60">
                   <div>• Hilos: 100% Algodón Peinado</div>
                   <div>• Teñido: Reactivo al frío</div>
                   <div>• Costuras: Reforzadas dobles</div>
@@ -559,18 +574,18 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
             </div>
 
             {/* Action Bar & WhatsApp Buy */}
-            <div className="space-y-3 pt-2 border-t border-line">
+            <div className="space-y-3 pt-3 border-t border-line">
               {toastMessage && (
-                <div className="py-2 px-3 bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs font-mono font-bold text-center rounded-sm animate-in fade-in">
+                <div className="py-2.5 px-4 bg-emerald-950/80 border border-emerald-600 text-emerald-300 text-xs font-bold text-center rounded-xl animate-in fade-in">
                   {toastMessage}
                 </div>
               )}
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <button
                   id="ficha-add-to-cart-cta"
                   onClick={handleAddToCart}
-                  className="w-full bg-ink text-paper hover:opacity-90 font-mono font-bold text-xs uppercase tracking-widest py-3.5 px-4 flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md rounded-sm"
+                  className="w-full bg-ink text-paper hover:opacity-95 font-sans font-bold text-xs uppercase tracking-wider py-3.5 px-5 flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg hover:shadow-xl hover:scale-[1.02] rounded-full"
                 >
                   <ShoppingBag className="w-4 h-4" />
                   <span>Agregar al Carrito</span>
@@ -579,9 +594,9 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
                 <button
                   id="ficha-buy-whatsapp-cta"
                   onClick={handleBuyOnWhatsApp}
-                  className="w-full bg-[#161620] hover:bg-[#222230] text-white border border-zinc-700 font-mono font-bold text-xs uppercase tracking-widest py-3.5 px-4 flex items-center justify-center gap-2 transition-all cursor-pointer shadow-md rounded-sm"
+                  className="w-full bg-emerald-700 hover:bg-emerald-600 text-white font-sans font-bold text-xs uppercase tracking-wider py-3.5 px-5 flex items-center justify-center gap-2 transition-all cursor-pointer shadow-lg hover:shadow-xl hover:scale-[1.02] rounded-full"
                 >
-                  <Send className="w-4 h-4 text-emerald-400" />
+                  <Send className="w-4 h-4 text-white" />
                   <span>Comprar por WhatsApp</span>
                 </button>
               </div>

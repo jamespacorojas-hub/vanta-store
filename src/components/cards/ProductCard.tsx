@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, ShoppingBag, Eye } from 'lucide-react';
+import { Heart, ShoppingBag, Eye, Flame, Tag } from 'lucide-react';
 import { Product } from '../../types';
 import { getColorClass } from '../../utils/colorSwatch';
 import { getProductImageByColor } from '../../utils/productImages';
@@ -44,88 +44,68 @@ export default function ProductCard({
 
   const activeColorName = previewColor || product.colors[0] || 'Original';
 
-  // Determine tag style (Luxury gothic & refined crimson accents)
+  // Determine tag style with modern pill design
   const getTagStyle = (tag: string) => {
     switch (tag) {
       case 'Nuevo':
-        return 'bg-white text-black font-bold border border-white shadow-xs';
+        return 'bg-white text-black font-bold shadow-sm';
       case 'Oferta':
-        return 'bg-rose-700 text-white font-bold border border-rose-600 shadow-xs';
+        return 'bg-rose-600 text-white font-bold shadow-sm';
       case 'Últimas unidades':
-        return 'bg-zinc-800 text-zinc-200 border border-zinc-700 font-bold';
+        return 'bg-amber-500/90 text-black font-semibold backdrop-blur-sm';
       case 'Próximamente':
-        return 'bg-[#0a0a0f] text-zinc-400 border border-zinc-800 font-bold';
+        return 'bg-zinc-800/90 text-zinc-300 font-medium backdrop-blur-sm';
       default:
-        return 'bg-zinc-900 text-zinc-200 border border-zinc-800';
+        return 'bg-black/60 text-white border border-white/10 backdrop-blur-md';
     }
   };
 
   return (
     <div
       id={`product-card-${product.id}`}
-      className="group flex flex-col h-full bg-paper-soft relative border border-line p-2 sm:p-4 transition-all duration-500 hover:border-accent hover:shadow-lg"
+      className="group flex flex-col h-full bg-paper-soft text-ink relative border border-line rounded-2xl p-2.5 sm:p-3.5 transition-all duration-300 hover:border-accent/40 hover:shadow-xl hover:-translate-y-1 overflow-hidden"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
       {/* Product Photo Stage */}
-      <div className="relative aspect-[3/4] w-full overflow-hidden bg-panel mb-2.5 sm:mb-4 select-none border border-line flex flex-col justify-between p-2 sm:p-4 text-ink transition-all duration-500 group-hover:border-accent/40">
+      <div className="relative aspect-[3/4] w-full overflow-hidden rounded-xl bg-panel select-none flex items-center justify-center text-ink transition-all duration-500">
         {hasPhoto && activeImage ? (
           <>
             <img
               src={activeImage}
               alt={`${product.name} - ${activeColorName}`}
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
               referrerPolicy="no-referrer"
             />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-transparent to-black/80 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" />
           </>
         ) : (
           /* Placeholder for unreleased garments */
           <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 text-center px-4 bg-panel">
-            <span className="font-display text-2xl sm:text-4xl font-medium text-muted select-none">
+            <span className="font-heading text-2xl sm:text-3xl font-bold text-muted/60 select-none">
               {product.name.split(' ').map((n) => n[0]).join('').toUpperCase()}
             </span>
-            <span className="text-[8px] sm:text-[9px] uppercase tracking-[0.2em] text-muted font-bold font-mono">Foto próximamente</span>
+            <span className="text-[10px] uppercase tracking-wider text-muted font-medium">Próximamente</span>
           </div>
         )}
 
-        {/* Upper metadata row (desktop only) */}
-        <div className={`hidden sm:flex justify-between items-start w-full z-10 text-[9px] font-mono uppercase tracking-wide ${hasPhoto ? 'text-zinc-200 drop-shadow-md' : 'text-zinc-500'}`}>
-          <span>{product.id.toUpperCase()}</span>
-          <span className="text-zinc-400">2026</span>
-        </div>
-
-        {/* Bottom Specs & Fabric badge row (desktop only) */}
-        <div className={`hidden sm:block w-full z-10 space-y-1.5 pt-2 border-t ${hasPhoto ? 'border-white/15 text-zinc-200' : 'border-zinc-800'}`}>
-          <div className={`flex justify-between items-center text-[9px] font-mono uppercase ${hasPhoto ? 'text-zinc-200 drop-shadow-md' : 'text-zinc-500'}`}>
-            <span>Corte relajado</span>
-            {product.tags.includes('Próximamente') ? (
-              <span className="font-mono text-zinc-400">PRÓX. LANZAMIENTO</span>
-            ) : product.stock <= 4 && product.stock > 0 ? (
-              <span className="font-mono text-rose-400 font-bold">STOCK: {product.stock}!</span>
-            ) : (
-              <span className="font-mono text-zinc-300">STOCK: {product.stock}</span>
-            )}
-          </div>
-          <div className="flex items-center space-x-1.5">
-            <span className="w-1.5 h-1.5 bg-rose-500 rounded-full" />
-            <span className={`text-[9px] uppercase font-medium ${hasPhoto ? 'text-zinc-200 drop-shadow-md' : 'text-zinc-500'}`}>
-              Disponible en {product.fabrics[0]}
+        {/* Floating Badges Container (Upper Left) */}
+        <div className="absolute top-2.5 left-2.5 flex flex-col gap-1.5 z-10 items-start">
+          {product.promoBadge && (
+            <span className="text-[9px] sm:text-[10px] font-sans font-extrabold uppercase tracking-wide px-2.5 py-0.5 rounded-full bg-gradient-to-r from-rose-600 to-amber-600 text-white shadow-md flex items-center gap-1">
+              <Flame className="w-3 h-3 text-amber-200 fill-amber-200" />
+              {product.promoBadge.split('·')[0].trim()}
             </span>
-          </div>
-        </div>
-
-        {/* Badges container (Upper left) */}
-        <div className="absolute top-2 left-2 sm:top-3 sm:left-3 flex flex-col gap-1 z-10">
+          )}
           {rank && (
-            <span className="text-[7px] sm:text-[8px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 select-none bg-white text-black shadow-md">
-              N.º {String(rank).padStart(2, '0')}
+            <span className="text-[9px] sm:text-[10px] font-sans font-extrabold uppercase tracking-wide px-2.5 py-0.5 rounded-full bg-white text-black shadow-md">
+              #{rank} TOP
             </span>
           )}
           {product.tags.slice(0, 1).map((tag) => (
             <span
               key={tag}
-              className={`text-[7px] sm:text-[8px] font-mono uppercase tracking-wider px-1.5 py-0.5 select-none ${getTagStyle(
+              className={`text-[9px] sm:text-[10px] font-sans uppercase tracking-wide px-2.5 py-0.5 rounded-full ${getTagStyle(
                 tag
               )}`}
             >
@@ -133,61 +113,67 @@ export default function ProductCard({
             </span>
           ))}
           {product.stock <= 4 && product.stock > 0 && (
-            <span className="text-[7px] sm:text-[8px] font-mono font-bold uppercase tracking-wider px-1.5 py-0.5 bg-rose-950/90 text-rose-200 border border-rose-700">
-              Stock {product.stock}
+            <span className="text-[8.5px] font-sans font-bold uppercase tracking-wide px-2 py-0.5 rounded-full bg-rose-600/90 text-white shadow-sm backdrop-blur-sm">
+              Solo {product.stock} disp.
             </span>
           )}
         </div>
 
-        {/* Favorite Icon (Upper right) */}
+        {/* Favorite Icon (Upper Right) - Sleek Floating Circle */}
         <button
           id={`favorite-btn-${product.id}`}
           onClick={(e) => {
             e.stopPropagation();
             onToggleFavorite(product);
           }}
-          className={`absolute top-2 right-2 sm:top-3 sm:right-3 p-1.5 rounded-none backdrop-blur-md transition-all duration-300 z-10 ${
+          className={`absolute top-2.5 right-2.5 w-8 h-8 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-300 z-10 cursor-pointer ${
             isFavorite
-              ? 'bg-rose-700 text-white border border-rose-600 shadow-[0_0_10px_rgba(225,29,72,0.4)]'
-              : 'bg-black/60 text-zinc-300 hover:text-white hover:bg-black/90 border border-white/15'
+              ? 'bg-rose-600 text-white shadow-md scale-105'
+              : 'bg-black/40 text-white hover:bg-white hover:text-black border border-white/15'
           }`}
           aria-label={isFavorite ? 'Quitar de favoritos' : 'Agregar a favoritos'}
         >
-          <Heart className={`w-3 sm:w-3.5 h-3 sm:h-3.5 ${isFavorite ? 'fill-current' : ''}`} />
+          <Heart className={`w-3.5 h-3.5 ${isFavorite ? 'fill-current' : ''}`} />
         </button>
 
-        {/* Desktop Hover quick-actions panel */}
-        <div className="absolute inset-x-0 bottom-0 bg-paper-soft/95 backdrop-blur-md p-3 transition-all duration-300 translate-y-full group-hover:translate-y-0 hidden sm:flex flex-col gap-2 border-t border-line z-20 text-ink">
+        {/* Desktop Quick-Actions Pill Bar (Hover slide up) */}
+        <div className="absolute inset-x-2.5 bottom-2.5 transition-all duration-300 translate-y-3 opacity-0 group-hover:translate-y-0 group-hover:opacity-100 hidden sm:flex items-center gap-1.5 z-20">
           <button
             id={`quick-view-card-${product.id}`}
             onClick={() => onQuickView(product)}
-            className="w-full bg-panel text-ink border border-line hover:border-accent hover:text-accent text-[10px] uppercase tracking-widest py-2 transition-all flex items-center justify-center gap-1.5 font-mono font-semibold cursor-pointer"
+            className="flex-1 bg-paper/90 backdrop-blur-md text-ink hover:bg-paper border border-line/80 text-[11px] font-semibold py-2 px-3 rounded-xl transition-all flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
           >
             <Eye className="w-3.5 h-3.5 text-muted" />
-            Ficha / Ver detalle
+            <span>Ver Ficha</span>
           </button>
           <button
             id={`add-to-cart-card-${product.id}`}
             onClick={() => onQuickView(product)}
             disabled={product.stock === 0}
-            className="w-full bg-accent text-white hover:bg-rose-600 text-[10px] uppercase tracking-widest py-2 transition-all flex items-center justify-center gap-1.5 font-mono font-bold shadow-md cursor-pointer disabled:bg-panel disabled:text-muted disabled:shadow-none disabled:cursor-not-allowed"
+            className="bg-accent text-white hover:bg-rose-600 p-2 rounded-xl transition-all flex items-center justify-center shadow-md cursor-pointer disabled:bg-panel disabled:text-muted disabled:shadow-none disabled:cursor-not-allowed"
+            title="Seleccionar talla y comprar"
           >
-            <ShoppingBag className="w-3.5 h-3.5" />
-            Comprar / Seleccionar
+            <ShoppingBag className="w-4 h-4" />
           </button>
         </div>
       </div>
 
-      {/* Product Card Info */}
-      <div className="flex-1 flex flex-col font-sans px-0.5">
-        {/* Interactive Color Swatches Row */}
-        <div className="space-y-1 mb-1.5">
-          <div className="flex items-center justify-between text-[7.5px] sm:text-[8.5px] font-mono uppercase text-muted">
-            <span className="truncate max-w-[90px] sm:max-w-none">Color: <strong className="text-ink">{activeColorName}</strong></span>
-            <span className="text-muted shrink-0">{product.colors.length} col.</span>
-          </div>
+      {/* Product Info */}
+      <div className="flex-1 flex flex-col pt-3 px-1">
+        {/* Category & Fabric Subtitle */}
+        <div className="flex items-center justify-between text-[10px] text-muted font-medium uppercase tracking-wider mb-1">
+          <span>{product.category}</span>
+          <span className="truncate max-w-[100px] text-muted/80">{product.fabrics[0]}</span>
+        </div>
 
-          <div className="flex gap-1 sm:gap-1.5 flex-wrap items-center">
+        {/* Product Title */}
+        <h3 className="font-heading font-bold text-xs sm:text-sm text-ink leading-snug mb-2 group-hover:text-accent transition-colors line-clamp-1">
+          {product.name}
+        </h3>
+
+        {/* Color Swatches Row */}
+        <div className="flex items-center justify-between mb-2.5">
+          <div className="flex gap-1.5 items-center flex-wrap">
             {product.colors.slice(0, 4).map((color) => {
               const isColorActive = activeColorName === color;
               return (
@@ -199,10 +185,10 @@ export default function ProductCard({
                     setPreviewColor(color);
                   }}
                   onMouseEnter={() => setPreviewColor(color)}
-                  title={`Ver en color ${color}`}
-                  className={`w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full border transition-all cursor-pointer ${
-                    getColorClass(color)
-                  } ${
+                  title={`Color: ${color}`}
+                  className={`w-3.5 h-3.5 rounded-full border transition-all cursor-pointer ${getColorClass(
+                    color
+                  )} ${
                     isColorActive
                       ? 'ring-2 ring-accent scale-110 shadow-sm'
                       : 'opacity-70 hover:opacity-100 hover:scale-105'
@@ -211,53 +197,58 @@ export default function ProductCard({
               );
             })}
             {product.colors.length > 4 && (
-              <button
-                type="button"
-                onClick={() => onQuickView(product)}
-                className="text-[7px] sm:text-[8px] font-mono text-muted hover:text-ink px-1 py-0.5 border border-line bg-panel transition-colors"
-                title="Ver todos los colores"
-              >
+              <span className="text-[9px] text-muted font-medium ml-0.5">
                 +{product.colors.length - 4}
-              </button>
+              </span>
             )}
           </div>
+          <span className="text-[10px] text-muted font-medium">
+            {product.sizes.join(' ')}
+          </span>
         </div>
 
-        {/* Product Name */}
-        <h3 className="font-display font-bold text-[11px] sm:text-sm text-ink tracking-wide leading-tight mb-1 group-hover:text-accent transition-colors line-clamp-1">
-          {product.name}
-        </h3>
-
-        {/* Sizes inline row */}
-        <p className="text-[8.5px] sm:text-[10px] text-muted mb-0.5 font-mono truncate">
-          Tallas: <span className="text-ink font-medium">{product.sizes.join(' • ')}</span>
-        </p>
-
-        {/* Price Tag with discount */}
-        <div className="flex items-baseline space-x-1.5 mt-auto pt-1.5 border-t border-line">
-          <span className="font-mono text-xs sm:text-base font-black text-ink">
-            S/. {product.price.toFixed(2)}
-          </span>
-          {product.oldPrice && (
-            <span className="font-mono text-[9px] sm:text-xs text-muted line-through">
-              S/. {product.oldPrice.toFixed(2)}
+        {/* Promotion Ribbon */}
+        {product.promoBadge && (
+          <div className="mt-1 mb-2 p-1.5 px-2.5 rounded-xl bg-accent/15 border border-accent/30 flex items-center justify-between text-[10px]">
+            <span className="font-sans font-bold text-accent tracking-wide flex items-center gap-1 truncate">
+              <Tag className="w-3 h-3 shrink-0" />
+              <span>{product.promoBadge}</span>
             </span>
-          )}
+            {product.promoSavings && (
+              <span className="text-emerald-400 font-semibold text-[9.5px] shrink-0 ml-1">
+                {product.promoSavings}
+              </span>
+            )}
+          </div>
+        )}
+
+        {/* Price Tag with Modern Discount Pill */}
+        <div className="flex items-center justify-between mt-auto pt-2 border-t border-line">
+          <div className="flex items-baseline gap-1.5">
+            <span className="font-sans font-extrabold text-sm sm:text-base text-ink tracking-tight">
+              S/. {product.price.toFixed(2)}
+            </span>
+            {product.oldPrice && (
+              <span className="text-[10px] sm:text-xs text-muted line-through">
+                S/. {product.oldPrice.toFixed(2)}
+              </span>
+            )}
+          </div>
           {product.oldPrice && (
-            <span className="font-mono text-[7.5px] sm:text-[8.5px] font-bold text-accent ml-auto">
+            <span className="bg-rose-500/15 text-accent font-bold text-[10px] px-2 py-0.5 rounded-full border border-rose-500/20">
               -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}%
             </span>
           )}
         </div>
 
-        {/* Mobile Clean Direct Action Button */}
+        {/* Mobile Quick Action Button */}
         <button
           id={`quick-view-card-mob-${product.id}`}
           onClick={() => onQuickView(product)}
-          className="mt-2 w-full bg-accent text-white hover:bg-rose-600 text-[9px] py-1.5 font-mono uppercase font-bold flex items-center justify-center gap-1 shadow-sm transition-all sm:hidden cursor-pointer"
+          className="mt-2.5 w-full bg-panel hover:bg-accent hover:text-white border border-line text-ink text-[11px] font-semibold py-2 rounded-xl flex items-center justify-center gap-1.5 shadow-sm transition-all sm:hidden cursor-pointer"
         >
-          <ShoppingBag className="w-3 h-3" />
-          VER PRENDA
+          <ShoppingBag className="w-3.5 h-3.5" />
+          <span>Ver Prenda</span>
         </button>
       </div>
     </div>

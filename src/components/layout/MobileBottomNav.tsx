@@ -46,7 +46,7 @@ export default function MobileBottomNav({
       label: 'Nuevos',
       icon: Sparkles,
       isActive: currentPath === '/nuevos-ingresos',
-      badge: '✦',
+      badge: 'NEW',
       onClick: () => {
         navigate('/nuevos-ingresos');
         window.scrollTo({ top: 0, behavior: 'smooth' });

@@ -5,47 +5,47 @@ export default function Benefits() {
   const benefitList = [
     {
       id: 'b1',
-      icon: <Truck className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />,
+      icon: <Truck className="w-5 h-5 text-accent" />,
       title: 'ENVÍOS A TODO EL PERÚ',
-      desc: 'Despachos express en Lima en 24 a 48h y envíos nacionales vía Olva y Shalom.',
+      desc: 'Despachos express en Lima en 24 a 48h y envíos nacionales seguros vía Olva y Shalom.',
     },
     {
       id: 'b2',
-      icon: <RotateCcw className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />,
-      title: 'CAMBIOS SIN COSTO',
-      desc: 'Cuentas con hasta 7 días para cambios de talla o modelo de forma ágil.',
+      icon: <RotateCcw className="w-5 h-5 text-accent" />,
+      title: 'CAMBIOS SIN COMPLICACIONES',
+      desc: 'Hasta 7 días para cambios de talla o modelo de forma rápida y asesorada.',
     },
     {
       id: 'b3',
-      icon: <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />,
-      title: 'CALIDAD PESADA',
-      desc: 'Fibras seleccionadas con gramajes altos y estructura boxy fit duradera.',
+      icon: <ShieldCheck className="w-5 h-5 text-accent" />,
+      title: 'CALIDAD PESADA GARANTIZADA',
+      desc: 'Fibras seleccionadas con gramajes altos y estructura boxy fit que no se deforma.',
     },
     {
       id: 'b4',
-      icon: <CreditCard className="w-4 h-4 sm:w-5 sm:h-5 text-accent" />,
-      title: 'YAPE, PLIN & TARJETAS',
-      desc: 'Paga con total seguridad por Yape, transferencia bancaria o contra-entrega.',
+      icon: <CreditCard className="w-5 h-5 text-accent" />,
+      title: 'PAGOS 100% SEGUROS',
+      desc: 'Paga con Yape, Plin, tarjetas de crédito/débito o transferencia bancaria.',
     },
   ];
 
   return (
-    <section id="purchase-benefits" className="border-y border-line bg-paper-soft text-ink py-8 sm:py-14 relative">
+    <section id="purchase-benefits" className="border-y border-line bg-panel/40 text-ink py-12 sm:py-16 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 sm:gap-5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
           {benefitList.map((benefit) => (
             <div
               id={`benefit-${benefit.id}`}
               key={benefit.id}
-              className="flex flex-col space-y-2 p-3 sm:p-5 bg-panel border border-line rounded-xs hover:border-ink/40 transition-all duration-300"
+              className="flex flex-col space-y-3 p-6 bg-paper-soft border border-line rounded-3xl hover:border-accent/40 hover:-translate-y-1 transition-all duration-300 shadow-sm"
             >
-              <div className="w-8 h-8 sm:w-10 sm:h-10 bg-paper flex items-center justify-center border border-line rounded-full shrink-0">
+              <div className="w-12 h-12 bg-panel flex items-center justify-center border border-line rounded-2xl shrink-0 shadow-xs">
                 {benefit.icon}
               </div>
-              <h3 className="text-[10px] sm:text-xs uppercase tracking-wider font-bold text-ink font-mono flex items-center gap-1">
-                <span className="text-accent">◈</span> {benefit.title}
+              <h3 className="text-xs sm:text-sm uppercase tracking-wider font-extrabold text-ink font-heading">
+                {benefit.title}
               </h3>
-              <p className="text-muted text-[10px] sm:text-xs font-light leading-relaxed font-sans">
+              <p className="text-muted text-xs sm:text-sm font-normal leading-relaxed">
                 {benefit.desc}
               </p>
             </div>

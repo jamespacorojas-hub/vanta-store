@@ -1,11 +1,11 @@
 @import "tailwindcss";
 
 @theme {
-  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --font-sans: "Plus Jakarta Sans", "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
-  --font-display: "Cinzel", "Cinzel Decorative", serif;
-  --font-gothic: "Cinzel Decorative", "Cinzel", serif;
-  --font-heading: "Syne", "Cinzel", sans-serif;
+  --font-display: "Syne", "Plus Jakarta Sans", -apple-system, sans-serif;
+  --font-gothic: "Syne", "Plus Jakarta Sans", sans-serif;
+  --font-heading: "Syne", "Plus Jakarta Sans", sans-serif;
 
   /* Dynamic Theme Variables */
   --color-paper: var(--theme-paper);
@@ -18,58 +18,67 @@
   --color-line: var(--theme-line);
 
   --animate-pulse-red: pulse-red 2s infinite ease-in-out;
-  --animate-glow: gothic-glow 3s infinite ease-in-out;
+  --animate-glow: ambient-glow 3s infinite ease-in-out;
 
   @keyframes pulse-red {
     0%, 100% {
       background-color: #e11d48;
       color: #ffffff;
       border-color: #f43f5e;
-      box-shadow: 0 0 10px rgba(225, 29, 72, 0.4);
+      box-shadow: 0 0 14px rgba(225, 29, 72, 0.45);
     }
     50% {
       background-color: #1a0810;
       color: #fda4af;
       border-color: #e11d48;
-      box-shadow: 0 0 3px rgba(225, 29, 72, 0.15);
+      box-shadow: 0 0 6px rgba(225, 29, 72, 0.2);
     }
   }
 
-  @keyframes gothic-glow {
+  @keyframes ambient-glow {
     0%, 100% {
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.05), inset 0 0 15px rgba(255, 255, 255, 0.02);
+      box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5), 0 0 20px -5px rgba(225, 29, 72, 0.15);
     }
     50% {
-      box-shadow: 0 0 25px rgba(255, 255, 255, 0.1), inset 0 0 20px rgba(255, 255, 255, 0.04);
+      box-shadow: 0 15px 35px -10px rgba(0, 0, 0, 0.6), 0 0 30px 0px rgba(225, 29, 72, 0.25);
+    }
+  }
+
+  @keyframes timer-progress {
+    0% {
+      width: 0%;
+    }
+    100% {
+      width: 100%;
     }
   }
 }
 
 :root {
-  --theme-paper: #08080a;
-  --theme-paper-soft: #0e0e14;
-  --theme-panel: #14141d;
-  --theme-ink: #ffffff;
-  --theme-muted: #94a3b8;
+  --theme-paper: #13151f;
+  --theme-paper-soft: #1b1e2c;
+  --theme-panel: #222638;
+  --theme-ink: #f9fafb;
+  --theme-muted: #9ca3af;
   --theme-accent: #e11d48;
-  --theme-accent-soft: #200812;
-  --theme-line: #22222f;
-  --theme-header-bg: rgba(8, 8, 10, 0.96);
-  --theme-modal-bg: #0b0b10;
+  --theme-accent-soft: rgba(225, 29, 72, 0.15);
+  --theme-line: rgba(255, 255, 255, 0.10);
+  --theme-header-bg: rgba(19, 21, 31, 0.88);
+  --theme-modal-bg: #181b28;
 }
 
 html.light,
 body.light,
 [data-theme="light"] {
-  --theme-paper: #f8fafc;
+  --theme-paper: #f3f5f9;
   --theme-paper-soft: #ffffff;
-  --theme-panel: #f1f5f9;
-  --theme-ink: #090d16;
+  --theme-panel: #e5e9f2;
+  --theme-ink: #0f172a;
   --theme-muted: #64748b;
   --theme-accent: #e11d48;
   --theme-accent-soft: #ffe4e6;
-  --theme-line: #e2e8f0;
-  --theme-header-bg: rgba(255, 255, 255, 0.96);
+  --theme-line: rgba(0, 0, 0, 0.08);
+  --theme-header-bg: rgba(243, 245, 249, 0.90);
   --theme-modal-bg: #ffffff;
 }
 
@@ -79,19 +88,22 @@ body {
   font-family: var(--font-sans);
   overflow-x: hidden;
   transition: background-color 0.25s ease, color 0.25s ease;
+  letter-spacing: -0.01em;
 }
 
 body:not(.light) {
   background-image: 
-    radial-gradient(ellipse at 50% -10%, rgba(255, 255, 255, 0.03) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 120%, rgba(225, 29, 72, 0.03) 0%, transparent 50%);
+    radial-gradient(ellipse at 50% -10%, rgba(225, 29, 72, 0.07) 0%, transparent 55%),
+    radial-gradient(ellipse at 90% 25%, rgba(99, 102, 241, 0.06) 0%, transparent 45%),
+    radial-gradient(ellipse at 10% 65%, rgba(225, 29, 72, 0.05) 0%, transparent 50%),
+    radial-gradient(ellipse at 50% 115%, rgba(139, 92, 246, 0.05) 0%, transparent 60%);
   background-attachment: fixed;
 }
 
 body.light {
   background-image:
-    radial-gradient(ellipse at 50% -10%, rgba(0, 0, 0, 0.02) 0%, transparent 60%),
-    radial-gradient(ellipse at 80% 120%, rgba(225, 29, 72, 0.025) 0%, transparent 50%);
+    radial-gradient(ellipse at 50% -10%, rgba(225, 29, 72, 0.03) 0%, transparent 60%),
+    radial-gradient(ellipse at 80% 120%, rgba(99, 102, 241, 0.03) 0%, transparent 50%);
   background-attachment: fixed;
 }
 

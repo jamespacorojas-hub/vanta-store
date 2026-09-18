@@ -1,7 +1,7 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'motion/react';
-import { ArrowLeft, ArrowRight, Sparkles, Ruler } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Sparkles, Ruler, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Product } from '../../types';
 import NuevosIngresosPremium from '../../components/home/NuevosIngresosPremium';
 import TechnicalBlueprint from '../../components/product/TechnicalBlueprint';
@@ -15,6 +15,27 @@ interface NuevosIngresosPageProps {
   onExploreCatalog: () => void;
 }
 
+const NUEVOS_BANNERS = [
+  {
+    image: '/banners/banner-9.png',
+    tag: 'LANZAMIENTO OFICIAL // DROP 2026',
+    title: 'VANTA Atelier New Drop',
+    subtitle: 'Algodón peinado 24/1 & Felpa pesada 420 GSM',
+  },
+  {
+    image: '/banners/banner-5.png',
+    tag: 'SILUETA COLECTIVA',
+    title: 'Oversized Boxy Fit',
+    subtitle: 'Hombro caído y caída rígida arquitectónica',
+  },
+  {
+    image: '/banners/banner-2.png',
+    tag: 'CORTE CONTEMPORÁNEO',
+    title: 'Ingeniería Sartorial',
+    subtitle: 'Costuras reforzadas y suavizado de silicona',
+  },
+];
+
 export default function NuevosIngresosPage({
   products,
   onAddToCart,
@@ -23,6 +44,17 @@ export default function NuevosIngresosPage({
   onQuickView,
   onExploreCatalog,
 }: NuevosIngresosPageProps) {
+  const [activeBannerIdx, setActiveBannerIdx] = useState(0);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    if (isHovered) return;
+    const timer = setInterval(() => {
+      setActiveBannerIdx((prev) => (prev + 1) % NUEVOS_BANNERS.length);
+    }, 5000);
+    return () => clearInterval(timer);
+  }, [isHovered]);
+
   return (
     <div id="nuevos-ingresos-page" className="pt-[78px] sm:pt-[96px] md:pt-[130px] bg-paper">
 
@@ -62,56 +94,111 @@ export default function NuevosIngresosPage({
             </p>
 
             {/* Feature badges */}
-            <div className="flex flex-wrap gap-3">
+            <div className="flex flex-wrap gap-2.5">
               {[
-                { icon: '▣', label: 'CAJA PESADA PREMIUM' },
-                { icon: '✕', label: 'PATRONAJES DE INGENIERÍA' },
-                { icon: '◎', label: 'EDICIÓN LIMITADA' },
+                { label: 'Caja Pesada Premium' },
+                { label: 'Patronajes de Alta Costura' },
+                { label: 'Edición Limitada' },
               ].map(item => (
-                <span key={item.label} className="inline-flex items-center gap-1.5 text-[9px] font-mono uppercase tracking-widest text-muted border border-line px-2 py-1">
-                  {item.icon} {item.label}
+                <span key={item.label} className="inline-flex items-center gap-1.5 text-xs font-sans font-semibold text-muted bg-panel border border-line px-3.5 py-1.5 rounded-full">
+                  {item.label}
                 </span>
               ))}
             </div>
 
             {/* Live card */}
-            <div className="text-[9px] font-mono text-muted space-y-1.5 border border-line bg-paper p-4 self-start">
+            <div className="text-xs font-sans text-muted space-y-2 border border-line bg-paper/60 backdrop-blur-md p-5 rounded-2xl self-start">
               {[
-                { k: 'SISTEMA', v: 'VANTA_CAD_V4.5' },
-                { k: 'UBICACIÓN', v: 'LIMA METROPOLITANA' },
-                { k: 'PIEZAS', v: `${products.length} EN DROP` },
+                { k: 'Línea', v: 'VANTA STUDIO 2026' },
+                { k: 'Ubicación', v: 'Lima Metropolitana' },
+                { k: 'Prendas', v: `${products.length} disponibles en drop` },
               ].map(row => (
                 <div key={row.k} className="flex justify-between gap-8">
                   <span className="text-muted">{row.k}:</span>
                   <span className="font-bold text-ink">{row.v}</span>
                 </div>
               ))}
-              <div className="flex justify-between gap-8 pt-1 border-t border-line">
-                <span className="text-muted">DISP:</span>
-                <span className="font-black text-accent animate-pulse">● DROP ACTIVO</span>
+              <div className="flex justify-between gap-8 pt-2 border-t border-line">
+                <span className="text-muted">Estado:</span>
+                <span className="font-extrabold text-accent flex items-center gap-1.5">
+                  <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                  DROP ACTIVO
+                </span>
               </div>
             </div>
           </div>
 
-          {/* RIGHT — imagen real sin superposición */}
-          <div className="relative hidden lg:block">
-            <img
-              src="/imagenes/banner-2.png"
-              alt="Nuevos Ingresos — Colección Drop"
-              className="absolute inset-0 w-full h-full object-cover object-center"
-            />
-            {/* sutil sombra izquierda para fundir con el fondo */}
-            <div className="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-paper-soft to-transparent pointer-events-none" />
-          </div>
+          {/* RIGHT — Rotating Hero Banners */}
+          <div
+            className="relative min-h-[300px] sm:min-h-[400px] lg:min-h-full overflow-hidden flex items-center justify-center bg-black group"
+            onMouseEnter={() => setIsHovered(true)}
+            onMouseLeave={() => setIsHovered(false)}
+          >
+            {NUEVOS_BANNERS.map((banner, idx) => (
+              <div
+                key={banner.image}
+                className={`absolute inset-0 transition-opacity duration-700 ease-in-out ${
+                  idx === activeBannerIdx ? 'opacity-100 z-1' : 'opacity-0 pointer-events-none'
+                }`}
+              >
+                <img
+                  src={banner.image}
+                  alt={banner.title}
+                  className="w-full h-full object-cover object-center transition-transform duration-1000 ease-out group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-paper-soft/90 via-black/30 to-black/20" />
+                <div className="absolute inset-y-0 left-0 w-20 bg-gradient-to-r from-paper-soft to-transparent pointer-events-none hidden lg:block" />
 
-          {/* Mobile: imagen debajo del texto */}
-          <div className="lg:hidden w-full h-56 overflow-hidden relative">
-            <img
-              src="/imagenes/banner-2.png"
-              alt="Nuevos Ingresos"
-              className="w-full h-full object-cover object-top"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-paper-soft/80 to-transparent pointer-events-none" />
+                {/* Badge top */}
+                <div className="absolute top-5 left-5 z-10">
+                  <span className="bg-black/60 backdrop-blur-md border border-white/15 text-white font-mono text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
+                    {banner.tag}
+                  </span>
+                </div>
+
+                {/* Caption bottom */}
+                <div className="absolute bottom-6 left-6 right-6 z-10 text-white">
+                  <h3 className="font-heading font-extrabold text-lg sm:text-xl text-white">
+                    {banner.title}
+                  </h3>
+                  <p className="text-xs text-zinc-300 font-light mt-0.5">
+                    {banner.subtitle}
+                  </p>
+                </div>
+              </div>
+            ))}
+
+            {/* Navigation Dots & Controls */}
+            <div className="absolute bottom-5 right-5 z-20 flex items-center gap-2">
+              <div className="flex items-center gap-1.5 mr-2">
+                {NUEVOS_BANNERS.map((_, dotIdx) => (
+                  <button
+                    key={dotIdx}
+                    onClick={() => setActiveBannerIdx(dotIdx)}
+                    className={`h-1.5 rounded-full transition-all duration-300 cursor-pointer ${
+                      dotIdx === activeBannerIdx
+                        ? 'w-6 bg-accent'
+                        : 'w-2 bg-white/40 hover:bg-white/70'
+                    }`}
+                    aria-label={`Banner ${dotIdx + 1}`}
+                  />
+                ))}
+              </div>
+              <button
+                onClick={() => setActiveBannerIdx((prev) => (prev - 1 + NUEVOS_BANNERS.length) % NUEVOS_BANNERS.length)}
+                className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center hover:bg-white hover:text-black transition-all cursor-pointer"
+                aria-label="Anterior"
+              >
+                <ChevronLeft className="w-3.5 h-3.5" />
+              </button>
+              <button
+                onClick={() => setActiveBannerIdx((prev) => (prev + 1) % NUEVOS_BANNERS.length)}
+                className="w-7 h-7 rounded-full bg-black/60 backdrop-blur-md border border-white/20 text-white flex items-center justify-center hover:bg-white hover:text-black transition-all cursor-pointer"
+                aria-label="Siguiente"
+              >
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
           </div>
 
         </div>
@@ -119,50 +206,50 @@ export default function NuevosIngresosPage({
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 sm:py-20 space-y-16">
         {/* Bento Grid Capsule Highlights Panel */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full">
-          <div className="bg-panel text-ink p-5 border border-line flex flex-col justify-between relative overflow-hidden h-[180px]">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-full">
+          <div className="bg-panel/70 text-ink p-6 border border-line rounded-3xl flex flex-col justify-between relative overflow-hidden min-h-[200px] shadow-sm">
             <div className="flex justify-between items-start z-10">
-              <span className="text-[8px] font-sans tracking-widest text-muted uppercase">01 // ESPECIFICACIONES CLAVE</span>
-              <Sparkles className="w-3.5 h-3.5 text-accent" />
+              <span className="text-xs font-sans tracking-wider text-muted uppercase font-semibold">01 // ESPECIFICACIONES CLAVE</span>
+              <Sparkles className="w-4 h-4 text-accent" />
             </div>
             <div className="space-y-1.5 z-10">
-              <h4 className="font-sans font-black text-sm tracking-widest text-ink uppercase">MATERIALES PREMIUM</h4>
-              <p className="text-[10px] font-sans font-light text-muted leading-relaxed">
-                Lanzamiento confeccionado con hilado de algodón peinado 24/1 y felpa italiana pesada de hasta 420 gramos de textura tridimensional.
+              <h4 className="font-heading font-bold text-base text-ink uppercase">MATERIALES PESADOS</h4>
+              <p className="text-xs text-muted leading-relaxed font-normal">
+                Lanzamiento confeccionado con hilado de algodón peinado 24/1 y felpa pesada de hasta 420 gramos con estructura indeformable.
               </p>
             </div>
-            <div className="flex gap-2 z-10 text-[8px] font-mono text-muted uppercase border-t border-line pt-2.5 justify-between">
+            <div className="flex gap-2 z-10 text-xs text-muted border-t border-line pt-3 justify-between font-medium">
               <span>ANCHO CAJA: +4 CM</span>
-              <span>PESO MAX: 420 GSM</span>
+              <span className="text-accent font-bold">PESO: 420 GSM</span>
             </div>
           </div>
 
-          <div className="bg-paper-soft text-ink p-5 border border-line flex flex-col justify-between h-[180px]">
+          <div className="bg-panel/70 text-ink p-6 border border-line rounded-3xl flex flex-col justify-between min-h-[200px] shadow-sm">
             <div className="flex justify-between items-start">
-              <span className="text-[8px] font-sans tracking-widest text-muted uppercase">02 // EDICIÓN EXCLUSIVA</span>
-              <span className="w-1.5 h-1.5 bg-ink rounded-full" />
+              <span className="text-xs font-sans tracking-wider text-muted uppercase font-semibold">02 // EDICIÓN EXCLUSIVA</span>
+              <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
             </div>
             <div className="space-y-1 my-auto">
-              <h4 className="font-sans font-black text-sm tracking-widest text-ink uppercase">TEXTIL AVANZADO</h4>
-              <p className="text-[10px] font-sans font-light text-muted leading-normal">
-                Cada prenda ha sido tratada con suavizado de silicona y fijador de color reactivo de alto espectro para un brillo mate duradero.
+              <h4 className="font-heading font-bold text-base text-ink uppercase">TEXTIL AVANZADO</h4>
+              <p className="text-xs text-muted leading-relaxed font-normal">
+                Cada prenda ha sido tratada con suavizado de silicona y fijador de color reactivo para un brillo mate y textura sedosa.
               </p>
             </div>
-            <div className="text-[8.5px] font-sans text-muted flex items-center justify-between border-t border-line pt-2">
-              <span>FIBRA NATURAL</span>
-              <span>TACTO ULTRA SUAVE</span>
+            <div className="text-xs text-muted flex items-center justify-between border-t border-line pt-3 font-medium">
+              <span>FIBRA 100% NATURAL</span>
+              <span className="text-ink font-semibold">TACTO SUAVE</span>
             </div>
           </div>
 
-          <div className="bg-paper border border-line p-5 flex flex-col justify-between h-[180px] group/bento">
+          <div className="bg-panel/70 text-ink p-6 border border-line rounded-3xl flex flex-col justify-between min-h-[200px] group/bento shadow-sm">
             <div className="flex justify-between items-start">
-              <span className="text-[8px] font-sans tracking-widest text-muted uppercase">03 // CAD SIMULATOR</span>
-              <Ruler className="w-3.5 h-3.5 text-muted" />
+              <span className="text-xs font-sans tracking-wider text-muted uppercase font-semibold">03 // CAD SIMULATOR</span>
+              <Ruler className="w-4 h-4 text-muted" />
             </div>
             <div className="space-y-1.5">
-              <h4 className="font-sans font-black text-sm tracking-widest text-ink uppercase">PATRONAJE EN VIVO</h4>
-              <p className="text-[10px] font-sans font-light text-muted leading-relaxed">
-                ¿Quieres ver cómo medimos cada costura, dobladillo y hombro? Abre nuestro visualizador técnico interactivo con simulador de medidas.
+              <h4 className="font-heading font-bold text-base text-ink uppercase">PATRONAJE EN VIVO</h4>
+              <p className="text-xs text-muted leading-relaxed font-normal">
+                Visualiza cómo medimos cada costura, dobladillo y hombro en nuestro simulador interactivo de cotas técnicas.
               </p>
             </div>
             <button
@@ -171,9 +258,10 @@ export default function NuevosIngresosPage({
                 const widget = document.getElementById('technical-blueprint-widget');
                 if (widget) widget.scrollIntoView({ behavior: 'smooth', block: 'center' });
               }}
-              className="text-[9px] font-mono uppercase tracking-wider text-ink border-b border-ink pb-0.5 self-start flex items-center gap-1 group-hover/bento:gap-2 transition-all font-bold"
+              className="text-xs uppercase tracking-wider text-ink border-b border-accent pb-0.5 self-start flex items-center gap-1.5 group-hover/bento:gap-2.5 transition-all font-bold cursor-pointer"
             >
-              ABRIR PLANO ESQUEMÁTICO <ArrowRight className="w-3 h-3" />
+              <span>Abrir plano esquemático</span>
+              <ArrowRight className="w-3.5 h-3.5 text-accent" />
             </button>
           </div>
         </div>
@@ -191,7 +279,7 @@ export default function NuevosIngresosPage({
         <div id="technical-blueprint-widget" className="pt-16 border-t border-line scroll-mt-32">
           <div className="text-center space-y-2 mb-10 max-w-2xl mx-auto">
             <span className="text-[9.5px] font-mono tracking-[0.3em] text-accent uppercase font-bold block">
-              ✦ LABORATORIO SARTORIAL // DROP FIT 2026 ✦
+              LABORATORIO SARTORIAL // DROP FIT 2026
             </span>
             <h3 className="text-2xl sm:text-3xl font-display font-black tracking-tight text-ink uppercase">
               Simulador Técnico & Guía de Tallas

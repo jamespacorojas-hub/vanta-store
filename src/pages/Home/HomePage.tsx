@@ -10,6 +10,7 @@ import OfertasTeaserSection from './sections/OfertasTeaserSection';
 import SiluetasSection from './sections/SiluetasSection';
 import MaterialesSection from './sections/MaterialesSection';
 import CatalogSection from './sections/CatalogSection';
+import LookbookShowcase from '../../components/home/LookbookShowcase';
 
 interface HomePageProps {
   activeCategory: string;
@@ -102,6 +103,8 @@ export default function HomePage({
               onQuickView={onQuickView}
               onToggleFavorite={onToggleFavorite}
             />
+
+            <LookbookShowcase onExploreClick={handleExploreCatalog} />
 
             <SiluetasSection onSelectCategory={handleSelectSiluetaCategory} />
 

@@ -151,7 +151,7 @@ export default function CartDrawer({
           <div className="flex items-center space-x-2">
             <ShoppingBag className="w-5 h-5 text-accent" />
             <span className="text-xs uppercase tracking-widest font-mono font-bold text-ink">
-              ✦ CARRITO ({totalQuantity}) ✦
+              CARRITO ({totalQuantity})
             </span>
           </div>
           <div className="flex items-center space-x-2">
@@ -167,7 +167,7 @@ export default function CartDrawer({
             <button
               id="close-cart-btn"
               onClick={onClose}
-              className="p-1.5 hover:bg-panel text-muted hover:text-ink transition-all cursor-pointer"
+              className="p-1.5 hover:bg-panel text-muted hover:text-ink rounded-full transition-all cursor-pointer"
               aria-label="Cerrar carrito"
             >
               <X className="w-5 h-5" />
@@ -191,7 +191,7 @@ export default function CartDrawer({
               <button
                 id="empty-cart-back-to-shop"
                 onClick={onClose}
-                className="bg-accent text-white px-6 py-3 text-xs font-mono font-bold tracking-wider uppercase hover:bg-rose-600 shadow-md transition-all cursor-pointer"
+                className="bg-accent text-white px-6 py-3 text-xs font-mono font-bold tracking-wider uppercase hover:bg-rose-600 shadow-md rounded-full transition-all cursor-pointer"
               >
                 VOLVER A LA TIENDA
               </button>
@@ -209,10 +209,10 @@ export default function CartDrawer({
                     <div
                       id={`cart-item-${item.id}`}
                       key={item.id}
-                      className="flex space-x-3.5 bg-paper-soft border border-line p-2.5 relative group"
+                      className="flex space-x-3.5 bg-paper-soft border border-line rounded-2xl p-3 relative group shadow-xs"
                     >
                       {/* Item Image */}
-                      <div className="w-16 aspect-[3/4] bg-panel shrink-0 select-none border border-line overflow-hidden relative flex flex-col justify-between p-1.5 text-ink">
+                      <div className="w-16 aspect-[3/4] bg-panel shrink-0 select-none border border-line rounded-xl overflow-hidden relative flex flex-col justify-between p-1.5 text-ink">
                         {photo ? (
                           <img
                             src={photo}
@@ -257,11 +257,11 @@ export default function CartDrawer({
 
                       <div className="flex items-center justify-between mt-2">
                         {/* Quantity Incrementor */}
-                        <div className="flex items-center border border-line">
+                        <div className="flex items-center border border-line rounded-full overflow-hidden bg-panel">
                           <button
                             id={`cart-qty-dec-${item.id}`}
                             onClick={() => onUpdateQuantity(item.id, Math.max(1, item.quantity - 1))}
-                            className="px-2.5 py-0.5 text-muted hover:text-ink hover:bg-paper font-mono"
+                            className="px-2.5 py-0.5 text-muted hover:text-ink hover:bg-paper font-mono cursor-pointer"
                           >
                             -
                           </button>
@@ -269,7 +269,7 @@ export default function CartDrawer({
                           <button
                             id={`cart-qty-inc-${item.id}`}
                             onClick={() => onUpdateQuantity(item.id, Math.min(item.product.stock, item.quantity + 1))}
-                            className="px-2.5 py-0.5 text-muted hover:text-ink hover:bg-paper font-mono"
+                            className="px-2.5 py-0.5 text-muted hover:text-ink hover:bg-paper font-mono cursor-pointer"
                           >
                             +
                           </button>
@@ -319,7 +319,7 @@ export default function CartDrawer({
                     placeholder="Ej. Mateo Silva"
                     value={customerName}
                     onChange={(e) => setCustomerName(e.target.value)}
-                    className="w-full text-xs p-3 border border-line rounded-none bg-paper-soft focus:outline-none focus:border-accent font-sans"
+                    className="w-full text-xs p-3 border border-line rounded-xl bg-paper-soft focus:outline-none focus:border-accent font-sans"
                   />
                 </div>
 
@@ -328,12 +328,12 @@ export default function CartDrawer({
                   <label className="block text-[10px] uppercase tracking-wider text-muted font-semibold">
                     Tipo de Envío / Destino *
                   </label>
-                  <div className="grid grid-cols-3 gap-1.5 p-1 bg-panel border border-line">
+                  <div className="grid grid-cols-3 gap-1.5 p-1.5 bg-panel border border-line rounded-2xl">
                     <button
                       type="button"
                       id="shipping-type-lima-btn"
                       onClick={() => setShippingType('lima')}
-                      className={`py-2 px-1 text-[9px] font-mono uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 border cursor-pointer ${
+                      className={`py-2 px-1 text-[9px] font-mono uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 border rounded-xl cursor-pointer ${
                         shippingType === 'lima'
                           ? 'bg-ink text-paper-soft border-ink font-bold shadow-xs'
                           : 'bg-transparent text-muted border-transparent hover:text-ink hover:bg-paper/50'
@@ -347,7 +347,7 @@ export default function CartDrawer({
                       type="button"
                       id="shipping-type-provincia-btn"
                       onClick={() => setShippingType('provincia')}
-                      className={`py-2 px-1 text-[9px] font-mono uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 border cursor-pointer ${
+                      className={`py-2 px-1 text-[9px] font-mono uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 border rounded-xl cursor-pointer ${
                         shippingType === 'provincia'
                           ? 'bg-ink text-paper-soft border-ink font-bold shadow-xs'
                           : 'bg-transparent text-muted border-transparent hover:text-ink hover:bg-paper/50'
@@ -361,7 +361,7 @@ export default function CartDrawer({
                       type="button"
                       id="shipping-type-chat-btn"
                       onClick={() => setShippingType('chat')}
-                      className={`py-2 px-1 text-[9px] font-mono uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 border cursor-pointer ${
+                      className={`py-2 px-1 text-[9px] font-mono uppercase tracking-wider transition-all flex flex-col items-center justify-center gap-1 border rounded-xl cursor-pointer ${
                         shippingType === 'chat'
                           ? 'bg-accent text-paper-soft border-accent font-bold shadow-xs'
                           : 'bg-transparent text-muted border-transparent hover:text-ink hover:bg-paper/50'
@@ -385,7 +385,7 @@ export default function CartDrawer({
                         required
                         value={district}
                         onChange={(e) => setDistrict(e.target.value)}
-                        className="w-full text-xs p-3 border border-line rounded-none bg-paper-soft focus:outline-none focus:border-accent font-sans"
+                        className="w-full text-xs p-3 border border-line rounded-xl bg-paper-soft focus:outline-none focus:border-accent font-sans cursor-pointer"
                       >
                         <option value="">-- Seleccionar Distrito --</option>
                         {LIMA_DISTRICTS.map((dist) => (
@@ -406,7 +406,7 @@ export default function CartDrawer({
                         placeholder="Ej. Av. Javier Prado 1240, Dpto 402"
                         value={deliveryAddress}
                         onChange={(e) => setDeliveryAddress(e.target.value)}
-                        className="w-full text-xs p-3 border border-line rounded-none bg-paper-soft focus:outline-none focus:border-accent font-sans"
+                        className="w-full text-xs p-3 border border-line rounded-xl bg-paper-soft focus:outline-none focus:border-accent font-sans"
                       />
                     </div>
                   </>
@@ -425,7 +425,7 @@ export default function CartDrawer({
                         placeholder="Ej. Arequipa / Trujillo / Cusco / Chiclayo"
                         value={customCity}
                         onChange={(e) => setCustomCity(e.target.value)}
-                        className="w-full text-xs p-3 border border-line rounded-none bg-paper-soft focus:outline-none focus:border-accent font-sans"
+                        className="w-full text-xs p-3 border border-line rounded-xl bg-paper-soft focus:outline-none focus:border-accent font-sans"
                       />
                     </div>
 
@@ -439,14 +439,14 @@ export default function CartDrawer({
                         placeholder="Ej. Shalom Agencia Central / Olva Domicilio"
                         value={deliveryAddress}
                         onChange={(e) => setDeliveryAddress(e.target.value)}
-                        className="w-full text-xs p-3 border border-line rounded-none bg-paper-soft focus:outline-none focus:border-accent font-sans"
+                        className="w-full text-xs p-3 border border-line rounded-xl bg-paper-soft focus:outline-none focus:border-accent font-sans"
                       />
                     </div>
                   </>
                 )}
 
                 {shippingType === 'chat' && (
-                  <div className="p-3 border border-accent/30 bg-accent-soft text-accent text-[10px] font-sans font-medium flex items-center space-x-2 leading-relaxed">
+                  <div className="p-3 border border-accent/30 bg-accent-soft text-accent text-[10px] font-sans font-medium flex items-center space-x-2 leading-relaxed rounded-xl">
                     <MessageSquare className="w-4 h-4 shrink-0" />
                     <span>Coordinaremos tu dirección exacta, ciudad o agencia preferida directamente por WhatsApp.</span>
                   </div>
@@ -462,7 +462,7 @@ export default function CartDrawer({
                     required
                     value={paymentMethod}
                     onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-full text-xs p-3 border border-line rounded-none bg-paper-soft focus:outline-none focus:border-accent font-sans"
+                    className="w-full text-xs p-3 border border-line rounded-xl bg-paper-soft focus:outline-none focus:border-accent font-sans cursor-pointer"
                   >
                     <option value="">-- Seleccionar Método --</option>
                     {PAYMENT_METHODS.map((pm) => (
@@ -484,7 +484,7 @@ export default function CartDrawer({
                 })()}
 
                 {formError && (
-                  <div id="cart-form-error" className="bg-paper-soft border border-red-200 text-red-600 p-3 text-xs flex items-center space-x-1.5 font-sans font-medium">
+                  <div id="cart-form-error" className="bg-paper-soft border border-red-200 text-red-600 p-3 text-xs flex items-center space-x-1.5 font-sans font-medium rounded-xl">
                     <AlertCircle className="w-4 h-4 shrink-0" />
                     <span>{formError}</span>
                   </div>
@@ -512,7 +512,7 @@ export default function CartDrawer({
               id="finalize-order-wa-btn"
               type="submit"
               onClick={handleCheckout}
-              className="w-full bg-accent text-white hover:bg-rose-600 text-xs font-mono font-bold uppercase tracking-[0.18em] py-3.5 flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer rounded-xs"
+              className="w-full bg-accent text-white hover:bg-rose-600 text-xs font-mono font-bold uppercase tracking-[0.18em] py-3.5 flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer rounded-full"
             >
               <Send className="w-4 h-4" />
               FINALIZAR PEDIDO POR WHATSAPP
