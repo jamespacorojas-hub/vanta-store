@@ -135,9 +135,9 @@ export default function CatalogoInteractivoPage() {
       case 8:
         return getGarmentImage('polera', '/productos/polera/jersey/negro.png');
       case 9:
-        return '/banners/banner-3.png';
+        return '/catalogo/guia-tallas.jpg';
       case 10:
-        return '/banners/banner-4.png';
+        return '/catalogo/telas-y-pagos.jpg';
       default:
         return '/banners/banner-1.png';
     }
@@ -1017,9 +1017,26 @@ export default function CatalogoInteractivoPage() {
                         <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-400 font-bold block mb-2">
                           CALCULADOR DE TALLA
                         </span>
-                        <h3 className="text-xl sm:text-2xl font-display font-black text-white uppercase tracking-wider mb-4 sm:mb-6">
+                        <h3 className="text-xl sm:text-2xl font-display font-black text-white uppercase tracking-wider mb-3 sm:mb-4">
                           Recomendación por Estatura
                         </h3>
+
+                        {/* Technical blueprint photo card with zoom */}
+                        <div
+                          onClick={() => setZoomImage('/catalogo/guia-tallas.jpg')}
+                          className="mb-3.5 relative rounded-lg overflow-hidden border border-zinc-700/80 bg-zinc-950 group cursor-pointer aspect-[16/9] max-h-[135px] flex items-center justify-center shadow-md hover:border-rose-500/50 transition-all"
+                        >
+                          <img
+                            src="/catalogo/guia-tallas.jpg"
+                            alt="Plano Técnico de Medidas VANTA"
+                            className="w-full h-full object-cover object-top transition-transform duration-500 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                          <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-mono text-zinc-200 border border-white/15 flex items-center gap-1">
+                            <ZoomIn className="w-3 h-3 text-rose-400" />
+                            <span>Ver plano técnico HD</span>
+                          </div>
+                        </div>
 
                         <div className="space-y-2.5 sm:space-y-3 font-mono text-xs">
                           <div className="p-3 sm:p-3.5 rounded bg-zinc-900/80 border border-zinc-800 flex flex-col xs:flex-row xs:items-center justify-between gap-1.5">
@@ -1086,6 +1103,23 @@ export default function CatalogoInteractivoPage() {
                         <h2 className="text-2xl sm:text-3xl font-display font-black text-white uppercase tracking-tight mb-3 sm:mb-4">
                           Carta de Telas VANTA
                         </h2>
+
+                        {/* Fabrics & payment showcase preview with zoom */}
+                        <div
+                          onClick={() => setZoomImage('/catalogo/telas-y-pagos.jpg')}
+                          className="mb-3.5 relative rounded-lg overflow-hidden border border-zinc-700/80 bg-zinc-950 group cursor-pointer aspect-[16/9] max-h-[135px] flex items-center justify-center shadow-md hover:border-rose-500/50 transition-all"
+                        >
+                          <img
+                            src="/catalogo/telas-y-pagos.jpg"
+                            alt="Muestrario de Telas y Medios Oficiales VANTA"
+                            className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                          />
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+                          <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-mono text-zinc-200 border border-white/15 flex items-center gap-1">
+                            <ZoomIn className="w-3 h-3 text-rose-400" />
+                            <span>Ver muestrario HD</span>
+                          </div>
+                        </div>
 
                         <div className="space-y-2.5 sm:space-y-3 font-mono text-xs">
                           <div className="p-2.5 sm:p-3 rounded bg-zinc-900 border border-zinc-800">
