@@ -117,6 +117,26 @@ export default function PromoBannerSection({ promotionalProduct, onQuickView }: 
                       </span>
                     )}
                   </div>
+
+                  {/* Promo Tiers Badges */}
+                  {currentProduct.promoTiers && currentProduct.promoTiers.length > 0 && (
+                    <div className="pt-2 space-y-1.5">
+                      <span className="text-[10.5px] font-mono text-accent font-bold uppercase tracking-wider block">
+                        🔥 Packs promocionales disponibles:
+                      </span>
+                      <div className="flex flex-wrap gap-1.5">
+                        {currentProduct.promoTiers.map((t) => (
+                          <span
+                            key={t.label}
+                            className="text-[11px] font-mono font-bold px-2.5 py-1 rounded-lg bg-accent/10 border border-accent/30 text-ink flex items-center gap-1"
+                          >
+                            <span>{t.label}</span>
+                            <span className="text-emerald-500 font-normal">· S/ {t.unitPrice.toFixed(2)} c/u</span>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </motion.div>
               </AnimatePresence>
             </div>

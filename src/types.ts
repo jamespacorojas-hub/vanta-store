@@ -1,3 +1,10 @@
+export interface PromoTier {
+  quantity: number;
+  price: number;
+  label: string;
+  unitPrice: number;
+}
+
 export interface Product {
   id: string;
   name: string;
@@ -18,6 +25,7 @@ export interface Product {
   promoBadge?: string;
   promoSavings?: string;
   promoDetail?: string;
+  promoTiers?: PromoTier[];
 }
 
 export interface SaleProduct extends Product {

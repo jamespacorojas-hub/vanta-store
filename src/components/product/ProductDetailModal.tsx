@@ -136,6 +136,7 @@ export default function ProductDetailModal({
   const [selectedSleeve, setSelectedSleeve] = useState<string>('Manga Corta');
   const [quantity, setQuantity] = useState<number>(1);
   const [toastMessage, setToastMessage] = useState<string>('');
+  const [selectedPromoTier, setSelectedPromoTier] = useState<import('../../types').PromoTier | null>(null);
 
   useEffect(() => {
     setSelectedColor(product.colors[0] || 'Negro');
@@ -143,6 +144,7 @@ export default function ProductDetailModal({
     setSelectedSize('M');
     setSelectedSleeve(product.id === 'manga-larga' ? 'Manga Larga' : (product.sleeves?.[0] || 'Manga Corta'));
     setQuantity(1);
+    setSelectedPromoTier(null);
     setActiveMediaTab('photo');
     setToastMessage('');
   }, [product]);
@@ -166,30 +168,41 @@ export default function ProductDetailModal({
   const textureImage = TEXTURE_MAP[activeFabric] || '/texturas/jersey.png';
 
   const handleAddToCart = () => {
+    const productWithPromoPrice = selectedPromoTier
+      ? { ...product, price: selectedPromoTier.unitPrice, promoBadge: selectedPromoTier.label }
+      : product;
+
     onAddToCart(
-      product,
+      productWithPromoPrice,
       quantity,
       selectedSize,
       activeColor,
       activeFabric,
       activeSleeve
     );
-    setToastMessage(`✓ ${product.name} (${activeColor} - ${selectedSize} - ${activeSleeve}) agregada`);
+    setToastMessage(
+      selectedPromoTier
+        ? `✓ Promo ${selectedPromoTier.label} agregada al carrito`
+        : `✓ ${product.name} (${activeColor} - ${selectedSize} - ${activeSleeve}) agregada`
+    );
     setTimeout(() => setToastMessage(''), 2500);
   };
 
   const handleBuyOnWhatsApp = () => {
-    const msg = `Hola, VANTA. Deseo realizar el pedido de la siguiente prenda:
-
-1. Prenda: ${product.name}
-2. Tipo de Manga: ${activeSleeve}
-3. Color: ${activeColor}
-4. Tejido: ${activeFabric} (${fabricData.gsm})
-5. Talla: ${selectedSize} (Corte Boxy Fit)
-6. Cantidad: ${quantity}
-7. Precio: S/ ${(product.price * quantity).toFixed(2)}
-
-Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
+    let msg = `Hola, VANTA. Deseo realizar el pedido de la siguiente prenda:\n\n`;
+    msg += `1. Prenda: ${product.name}\n`;
+    msg += `2. Tipo de Manga: ${activeSleeve}\n`;
+    msg += `3. Color: ${activeColor}\n`;
+    msg += `4. Tejido: ${activeFabric} (${fabricData.gsm})\n`;
+    msg += `5. Talla: ${selectedSize} (Corte Boxy Fit)\n`;
+    if (selectedPromoTier) {
+      msg += `6. Promoción Elegida: 🔥 ${selectedPromoTier.label}\n`;
+      msg += `7. Total a Pagar: S/ ${selectedPromoTier.price.toFixed(2)} (S/ ${selectedPromoTier.unitPrice.toFixed(2)} c/u)\n`;
+    } else {
+      msg += `6. Cantidad: ${quantity} unidad(es)\n`;
+      msg += `7. Total a Pagar: S/ ${(product.price * quantity).toFixed(2)}\n`;
+    }
+    msg += `\nPor favor confirmar disponibilidad y métodos de pago oficiales (Agora / Oh! / Transferencia). Gracias.`;
 
     const url = `https://wa.me/51904536406?text=${encodeURIComponent(msg)}`;
     window.open(url, '_blank');
@@ -390,22 +403,30 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
 
                 <div className="flex items-baseline gap-3 pt-1">
                   <span className="font-sans font-extrabold text-2xl sm:text-3xl text-ink tracking-tight">
-                    S/ {product.price.toFixed(2)}
+                    S/ {selectedPromoTier ? selectedPromoTier.price.toFixed(2) : product.price.toFixed(2)}
                   </span>
-                  {product.oldPrice && (
-                    <span className="font-sans text-sm sm:text-base text-muted line-through">
-                      S/ {product.oldPrice.toFixed(2)}
+                  {selectedPromoTier ? (
+                    <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-1 rounded-full">
+                      Pack de {selectedPromoTier.quantity} und · S/ {selectedPromoTier.unitPrice.toFixed(2)} c/u
                     </span>
-                  )}
-                  {product.oldPrice && (
-                    <span className="text-xs font-bold text-accent bg-rose-500/10 px-2.5 py-0.5 rounded-full">
-                      -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}% OFF
-                    </span>
+                  ) : (
+                    <>
+                      {product.oldPrice && (
+                        <span className="font-sans text-sm sm:text-base text-muted line-through">
+                          S/ {product.oldPrice.toFixed(2)}
+                        </span>
+                      )}
+                      {product.oldPrice && (
+                        <span className="text-xs font-bold text-accent bg-rose-500/10 px-2.5 py-0.5 rounded-full">
+                          -{Math.round(((product.oldPrice - product.price) / product.oldPrice) * 100)}% OFF
+                        </span>
+                      )}
+                    </>
                   )}
                 </div>
 
                 {/* Active promotion banner if configured */}
-                {product.promoBadge && (
+                {product.promoBadge && !selectedPromoTier && (
                   <div className="flex items-center gap-2 pt-2">
                     <span className="inline-flex items-center gap-1.5 text-xs font-sans font-bold text-accent bg-accent/15 border border-accent/30 px-3 py-1 rounded-full shadow-xs">
                       <Sparkles className="w-3.5 h-3.5" />
@@ -419,6 +440,72 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
                   </div>
                 )}
               </div>
+
+              {/* Promo Tiers Interactive Selector */}
+              {product.promoTiers && product.promoTiers.length > 0 && (
+                <div className="p-3.5 bg-gradient-to-r from-rose-950/20 via-zinc-900/40 to-amber-950/20 border border-rose-500/30 rounded-2xl space-y-2.5">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      <Sparkles className="w-3.5 h-3.5 text-rose-500" />
+                      <span className="text-xs font-mono font-bold uppercase tracking-wider text-white">
+                        Promociones por Volumen
+                      </span>
+                    </div>
+                    {selectedPromoTier && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setSelectedPromoTier(null);
+                          setQuantity(1);
+                        }}
+                        className="text-[10.5px] font-mono text-zinc-400 hover:text-rose-400 underline cursor-pointer"
+                      >
+                        Comprar 1 unidad
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2">
+                    {product.promoTiers.map((tier) => {
+                      const isSel = selectedPromoTier?.label === tier.label;
+                      return (
+                        <button
+                          key={tier.label}
+                          type="button"
+                          onClick={() => {
+                            if (isSel) {
+                              setSelectedPromoTier(null);
+                              setQuantity(1);
+                            } else {
+                              setSelectedPromoTier(tier);
+                              setQuantity(tier.quantity);
+                            }
+                          }}
+                          className={`p-2 sm:p-2.5 rounded-xl border text-center transition-all cursor-pointer flex flex-col justify-between ${
+                            isSel
+                              ? 'bg-rose-600 text-white border-rose-400 shadow-md scale-[1.02]'
+                              : 'bg-zinc-900/80 hover:bg-zinc-800 text-zinc-200 border-zinc-700/80 hover:border-rose-500/50'
+                          }`}
+                        >
+                          <div className="text-[11px] font-sans font-bold leading-tight truncate">
+                            {tier.quantity} {product.category === 'Camisa' ? 'camisas' : product.category === 'Polera' ? 'poleras' : 'polos'}
+                          </div>
+                          <div className="text-sm sm:text-base font-mono font-black my-1">
+                            S/ {tier.price}
+                          </div>
+                          <div
+                            className={`text-[9.5px] font-mono rounded px-1 py-0.5 truncate ${
+                              isSel ? 'bg-black/30 text-white' : 'bg-emerald-500/15 text-emerald-400 font-bold'
+                            }`}
+                          >
+                            S/ {tier.unitPrice.toFixed(2)} c/u
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
 
               {/* 1. Fabric Selection (Tejido) */}
               <div className="space-y-2">

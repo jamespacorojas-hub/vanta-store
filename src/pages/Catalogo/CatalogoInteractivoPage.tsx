@@ -176,16 +176,20 @@ export default function CatalogoInteractivoPage() {
   };
 
   // Build WhatsApp inquiry link
-  const openWhatsAppInquiry = (productName?: string, colorName?: string, price?: number) => {
+  const openWhatsAppInquiry = (productName?: string, colorName?: string, price?: number, promoText?: string) => {
     let msg = `Hola VANTA, vengo del *Catálogo Interactivo 2026*.\n`;
     if (productName) {
       msg += `Me interesa pedir la siguiente prenda:\n`;
       msg += `👕 *Prenda:* ${productName}\n`;
       if (colorName) msg += `🎨 *Color:* ${colorName}\n`;
-      if (price) msg += `💰 *Precio Catálogo:* S/ ${price.toFixed(2)}\n`;
+      if (promoText) {
+        msg += `🔥 *Promoción:* ${promoText}\n`;
+      } else if (price) {
+        msg += `💰 *Precio Catálogo:* S/ ${price.toFixed(2)}\n`;
+      }
       msg += `¿Tienen stock disponible para entrega inmediata?`;
     } else {
-      msg += `Deseo recibir asesoría y consultar disponibilidad de la colección actual.`;
+      msg += `Deseo recibir asesoría y consultar disponibilidad de las promociones de la colección actual.`;
     }
     const waUrl = `https://api.whatsapp.com/send?phone=51904536406&text=${encodeURIComponent(msg)}`;
     window.open(waUrl, '_blank');
@@ -640,8 +644,8 @@ export default function CatalogoInteractivoPage() {
                       </div>
 
                       <div className="pt-6 border-t border-zinc-800/80 flex items-center justify-between gap-2">
-                        <span className="text-xs text-zinc-400 font-mono">
-                          Promoción: 2x desde S/ 70
+                        <span className="text-xs text-rose-400 font-mono font-bold">
+                          🔥 Promociones activas desde S/ 35
                         </span>
                         <button
                           onClick={() => handlePageChange(3)}
@@ -804,6 +808,38 @@ export default function CatalogoInteractivoPage() {
                                 {product.promoDetail}
                               </span>
                             </div>
+
+                            {/* Promo Tiers Action Cards */}
+                            {product.promoTiers && product.promoTiers.length > 0 && (
+                              <div className="mt-3.5 p-3 rounded-xl bg-gradient-to-r from-rose-950/20 via-zinc-900/60 to-amber-950/20 border border-rose-500/30">
+                                <div className="text-[10.5px] font-mono text-rose-400 font-bold uppercase tracking-wider mb-2 flex items-center justify-between">
+                                  <span className="flex items-center gap-1.5">
+                                    <Sparkles className="w-3.5 h-3.5 text-rose-500" />
+                                    <span>Packs en Promoción (Toca para pedir):</span>
+                                  </span>
+                                </div>
+                                <div className="grid grid-cols-3 gap-1.5">
+                                  {product.promoTiers.map((tier) => (
+                                    <button
+                                      key={tier.label}
+                                      onClick={() => openWhatsAppInquiry(product.name, activeColor, tier.price, tier.label)}
+                                      className="p-2 rounded-lg bg-black/50 hover:bg-rose-600 active:bg-rose-700 border border-zinc-700/80 hover:border-rose-400 text-center transition-all cursor-pointer group/tier"
+                                      title={`Pedir ${tier.label} al WhatsApp`}
+                                    >
+                                      <div className="text-[10px] font-mono text-zinc-300 group-hover/tier:text-white font-bold leading-tight truncate">
+                                        {tier.quantity} {product.category === 'Camisa' ? 'camisas' : product.category === 'Polera' ? 'poleras' : 'polos'}
+                                      </div>
+                                      <div className="text-sm font-mono font-black text-white my-0.5">
+                                        S/ {tier.price}
+                                      </div>
+                                      <div className="text-[9px] font-mono text-emerald-400 group-hover/tier:text-zinc-100 font-semibold truncate">
+                                        S/ {tier.unitPrice.toFixed(2)} c/u
+                                      </div>
+                                    </button>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
 
                             {/* Description */}
                             <p className="text-xs sm:text-sm text-zinc-300 font-light leading-relaxed mt-3 sm:mt-4">

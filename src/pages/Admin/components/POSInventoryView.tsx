@@ -200,10 +200,15 @@ export default function POSInventoryView() {
     const origin = window.location.origin;
     const fullImageUrl = imageUrl.startsWith('http') ? imageUrl : `${origin}${imageUrl}`;
 
+    let promosText = '';
+    if (product.promoTiers && product.promoTiers.length > 0) {
+      promosText = `\n🔥 *PROMOCIONES DE TEMPORADA:*\n` + product.promoTiers.map((t) => `  • ✅ ${t.label} (S/ ${t.unitPrice.toFixed(2)} c/u)`).join('\n') + '\n';
+    }
+
     return `🔥 *VANTA STUDIO — ${product.name.toUpperCase()}*
 ━━━━━━━━━━━━━━━━━━━━
-🏷️ *Precio:* S/ ${product.price.toFixed(2)} ${product.promoBadge ? `(${product.promoBadge})` : ''}
-${product.promoSavings ? `⚡ *Ahorro:* ${product.promoSavings}\n` : ''}🧵 *Tejido:* ${fabric.toUpperCase()} (Algodón Peruano peinado)
+🏷️ *Precio Unitario:* S/ ${product.price.toFixed(2)}
+${promosText}🧵 *Tejido:* ${fabric.toUpperCase()} (Algodón Peruano peinado)
 🎨 *Color consultado:* ${color}
 📏 *Tallas confeccionadas:* ${product.sizes.join(' · ')}
 📦 *Stock en almacén:* ${stockText}
@@ -215,7 +220,7 @@ ${product.promoSavings ? `⚡ *Ahorro:* ${product.promoSavings}\n` : ''}🧵 *Te
 📸 *Foto en alta resolución:*
 ${fullImageUrl}
 ━━━━━━━━━━━━━━━━━━━━
-¿Te gustaría separarlo en alguna talla en específico?`;
+¿Te gustaría aprovechar alguna de las promociones o separarlo en una talla?`;
   };
 
   // Copy WhatsApp snippet
@@ -578,13 +583,27 @@ ${fullImageUrl}
                           <div className="font-mono text-sm sm:text-base font-black text-white">
                             S/ {product.price.toFixed(2)}
                           </div>
-                          {product.promoBadge && (
-                            <span className="text-[9px] sm:text-[9.5px] font-mono text-rose-400 font-bold bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20 block mt-0.5">
-                              {product.promoBadge}
+                          {product.promoSavings && (
+                            <span className="text-[9px] font-mono text-emerald-400 font-bold block">
+                              {product.promoSavings}
                             </span>
                           )}
                         </div>
                       </div>
+
+                      {/* Promo Tiers Quick Summary Pills */}
+                      {product.promoTiers && product.promoTiers.length > 0 && (
+                        <div className="mt-1.5 flex flex-wrap gap-1">
+                          {product.promoTiers.map((t) => (
+                            <span
+                              key={t.label}
+                              className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-rose-950/40 text-rose-300 border border-rose-800/50 font-medium"
+                            >
+                              🔥 {t.label}
+                            </span>
+                          ))}
+                        </div>
+                      )}
 
                       {/* Real-time Stock Editor Controls */}
                       <div className="mt-2 sm:mt-2.5 p-2 rounded bg-[#181b2e] border border-[#262b47] flex items-center justify-between gap-2">
