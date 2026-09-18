@@ -23,7 +23,9 @@ import {
   X,
   Smartphone,
   Tag,
-  HandMetal
+  HandMetal,
+  QrCode,
+  CreditCard
 } from 'lucide-react';
 import { PRODUCTS } from '../../data';
 import productImageManifest from '../../data/productImageManifest.json';
@@ -53,6 +55,49 @@ const playFlipSound = () => {
     // Audio not allowed or unsupported; safe to ignore
   }
 };
+
+const FABRIC_TEXTURES = [
+  {
+    id: 'waffle',
+    name: 'Waffle Textured',
+    gsm: '400 GSM',
+    desc: 'Estructura alveolar 3D nido de abeja. Absorbe la luz de forma mate con caída pesada.',
+    ideal: 'Hoodies, Camisas y Camiseros',
+    image: '/texturas/waffle.png',
+  },
+  {
+    id: 'waffer',
+    name: 'Waffer Premium',
+    gsm: '420 GSM',
+    desc: 'Stitch entrelazado extra grueso de alta ingeniería. Mayor aislamiento térmico y solidez.',
+    ideal: 'Prendas de Invierno & Volumen',
+    image: '/texturas/waffer.png',
+  },
+  {
+    id: 'pique',
+    name: 'Piqué Estructurado',
+    gsm: '300 GSM',
+    desc: 'Tejido micro-gofrado de punto de arroz. Máxima ventilación y firmeza contra arrugas.',
+    ideal: 'Camisas Polo y Camiseros',
+    image: '/texturas/pique.png',
+  },
+  {
+    id: 'jersey',
+    name: 'Jersey Peinado 24/1',
+    gsm: '240 GSM',
+    desc: '100% Algodón peinado de fibra larga. Extra suave sobre la piel y caída recta fluida.',
+    ideal: 'Básicos, Clásicos y Cuello Pico',
+    image: '/texturas/jersey.png',
+  },
+  {
+    id: 'zyko',
+    name: 'Zyko Rústico',
+    gsm: '280 GSM',
+    desc: 'Entramado orgánico de hilos cruzados efecto lino pesado. Caída natural desestructurada.',
+    ideal: 'Poleras Zyko y Mangas Largas',
+    image: '/texturas/zyko.png',
+  },
+];
 
 export default function CatalogoInteractivoPage() {
   const [currentPage, setCurrentPage] = useState<number>(1);
@@ -200,6 +245,15 @@ export default function CatalogoInteractivoPage() {
       navigator.clipboard.writeText(url);
       setCopiedToast('¡Enlace del Catálogo copiado al portapapeles!');
       setTimeout(() => setCopiedToast(null), 3500);
+    }
+  };
+
+  // Copy arbitrary text with toast feedback
+  const handleCopyText = (text: string, label: string) => {
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText(text);
+      setCopiedToast(`¡${label} copiado al portapapeles!`);
+      setTimeout(() => setCopiedToast(null), 2500);
     }
   };
 
@@ -1093,117 +1147,263 @@ export default function CatalogoInteractivoPage() {
                     </div>
                   </>
                 ) : (
-                  /* PAGE 10: FABRIC GUIDE, OFFICIAL PAYMENTS & SHIPPING */
+                  /* PAGE 10: REAL FABRIC TEXTURES & OFFICIAL PAYMENT METHODS */
                   <>
-                    <div className="p-5 xs:p-7 sm:p-10 md:p-12 border-b md:border-b-0 md:border-r border-zinc-800 flex flex-col justify-between bg-[#0e1019]">
+                    {/* Left Page: Real Fabric Textures from the Web Store */}
+                    <div className="p-4 xs:p-5 sm:p-7 md:p-8 border-b md:border-b-0 md:border-r border-zinc-800 flex flex-col justify-between bg-[#0e1019]">
                       <div>
-                        <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-rose-400 font-bold block mb-2">
-                          10 / TEXTILES & CALIDAD
-                        </span>
-                        <h2 className="text-2xl sm:text-3xl font-display font-black text-white uppercase tracking-tight mb-3 sm:mb-4">
-                          Carta de Telas VANTA
-                        </h2>
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-rose-400 font-bold">
+                            10 / TEXTILES & CALIDAD
+                          </span>
+                          <span className="text-[9px] font-mono text-zinc-400 bg-zinc-900 border border-zinc-800 px-2 py-0.5 rounded">
+                            5 Tejidos de Atelier
+                          </span>
+                        </div>
 
-                        {/* Fabrics & payment showcase preview with zoom */}
+                        <h2 className="text-xl sm:text-2xl lg:text-3xl font-display font-black text-white uppercase tracking-tight mb-1">
+                          Carta de Texturas VANTA
+                        </h2>
+                        <p className="text-xs text-zinc-400 font-light mb-3 sm:mb-4">
+                          Hilados peruanos de alta densidad desarrollados a medida en nuestro atelier.
+                        </p>
+
+                        {/* List of Real Textures with Zoomable Swatches */}
+                        <div className="space-y-2 sm:space-y-2.5">
+                          {FABRIC_TEXTURES.map((fab) => (
+                            <div
+                              key={fab.id}
+                              className="p-2 sm:p-2.5 rounded-lg bg-zinc-900/85 hover:bg-zinc-900 border border-zinc-800/90 hover:border-rose-500/40 transition-all flex items-center gap-2.5 sm:gap-3 group"
+                            >
+                              {/* Swatch thumbnail with zoom trigger */}
+                              <div
+                                onClick={() => setZoomImage(fab.image)}
+                                className="w-12 h-12 sm:w-13 sm:h-13 rounded-md overflow-hidden border border-zinc-700/80 bg-zinc-950 shrink-0 relative cursor-pointer shadow-inner group/thumb"
+                                title={`Toca para ampliar textura ${fab.name}`}
+                              >
+                                <img
+                                  src={fab.image}
+                                  alt={`Textura ${fab.name}`}
+                                  className="w-full h-full object-cover transition-transform duration-300 group-hover/thumb:scale-110"
+                                />
+                                <div className="absolute inset-0 bg-black/40 opacity-0 group-hover/thumb:opacity-100 transition-opacity flex items-center justify-center">
+                                  <ZoomIn className="w-3.5 h-3.5 text-rose-400" />
+                                </div>
+                              </div>
+
+                              {/* Details */}
+                              <div className="flex-1 min-w-0">
+                                <div className="flex items-center justify-between gap-1.5 mb-0.5">
+                                  <span className="font-bold text-xs text-white truncate group-hover:text-rose-300 transition-colors">
+                                    {fab.name}
+                                  </span>
+                                  <span className="text-[10px] font-mono font-bold text-rose-400 bg-rose-500/10 px-1.5 py-0.5 rounded border border-rose-500/20 shrink-0">
+                                    {fab.gsm}
+                                  </span>
+                                </div>
+                                <p className="text-[11px] text-zinc-400 leading-snug line-clamp-2">
+                                  {fab.desc}
+                                </p>
+                                <div className="mt-1 flex items-center gap-1 text-[10px] font-mono text-zinc-400">
+                                  <span className="text-zinc-500">Uso:</span>
+                                  <span className="text-zinc-300 truncate">{fab.ideal}</span>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Macro banner preview */}
                         <div
                           onClick={() => setZoomImage('/catalogo/telas-y-pagos.jpg')}
-                          className="mb-3.5 relative rounded-lg overflow-hidden border border-zinc-700/80 bg-zinc-950 group cursor-pointer aspect-[16/9] max-h-[135px] flex items-center justify-center shadow-md hover:border-rose-500/50 transition-all"
+                          className="mt-3 relative rounded-lg overflow-hidden border border-zinc-800 bg-zinc-950 group cursor-pointer h-12 sm:h-14 flex items-center justify-between px-3 shadow-md hover:border-rose-500/50 transition-all"
                         >
                           <img
                             src="/catalogo/telas-y-pagos.jpg"
-                            alt="Muestrario de Telas y Medios Oficiales VANTA"
-                            className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                            alt="Laboratorio Textil VANTA"
+                            className="absolute inset-0 w-full h-full object-cover object-center opacity-30 group-hover:opacity-45 transition-opacity duration-300"
                           />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-                          <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-mono text-zinc-200 border border-white/15 flex items-center gap-1">
-                            <ZoomIn className="w-3 h-3 text-rose-400" />
-                            <span>Ver muestrario HD</span>
-                          </div>
-                        </div>
-
-                        <div className="space-y-2.5 sm:space-y-3 font-mono text-xs">
-                          <div className="p-2.5 sm:p-3 rounded bg-zinc-900 border border-zinc-800">
-                            <span className="font-bold text-white block">WAFFLE TEXTURED</span>
-                            <span className="text-[11px] text-zinc-400">
-                              Estructura alveolar tridimensional de alta transpirabilidad y tacto premium.
+                          <div className="relative z-10 flex items-center gap-2">
+                            <Sparkles className="w-4 h-4 text-rose-400" />
+                            <span className="text-xs font-bold text-white font-mono uppercase tracking-wider">
+                              Ver Muestrario Textil HD
                             </span>
                           </div>
-                          <div className="p-2.5 sm:p-3 rounded bg-zinc-900 border border-zinc-800">
-                            <span className="font-bold text-white block">JERSEY HEAVYWEIGHT 24/1</span>
-                            <span className="text-[11px] text-zinc-400">
-                              100% Algodón peinado de superficie lisa, ultra suave y caída recta.
-                            </span>
-                          </div>
-                          <div className="p-2.5 sm:p-3 rounded bg-zinc-900 border border-zinc-800">
-                            <span className="font-bold text-white block">PIQUÉ ESTRUCTURADO</span>
-                            <span className="text-[11px] text-zinc-400">
-                              Tejido de punto micro-gofrado con mayor densidad, ideal para camisas y cuellos polo.
-                            </span>
-                          </div>
-                          <div className="p-2.5 sm:p-3 rounded bg-zinc-900 border border-zinc-800">
-                            <span className="font-bold text-white block">ZYKO FLEECE 420 GSM</span>
-                            <span className="text-[11px] text-zinc-400">
-                              Felpa de alto gramaje para poleras y hoodies. Máxima calidez sin deformación.
-                            </span>
+                          <div className="relative z-10 flex items-center gap-1 text-[10px] font-mono text-rose-400 bg-black/60 px-2 py-0.5 rounded border border-rose-500/30">
+                            <ZoomIn className="w-3 h-3" />
+                            <span>Ampliar</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="pt-4 sm:pt-6 mt-4 sm:mt-0 border-t border-zinc-800/80 text-[10px] font-mono text-zinc-500">
-                        GARANTÍA DE FABRICACIÓN 100% PERUANA
+                      <div className="pt-3 sm:pt-4 mt-3 border-t border-zinc-800/80 flex items-center justify-between text-[10px] font-mono text-zinc-500">
+                        <span>GARANTÍA 100% ALGODÓN PERUANO</span>
+                        <span>0% ENCOGIMIENTO</span>
                       </div>
                     </div>
 
-                    {/* Right Page: Payments & Ordering CTA */}
-                    <div className="p-5 xs:p-7 sm:p-10 md:p-12 flex flex-col justify-between bg-[#111422]">
+                    {/* Right Page: Real Payment Methods of the Web Store */}
+                    <div className="p-4 xs:p-5 sm:p-7 md:p-8 flex flex-col justify-between bg-[#111422]">
                       <div>
-                        <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-emerald-400 font-bold block mb-2">
-                          CHECKOUT DIRECTO
-                        </span>
-                        <h3 className="text-xl sm:text-2xl font-display font-black text-white uppercase tracking-wider mb-3 sm:mb-4">
-                          Medios de Pago Oficiales
-                        </h3>
-
-                        <div className="p-3 sm:p-4 rounded bg-zinc-900/90 border border-zinc-800 space-y-2.5 sm:space-y-3 mb-4 sm:mb-6">
-                          <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-emerald-500" />
-                            <span className="font-bold text-xs text-white uppercase tracking-wider">
-                              AGORA PAY & OH! PAY
-                            </span>
-                          </div>
-                          <p className="text-xs text-zinc-300 font-light">
-                            Aceptamos pagos directos y transferencias interbancarias (CCI) desde cualquier entidad financiera (Yape, Plin, BCP, BBVA, Interbank, Scotiabank).
-                          </p>
+                        <div className="flex items-center justify-between gap-2 mb-2">
+                          <span className="text-[10px] font-mono uppercase tracking-[0.25em] text-emerald-400 font-bold">
+                            CHECKOUT DIRECTO
+                          </span>
+                          <span className="text-[9px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/30 px-2 py-0.5 rounded">
+                            Verificado 2026
+                          </span>
                         </div>
 
-                        <div className="space-y-2 text-xs font-mono text-zinc-400">
+                        <h3 className="text-xl sm:text-2xl lg:text-3xl font-display font-black text-white uppercase tracking-wider mb-1">
+                          Medios de Pago Oficiales
+                        </h3>
+                        <p className="text-xs text-zinc-400 font-light mb-3 sm:mb-4">
+                          Transfiere con seguridad desde billeteras digitales o tu aplicación bancaria.
+                        </p>
+
+                        {/* Payment Showcase: Real QR + Account Details */}
+                        <div className="p-3 sm:p-3.5 rounded-xl bg-zinc-900/95 border border-zinc-800 space-y-3 mb-3 sm:mb-4 shadow-lg">
+                          {/* QR Code & Digital Wallets */}
+                          <div className="flex flex-col sm:flex-row items-center gap-3">
+                            {/* QR Code Thumbnail with Zoom */}
+                            <div
+                              onClick={() => setZoomImage('/pagos/codigo-qr.jpeg')}
+                              className="w-24 h-24 sm:w-26 sm:h-26 shrink-0 rounded-lg overflow-hidden border-2 border-emerald-500/80 bg-white p-1 cursor-pointer group relative shadow-md"
+                              title="Toca para ampliar el Código QR de Pago"
+                            >
+                              <img
+                                src="/pagos/codigo-qr.jpeg"
+                                alt="Código QR Oficial de Pago VANTA"
+                                className="w-full h-full object-contain group-hover:scale-105 transition-transform"
+                              />
+                              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center text-white text-[10px] font-mono font-bold text-center p-1">
+                                <ZoomIn className="w-4 h-4 text-emerald-300" />
+                              </div>
+                            </div>
+
+                            {/* Wallet badges & scan instructions */}
+                            <div className="flex-1 space-y-1.5 text-center sm:text-left">
+                              <div className="flex items-center justify-center sm:justify-start gap-1.5">
+                                <QrCode className="w-3.5 h-3.5 text-emerald-400" />
+                                <span className="font-mono text-[10px] uppercase tracking-wider text-emerald-400 font-bold">
+                                  Escaneo Directo Universal
+                                </span>
+                              </div>
+                              <p className="text-[11px] text-zinc-300 leading-snug">
+                                Escanea el QR oficial desde <b className="text-white">Yape, Plin, Agora Pay</b> o cualquier banca móvil.
+                              </p>
+                              {/* Badges */}
+                              <div className="flex flex-wrap items-center justify-center sm:justify-start gap-1 pt-0.5">
+                                <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-accent/20 text-accent border border-accent/40">
+                                  Agora Pay
+                                </span>
+                                <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-red-500/20 text-red-400 border border-red-500/40">
+                                  Oh! Pay
+                                </span>
+                                <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-purple-500/20 text-purple-300 border border-purple-500/40">
+                                  Yape
+                                </span>
+                                <span className="px-1.5 py-0.5 rounded text-[9px] font-black uppercase tracking-wider bg-cyan-500/20 text-cyan-300 border border-cyan-500/40">
+                                  Plin
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          {/* Account Numbers with 1-Tap Copy */}
+                          <div className="pt-2 border-t border-zinc-800/80 space-y-1.5 font-mono">
+                            {/* Titular */}
+                            <div className="flex items-center justify-between text-[11px] bg-zinc-950/60 px-2.5 py-1.5 rounded border border-zinc-800/60">
+                              <span className="text-zinc-500 text-[10px]">TITULAR:</span>
+                              <span className="font-bold text-zinc-200 tracking-wide text-right">
+                                BRYAN MICHAEL REQUENA AVILA
+                              </span>
+                            </div>
+
+                            {/* Celular / Yape / Plin / Agora */}
+                            <div className="flex items-center justify-between text-[11px] bg-zinc-950/60 px-2.5 py-1.5 rounded border border-zinc-800/60">
+                              <div className="flex items-center gap-1.5">
+                                <Smartphone className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                                <span className="text-zinc-400 text-[10px]">CELULAR / BILLETERAS:</span>
+                                <span className="font-bold text-white tracking-wider">924 058 988</span>
+                              </div>
+                              <button
+                                onClick={() => handleCopyText('924058988', 'Número 924 058 988')}
+                                className="px-2 py-0.5 rounded bg-zinc-800 hover:bg-emerald-600 text-zinc-300 hover:text-white text-[10px] font-bold flex items-center gap-1 transition-colors cursor-pointer shrink-0"
+                                title="Copiar número"
+                              >
+                                <Copy className="w-3 h-3" />
+                                <span>Copiar</span>
+                              </button>
+                            </div>
+
+                            {/* CCI Interbancario */}
+                            <div className="flex items-center justify-between text-[11px] bg-zinc-950/60 px-2.5 py-1.5 rounded border border-zinc-800/60">
+                              <div className="flex items-center gap-1.5 truncate">
+                                <CreditCard className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                                <span className="text-zinc-400 text-[10px] shrink-0">CCI:</span>
+                                <span className="font-bold text-white tracking-wider truncate">
+                                  094-00141000636992-1-53
+                                </span>
+                              </div>
+                              <button
+                                onClick={() => handleCopyText('094-00141000636992-1-53', 'Código CCI')}
+                                className="px-2 py-0.5 rounded bg-zinc-800 hover:bg-rose-600 text-zinc-300 hover:text-white text-[10px] font-bold flex items-center gap-1 transition-colors cursor-pointer shrink-0"
+                                title="Copiar CCI"
+                              >
+                                <Copy className="w-3 h-3" />
+                                <span>Copiar</span>
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* Banks Strip */}
+                          <div className="flex flex-wrap items-center justify-between gap-1 text-[9px] font-mono text-zinc-400 pt-0.5">
+                            <span className="text-zinc-400 font-semibold">Bancos Aceptados:</span>
+                            <div className="flex items-center gap-1 text-zinc-300">
+                              <span>BCP</span>
+                              <span>·</span>
+                              <span>BBVA</span>
+                              <span>·</span>
+                              <span>Interbank</span>
+                              <span>·</span>
+                              <span>Scotiabank</span>
+                              <span>·</span>
+                              <span>BanBif</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Shipping & Delivery perks */}
+                        <div className="space-y-1 text-xs font-mono text-zinc-400">
                           <div className="flex items-center gap-2">
-                            <Truck className="w-4 h-4 text-rose-500 shrink-0" />
+                            <Truck className="w-3.5 h-3.5 text-rose-500 shrink-0" />
                             <span>Lima: Envíos express en 24 a 48 horas hábiles</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <Truck className="w-4 h-4 text-rose-500 shrink-0" />
-                            <span>Provincias: Agencias Olva Courier y Shalom Diario</span>
+                            <Truck className="w-3.5 h-3.5 text-rose-500 shrink-0" />
+                            <span>Provincias: Envíos diarios vía Olva Courier y Shalom</span>
                           </div>
                           <div className="flex items-center gap-2">
-                            <ShieldCheck className="w-4 h-4 text-teal-400 shrink-0" />
-                            <span>Cambios inmediatos por talla dentro de los 7 días</span>
+                            <ShieldCheck className="w-3.5 h-3.5 text-teal-400 shrink-0" />
+                            <span>Garantía VANTA: Cambios inmediatos por talla (7 días)</span>
                           </div>
                         </div>
                       </div>
 
-                      <div className="pt-4 sm:pt-6 mt-4 sm:mt-0 border-t border-zinc-800/80 space-y-2.5 sm:space-y-3">
+                      {/* Bottom Actions */}
+                      <div className="pt-3 sm:pt-4 mt-3 border-t border-zinc-800/80 space-y-2">
                         <button
                           onClick={() => openWhatsAppInquiry(undefined, undefined, undefined)}
-                          className="w-full bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider py-3.5 sm:py-4 px-4 rounded flex items-center justify-center gap-2.5 shadow-xl shadow-emerald-950/40 transition-all cursor-pointer"
+                          className="w-full bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white font-bold text-xs uppercase tracking-wider py-3 px-4 rounded-lg flex items-center justify-center gap-2 shadow-xl shadow-emerald-950/40 transition-all cursor-pointer"
                         >
-                          <MessageCircle className="w-5 h-5" />
+                          <MessageCircle className="w-4 h-4" />
                           <span>Hacer Pedido al WhatsApp: 904 536 406</span>
                         </button>
 
                         <a
                           href="/"
-                          className="w-full bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 text-xs font-mono py-2.5 rounded flex items-center justify-center gap-2 transition-colors border border-zinc-700"
+                          className="w-full bg-zinc-800/80 hover:bg-zinc-700 text-zinc-300 text-xs font-mono py-2 rounded-lg flex items-center justify-center gap-2 transition-colors border border-zinc-700"
                         >
                           <span>Explorar Carrito & Tienda Online Completa</span>
                           <ArrowRight className="w-3.5 h-3.5" />
