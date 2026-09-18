@@ -115,6 +115,34 @@ export default function CatalogoInteractivoPage() {
     return fallback;
   };
 
+  // Helper to get thumbnail image for each catalog page in visual index
+  const getPageThumbnail = (pageNum: number): string => {
+    switch (pageNum) {
+      case 1:
+        return '/banners/banner-1.png';
+      case 2:
+        return '/banners/banner-2.png';
+      case 3:
+        return getGarmentImage('camisa', '/productos/camisa/jersey/blanco.png');
+      case 4:
+        return getGarmentImage('camisero', '/productos/camisero/jersey/cemento.png');
+      case 5:
+        return getGarmentImage('manga-larga', '/productos/manga-larga/jersey/vino.png');
+      case 6:
+        return getGarmentImage('clasico', '/productos/clasico/jersey/denim.png');
+      case 7:
+        return getGarmentImage('notch', '/productos/notch/jersey/botella.png');
+      case 8:
+        return getGarmentImage('polera', '/productos/polera/jersey/negro.png');
+      case 9:
+        return '/banners/banner-3.png';
+      case 10:
+        return '/banners/banner-4.png';
+      default:
+        return '/banners/banner-1.png';
+    }
+  };
+
   // Page turn navigation
   const handlePageChange = useCallback(
     (page: number) => {
@@ -255,24 +283,28 @@ export default function CatalogoInteractivoPage() {
   return (
     <div className="min-h-screen bg-[#090a0f] text-zinc-100 flex flex-col selection:bg-rose-600 selection:text-white font-sans antialiased">
       {/* ── TOP FLOATING CONTROL BAR (EDITORIAL HEADER) ── */}
-      <header className="sticky top-0 z-50 bg-[#0c0d14]/90 backdrop-blur-md border-b border-zinc-800/80 px-2.5 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-1.5 sm:gap-3 select-none">
-        {/* Brand & Edition */}
-        <div className="flex items-center gap-2 shrink-0">
-          <div className="w-6 h-6 rounded bg-rose-600 flex items-center justify-center font-black text-xs text-white">
-            V
-          </div>
-          <div>
-            <span className="font-display font-black tracking-[0.2em] text-white text-xs sm:text-sm">
-              VANTA
-            </span>
-            <span className="hidden md:inline-block ml-2 text-[10px] font-mono tracking-widest text-zinc-400 uppercase bg-zinc-800/80 px-2 py-0.5 rounded border border-zinc-700/50">
-              LOOKBOOK INTERACTIVO
-            </span>
-          </div>
-        </div>
+      <header className="sticky top-0 z-50 bg-[#0c0d14]/95 backdrop-blur-md border-b border-zinc-800/80 px-2 sm:px-4 py-2 sm:py-2.5 flex items-center justify-between gap-1 sm:gap-3 select-none">
+        {/* Brand: Pure Panther Logo Icon + VANTA */}
+        <a
+          href="/"
+          className="flex items-center gap-1.5 sm:gap-2 shrink-0 hover:opacity-85 transition-opacity cursor-pointer"
+          title="Ir a la tienda VANTA"
+        >
+          <img
+            src="/vanta-panther-white.png"
+            alt="VANTA"
+            className="h-7 sm:h-8 w-auto object-contain drop-shadow-sm shrink-0"
+          />
+          <span className="font-display font-black tracking-[0.2em] text-white text-xs sm:text-sm">
+            VANTA
+          </span>
+          <span className="hidden lg:inline-block ml-1 text-[9px] font-mono tracking-widest text-zinc-400 uppercase bg-zinc-800/80 px-2 py-0.5 rounded border border-zinc-700/50">
+            LOOKBOOK
+          </span>
+        </a>
 
         {/* Center: Page Switcher & Small Arrows */}
-        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+        <div className="flex items-center gap-0.5 sm:gap-1.5 shrink-0">
           <button
             onClick={handlePrevPage}
             disabled={currentPage === 1}
@@ -280,7 +312,7 @@ export default function CatalogoInteractivoPage() {
             title="Página Anterior (←)"
             aria-label="Página Anterior"
           >
-            <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+            <ChevronLeft className="w-4 h-4" />
           </button>
 
           {/* Quick Page Jump Selector */}
@@ -288,15 +320,15 @@ export default function CatalogoInteractivoPage() {
             <select
               value={currentPage}
               onChange={(e) => handlePageChange(Number(e.target.value))}
-              className="bg-zinc-900 border border-zinc-700 text-zinc-200 text-[11px] sm:text-xs font-mono py-1 pl-2 pr-5 sm:pl-2.5 sm:pr-7 rounded focus:outline-none focus:border-rose-500 cursor-pointer appearance-none max-w-[85px] xs:max-w-[130px] sm:max-w-none truncate"
+              className="bg-zinc-900 border border-zinc-700 text-zinc-200 text-[10.5px] sm:text-xs font-mono py-1 pl-1.5 pr-4 sm:pl-2.5 sm:pr-6 rounded focus:outline-none focus:border-rose-500 cursor-pointer appearance-none max-w-[70px] xs:max-w-[88px] sm:max-w-[170px] md:max-w-none truncate"
             >
               {pageTitles.map((p) => (
                 <option key={p.num} value={p.num}>
-                  {p.num < 10 ? `0${p.num}` : p.num} / {totalPages} — {p.title}
+                  {p.num < 10 ? `0${p.num}` : p.num}/{totalPages} {p.title}
                 </option>
               ))}
             </select>
-            <span className="pointer-events-none absolute right-1.5 sm:right-2 text-zinc-500 text-[9px] sm:text-[10px]">▼</span>
+            <span className="pointer-events-none absolute right-1 sm:right-1.5 text-zinc-500 text-[8px] sm:text-[9px]">▼</span>
           </div>
 
           <button
@@ -306,40 +338,43 @@ export default function CatalogoInteractivoPage() {
             title="Página Siguiente (→)"
             aria-label="Página Siguiente"
           >
-            <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Right Tools: View Mode, Audio, Share, WhatsApp & Store */}
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-          {/* View Mode Toggle (desktop only) */}
-          <div className="hidden md:flex items-center bg-zinc-900 border border-zinc-800 rounded p-0.5">
+        {/* Right Tools: View Mode Toggle (ALL devices), Audio, WhatsApp, Share */}
+        <div className="flex items-center gap-1 sm:gap-1.5 shrink-0">
+          {/* View Mode Toggle — now visible on ALL screen sizes */}
+          <div className="flex items-center bg-zinc-900 border border-zinc-800 rounded p-0.5">
             <button
               onClick={() => setViewMode('spread')}
-              className={`px-2 py-1 text-[11px] font-mono rounded transition-colors ${
+              className={`p-1 sm:px-2 sm:py-1 text-[11px] font-mono rounded transition-colors flex items-center gap-1 ${
                 viewMode === 'spread' ? 'bg-zinc-700 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'
               }`}
               title="Vista Revista (Doble Página)"
             >
-              Revista
+              <BookOpen className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Revista</span>
             </button>
             <button
               onClick={() => setViewMode('single')}
-              className={`px-2 py-1 text-[11px] font-mono rounded transition-colors ${
+              className={`p-1 sm:px-2 sm:py-1 text-[11px] font-mono rounded transition-colors flex items-center gap-1 ${
                 viewMode === 'single' ? 'bg-zinc-700 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'
               }`}
               title="Página Individual"
             >
-              Página
+              <Smartphone className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Página</span>
             </button>
             <button
               onClick={() => setViewMode('grid')}
-              className={`px-2 py-1 text-[11px] font-mono rounded transition-colors ${
+              className={`p-1 sm:px-2 sm:py-1 text-[11px] font-mono rounded transition-colors flex items-center gap-1 ${
                 viewMode === 'grid' ? 'bg-zinc-700 text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'
               }`}
-              title="Ver Todas las Páginas"
+              title="Índice Visual (Todas las Páginas)"
             >
               <Grid className="w-3.5 h-3.5" />
+              <span className="hidden md:inline">Índice</span>
             </button>
           </div>
 
@@ -349,16 +384,16 @@ export default function CatalogoInteractivoPage() {
             className="p-1.5 rounded text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
             title={isSoundEnabled ? 'Silenciar sonido de página' : 'Activar sonido de página'}
           >
-            {isSoundEnabled ? <Volume2 className="w-4 h-4 text-rose-400" /> : <VolumeX className="w-4 h-4" />}
+            {isSoundEnabled ? <Volume2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-rose-400" /> : <VolumeX className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
           </button>
 
           {/* Share Button */}
           <button
             onClick={handleShare}
             className="p-1.5 rounded text-zinc-400 hover:text-white hover:bg-zinc-800 transition-colors cursor-pointer"
-            title="Compartir enlace del catálogo"
+            title="Compartir catálogo"
           >
-            <Share2 className="w-4 h-4" />
+            <Share2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </button>
 
           {/* Fullscreen Button */}
@@ -373,19 +408,19 @@ export default function CatalogoInteractivoPage() {
           {/* Order via WhatsApp Direct CTA */}
           <button
             onClick={() => openWhatsAppInquiry()}
-            className="flex items-center gap-1 sm:gap-1.5 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-[11px] sm:text-xs font-bold px-2 sm:px-3 py-1.5 rounded transition-all shadow-sm cursor-pointer ml-0.5 sm:ml-1 shrink-0"
+            className="flex items-center gap-1 bg-emerald-600 hover:bg-emerald-500 active:bg-emerald-700 text-white text-[11px] sm:text-xs font-bold p-1.5 sm:px-2.5 sm:py-1.5 rounded transition-all shadow-sm cursor-pointer shrink-0"
             title="Pedir por WhatsApp al 904536406"
           >
             <MessageCircle className="w-3.5 h-3.5" />
-            <span className="hidden xs:inline">WhatsApp</span>
+            <span className="hidden md:inline">WhatsApp</span>
           </button>
 
           {/* Store Switcher */}
           <a
             href="/"
-            className="hidden lg:flex items-center gap-1 text-[11px] font-mono text-zinc-400 hover:text-rose-400 transition-colors px-2 py-1 rounded hover:bg-zinc-900 border border-transparent hover:border-zinc-800"
+            className="hidden xl:flex items-center gap-1 text-[11px] font-mono text-zinc-400 hover:text-rose-400 transition-colors px-2 py-1 rounded hover:bg-zinc-900 border border-transparent hover:border-zinc-800"
           >
-            <span>Tienda Web</span>
+            <span>Tienda</span>
             <ExternalLink className="w-3 h-3" />
           </a>
         </div>
@@ -419,13 +454,13 @@ export default function CatalogoInteractivoPage() {
               </div>
               <button
                 onClick={() => setViewMode('spread')}
-                className="bg-rose-600 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1.5 cursor-pointer"
+                className="bg-rose-600 hover:bg-rose-500 text-white text-xs font-bold px-3 py-1.5 rounded flex items-center gap-1.5 cursor-pointer transition-colors"
               >
                 <BookOpen className="w-3.5 h-3.5" /> Volver a Modo Revista
               </button>
             </div>
 
-            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
               {pageTitles.map((p) => (
                 <div
                   key={p.num}
@@ -433,15 +468,33 @@ export default function CatalogoInteractivoPage() {
                     setCurrentPage(p.num);
                     setViewMode('spread');
                   }}
-                  className={`group relative bg-zinc-900 rounded-lg overflow-hidden border transition-all cursor-pointer hover:scale-[1.02] ${
-                    currentPage === p.num ? 'border-rose-500 ring-2 ring-rose-500/30' : 'border-zinc-800 hover:border-zinc-600'
+                  className={`group relative bg-zinc-900 rounded-xl overflow-hidden border transition-all cursor-pointer hover:scale-[1.02] shadow-lg ${
+                    currentPage === p.num ? 'border-rose-500 ring-2 ring-rose-500/40' : 'border-zinc-800 hover:border-zinc-600'
                   }`}
                 >
-                  <div className="aspect-[3/4] bg-zinc-950 flex flex-col items-center justify-center p-4 relative overflow-hidden">
-                    <span className="font-display font-black text-4xl text-zinc-800 group-hover:text-rose-500/20 transition-colors">
+                  <div className="aspect-[3/4] bg-zinc-950 flex flex-col items-center justify-center relative overflow-hidden">
+                    <img
+                      src={getPageThumbnail(p.num)}
+                      alt={p.title}
+                      className="w-full h-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    {/* Dark gradient overlay for text readability */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-black/20" />
+
+                    {/* Page badge at top-left */}
+                    <div className="absolute top-2 left-2 bg-black/70 backdrop-blur-md px-2 py-0.5 rounded text-[10px] font-mono font-bold text-white border border-white/10 shadow">
                       {p.num < 10 ? `0${p.num}` : p.num}
-                    </span>
-                    <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-transparent to-transparent opacity-80" />
+                    </div>
+
+                    {/* Active indicator */}
+                    {currentPage === p.num && (
+                      <div className="absolute top-2 right-2 bg-rose-600 text-white text-[9px] font-mono font-bold px-1.5 py-0.5 rounded shadow">
+                        ACTUAL
+                      </div>
+                    )}
+
+                    {/* Bottom info */}
                     <div className="absolute bottom-2 left-2 right-2">
                       <span className="text-[9px] font-mono uppercase tracking-wider text-rose-400 font-bold block">
                         {p.tag}
