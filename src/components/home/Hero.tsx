@@ -49,22 +49,7 @@ export default function Hero({ onExploreClick, onTabSelect }: HeroProps) {
   };
 
   return (
-    <section id="hero-banner" className="relative w-full bg-paper text-ink pt-[56px] sm:pt-[68px] md:pt-[96px] border-b border-line select-none">
-      {/* Top Modern Luxury Ticker */}
-      <div className="bg-panel/95 backdrop-blur-md border-b border-line py-2 px-3 overflow-hidden select-none">
-        <div className="flex items-center justify-center gap-2 sm:gap-4 text-[9px] sm:text-[11px] font-sans tracking-[0.18em] text-muted uppercase">
-          <span className="text-accent font-bold">●</span>
-          <span className="font-bold text-ink tracking-widest">VANTA ATELIER 2026</span>
-          <span className="text-muted/40">•</span>
-          <span className="text-accent font-bold">PROMOS 2X Y 3X EN POLOS</span>
-          <span className="text-muted/40">•</span>
-          <span className="text-ink font-semibold">420 GSM ALGODÓN PESADO</span>
-          <span className="text-muted/40">•</span>
-          <span className="hidden md:inline">ENVÍOS EXPRESS TODO EL PERÚ</span>
-          <span className="text-accent font-bold">●</span>
-        </div>
-      </div>
-
+    <section id="hero-banner" className="relative w-full bg-paper text-ink pt-14 sm:pt-16 md:pt-20 border-b border-line select-none">
       {/* Full-Width Edge-to-Edge Campaign Banner Frame with Auto-rotation */}
       <div
         className="w-full relative overflow-hidden bg-paper-soft group"

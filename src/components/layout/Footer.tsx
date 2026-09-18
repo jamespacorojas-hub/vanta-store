@@ -27,12 +27,9 @@ export default function Footer({ onSelectCategory, onOpenWishlist, theme = 'dark
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 pb-10 border-b border-line">
           <div className="flex items-center gap-3.5">
             <img
-              src={theme === 'light' ? '/panther-dark.png' : '/panther-white.png'}
+              src={theme === 'light' ? '/vanta-panther-dark.png' : '/vanta-panther-white.png'}
               alt="VANTA Panther"
-              className="w-12 h-12 rounded-full object-contain drop-shadow-sm shrink-0"
-              onError={(e) => {
-                e.currentTarget.src = '/logo-oficial.png';
-              }}
+              className="h-12 w-auto object-contain drop-shadow-sm shrink-0"
             />
             <div>
               <div className="flex items-center gap-2">

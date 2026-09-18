@@ -76,19 +76,6 @@ export default function Header({
           : 'bg-paper/98 backdrop-blur-md border-b border-line/80'
       }`}
     >
-      {/* Modern Luxury Announcement Banner */}
-      <div
-        id="promo-banner"
-        className="bg-panel/90 backdrop-blur-md text-muted border-b border-line text-[10px] sm:text-xs uppercase tracking-widest py-2 text-center font-sans select-none flex items-center justify-center gap-2.5"
-      >
-        <span className="w-1.5 h-1.5 bg-accent rounded-full animate-pulse" />
-        <span className="font-bold text-ink">ENVÍOS A TODO EL PERÚ</span>
-        <span className="text-muted/40">•</span>
-        <span className="font-medium">COMPRA DIRECTA POR WHATSAPP</span>
-        <span className="text-muted/40">•</span>
-        <span className="text-accent font-bold">10% OFF PRIMERA COMPRA</span>
-      </div>
-
       {/* Main Header Container */}
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 md:h-20 flex items-center justify-between relative">
         {/* Left: Mobile Menu Trigger & Search */}
@@ -147,12 +134,9 @@ export default function Header({
             title="VANTA"
           >
             <img
-              src={theme === 'light' ? '/panther-dark.png' : '/panther-white.png'}
+              src={theme === 'light' ? '/vanta-panther-dark.png' : '/vanta-panther-white.png'}
               alt="VANTA"
-              className="w-9 h-9 sm:w-11 sm:h-11 md:w-12 md:h-12 rounded-full object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-105"
-              onError={(e) => {
-                e.currentTarget.src = '/logo-oficial.png';
-              }}
+              className="h-10 sm:h-12 md:h-14 w-auto object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-105"
             />
           </button>
         </div>
@@ -383,12 +367,9 @@ export default function Header({
             <div className="flex items-center justify-between mb-6 border-b border-line pb-4">
               <div className="flex items-center gap-2.5">
                 <img
-                  src={theme === 'light' ? '/panther-dark.png' : '/panther-white.png'}
+                  src={theme === 'light' ? '/vanta-panther-dark.png' : '/vanta-panther-white.png'}
                   alt="VANTA"
-                  className="w-9 h-9 rounded-full object-contain drop-shadow-sm"
-                  onError={(e) => {
-                    e.currentTarget.src = '/logo-oficial.png';
-                  }}
+                  className="h-9 w-auto object-contain drop-shadow-sm"
                 />
                 <div className="flex flex-col">
                   <span className="font-display text-xl font-black tracking-wider text-ink leading-none">

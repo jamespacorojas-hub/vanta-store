@@ -69,7 +69,7 @@ export default function OfertasPage({
   }, [saleProducts, sortMode]);
 
   return (
-    <div id="ofertas-page" className="pt-[78px] sm:pt-[96px] md:pt-[130px] bg-paper">
+    <div id="ofertas-page" className="pt-14 sm:pt-16 md:pt-20 bg-paper">
       {/* Full-page header dedicated to deals with Campaign Banner */}
       <section id="ofertas-hero" className="relative bg-panel text-ink overflow-hidden border-b border-line">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 min-h-[420px] sm:min-h-[500px]">
