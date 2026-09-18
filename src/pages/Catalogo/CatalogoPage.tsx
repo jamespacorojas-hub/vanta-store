@@ -187,7 +187,7 @@ Por favor confirmar disponibilidad y métodos de pago oficiales. Gracias.`;
   return (
     <div
       id="catalogo-page"
-      className="pt-[78px] sm:pt-[96px] md:pt-[130px] bg-paper text-ink min-h-screen relative overflow-x-clip selection:bg-accent selection:text-white"
+      className="pt-16 sm:pt-20 md:pt-22 bg-paper text-ink min-h-screen relative overflow-x-clip selection:bg-accent selection:text-white"
     >
       <section className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-10 relative z-10">
         {/* Top Breadcrumb & Badge */}

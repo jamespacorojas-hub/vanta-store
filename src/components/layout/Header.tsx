@@ -76,73 +76,186 @@ export default function Header({
           : 'bg-paper/98 backdrop-blur-md border-b border-line/80'
       }`}
     >
-      {/* Main Header Container */}
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-14 sm:h-16 md:h-20 flex items-center justify-between relative">
-        {/* Left: Mobile Menu Trigger & Search */}
-        <div className="flex items-center space-x-2 sm:space-x-4 z-10">
+      {/* Main Unified Header Container */}
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between gap-2 sm:gap-4">
+        {/* Left: Mobile Menu Trigger + Brand Logo Icon + Search Bar */}
+        <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
           <button
             id="mobile-menu-trigger"
             onClick={() => setIsMobileMenuOpen(true)}
-            className="md:hidden p-2 text-muted hover:text-ink transition-colors cursor-pointer"
+            className="md:hidden p-2 text-muted hover:text-ink transition-colors cursor-pointer rounded-lg hover:bg-panel"
             aria-label="Abrir menú"
           >
             <Menu className="w-5 h-5" />
           </button>
 
-          <div className="flex items-center relative">
-            <button
-              id="search-toggle-btn"
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className="p-2 text-muted hover:text-ink transition-colors cursor-pointer"
-              aria-label="Buscar"
-            >
-              <Search className="w-4 h-4 sm:w-5 sm:h-5" />
-            </button>
-            <div
-              className={`hidden md:block absolute left-10 transition-all duration-300 overflow-hidden ${
-                isSearchOpen ? 'w-64 opacity-100' : 'w-0 opacity-0 pointer-events-none'
-              }`}
-            >
-              <input
-                id="search-input-desktop"
-                type="text"
-                placeholder="Buscar prenda..."
-                value={searchQuery}
-                onChange={(e) => onSearchChange(e.target.value)}
-                className="w-full text-xs py-2 px-4 border border-line focus:outline-none focus:border-accent bg-panel text-ink placeholder:text-muted rounded-full shadow-inner font-sans"
-              />
-              {searchQuery && (
-                <button
-                  id="clear-search-btn-desktop"
-                  onClick={() => onSearchChange('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-xs text-muted hover:text-ink font-medium cursor-pointer"
-                >
-                  Limpiar
-                </button>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* Center: Pure Panther Brand Icon - Centered Perfectly */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 flex justify-center items-center pointer-events-auto">
+          {/* Brand Logo Icon — strictly panther icon */}
           <button
             id="brand-logo-btn"
             onClick={() => handleCategoryClick('Inicio')}
-            className="group flex items-center justify-center cursor-pointer p-1 transition-transform duration-300 hover:scale-108"
+            className="group flex items-center cursor-pointer transition-transform duration-200 hover:scale-105 shrink-0 p-1"
             aria-label="VANTA — Ir al inicio"
             title="VANTA"
           >
             <img
               src={theme === 'light' ? '/vanta-panther-dark.png' : '/vanta-panther-white.png'}
               alt="VANTA"
-              className="h-10 sm:h-12 md:h-14 w-auto object-contain drop-shadow-md transition-transform duration-300 group-hover:scale-105"
+              className="h-9 sm:h-10 md:h-11 w-auto object-contain drop-shadow-sm transition-transform duration-300 group-hover:scale-105"
             />
           </button>
+
+          {/* Search Bar next to Logo Icon (Desktop) */}
+          <div className="hidden md:flex items-center relative">
+            <Search className="w-4 h-4 absolute left-3 text-muted pointer-events-none" />
+            <input
+              id="search-input-desktop"
+              type="text"
+              placeholder="Buscar prenda o tejido..."
+              value={searchQuery}
+              onChange={(e) => onSearchChange(e.target.value)}
+              className="w-36 lg:w-48 focus:w-48 lg:focus:w-60 text-xs py-2 pl-9 pr-7 border border-line focus:outline-none focus:border-accent bg-panel/80 text-ink placeholder:text-muted rounded-full shadow-inner font-sans transition-all duration-300"
+            />
+            {searchQuery && (
+              <button
+                id="clear-search-btn-desktop"
+                onClick={() => onSearchChange('')}
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted hover:text-ink cursor-pointer p-0.5"
+                title="Limpiar búsqueda"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
         </div>
 
-        {/* Right: Theme Toggle, Cart & Wishlist */}
-        <div className="flex items-center space-x-1 sm:space-x-3 z-10">
+        {/* Center: Desktop Navigation Items */}
+        <nav id="desktop-navigation" className="hidden md:flex items-center justify-center flex-1 min-w-0 mx-2 lg:mx-4">
+          <ul className="flex items-center space-x-4 lg:space-x-6 text-[11px] lg:text-[12px] uppercase tracking-[0.16em] font-semibold">
+            {MAIN_NAV_ITEMS.map((item) => {
+              if (item === 'Prendas') {
+                return (
+                  <li
+                    key={item}
+                    className="relative py-1"
+                    onMouseEnter={() => setIsDropdownOpen(true)}
+                    onMouseLeave={() => setIsDropdownOpen(false)}
+                  >
+                    <button
+                      id="nav-item-prendas"
+                      className={`transition-all duration-200 relative py-1 hover:text-accent flex items-center gap-1 cursor-pointer ${
+                        isPrendasActive
+                          ? 'text-ink font-bold'
+                          : 'text-muted hover:text-ink'
+                      }`}
+                    >
+                      <span>{item}</span>
+                      <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180 text-accent' : ''}`} />
+                      {isPrendasActive && (
+                        <span className="absolute bottom-0 left-0 w-full h-[2px] bg-accent" />
+                      )}
+                    </button>
+
+                    {/* Dropdown Menu */}
+                    <AnimatePresence>
+                      {isDropdownOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 6 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          exit={{ opacity: 0, y: 6 }}
+                          transition={{ duration: 0.15 }}
+                          className="absolute left-1/2 -translate-x-1/2 mt-2 w-[540px] bg-paper/95 backdrop-blur-2xl border border-line shadow-2xl z-50 p-5 rounded-3xl"
+                        >
+                          <div className="text-xs font-semibold tracking-wider text-muted uppercase mb-3 border-b border-line pb-2.5 flex items-center justify-between">
+                            <span>SILUETAS Y VARIANTES DE TELA</span>
+                            <span className="text-[10px] text-accent font-bold">ATELIER 2026</span>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2">
+                            {PRODUCT_CATEGORIES_WITH_FABRICS.map((pCat) => {
+                              const isSubActive = activeCategory === pCat.name;
+                              return (
+                                <button
+                                  key={pCat.name}
+                                  onClick={() => {
+                                    onSelectCategory(pCat.name);
+                                    setIsDropdownOpen(false);
+                                  }}
+                                  className={`text-left p-3 transition-all duration-200 border rounded-2xl group/drop flex flex-col cursor-pointer ${
+                                    isSubActive
+                                      ? 'bg-accent/10 border-accent/30 text-accent'
+                                      : 'border-line/60 bg-panel/60 hover:bg-paper-soft hover:border-accent/30'
+                                  }`}
+                                >
+                                  <div className="flex items-center justify-between w-full">
+                                    <span className="font-heading text-xs sm:text-sm font-bold tracking-tight uppercase text-ink group-hover/drop:text-accent transition-colors">
+                                      {pCat.name}
+                                    </span>
+                                    {isSubActive && (
+                                      <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
+                                    )}
+                                  </div>
+                                  <div className="text-[10px] text-muted mt-0.5 tracking-wide">
+                                    Telas: {pCat.fabrics.join(' • ')}
+                                  </div>
+                                </button>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </li>
+                );
+              }
+
+              const isActive = activeCategory === item;
+              return (
+                <li key={item}>
+                  <button
+                    id={`nav-item-${item.toLowerCase().replace(/\s+/g, '-')}`}
+                    onClick={() => onSelectCategory(item)}
+                    className={`transition-all duration-200 relative py-1 hover:text-accent cursor-pointer ${
+                      isActive
+                        ? 'text-ink font-bold'
+                        : 'text-muted hover:text-ink'
+                    }`}
+                  >
+                    {item}
+                    {isActive && (
+                      <span className="absolute bottom-0 left-0 w-full h-[2px] bg-accent" />
+                    )}
+                  </button>
+                </li>
+              );
+            })}
+
+            {/* Standalone Interactive Catalog Link */}
+            <li>
+              <a
+                href="/catalogo-interactivo"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 hover:text-rose-400 border border-rose-500/30 text-[10px] lg:text-[10.5px] font-bold tracking-wider transition-all whitespace-nowrap"
+              >
+                <Sparkles className="w-3 h-3 text-rose-500" />
+                <span>CATÁLOGO ↗</span>
+              </a>
+            </li>
+          </ul>
+        </nav>
+
+        {/* Right: Theme Toggle, Wishlist, and Cart Bag */}
+        <div className="flex items-center space-x-1 sm:space-x-2 shrink-0">
+          {/* Mobile Search Button */}
+          <button
+            id="search-toggle-btn"
+            onClick={() => setIsSearchOpen(!isSearchOpen)}
+            className="md:hidden p-2 text-muted hover:text-ink transition-colors cursor-pointer rounded-full hover:bg-panel"
+            aria-label="Buscar"
+          >
+            <Search className="w-5 h-5" />
+          </button>
+
+          {/* Theme Toggle Button */}
           {onToggleTheme && (
             <button
               id="theme-toggle-btn"
@@ -159,34 +272,38 @@ export default function Header({
             </button>
           )}
 
+          {/* Wishlist Button */}
           <button
             id="wishlist-trigger-btn"
             onClick={onOpenWishlist}
-            className="p-2 text-muted hover:text-ink transition-colors relative cursor-pointer"
+            className="p-2 text-muted hover:text-ink transition-colors relative cursor-pointer rounded-full hover:bg-panel"
             aria-label="Ver favoritos"
+            title="Favoritos"
           >
             <Heart className="w-5 h-5" />
             {wishlistCount > 0 && (
               <span
                 id="wishlist-badge"
-                className="absolute -top-0.5 -right-0.5 bg-accent text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-mono font-black shadow-md"
+                className="absolute top-0.5 right-0.5 bg-accent text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-mono font-black shadow-md"
               >
                 {wishlistCount}
               </span>
             )}
           </button>
 
+          {/* Shopping Bag Button */}
           <button
             id="cart-trigger-btn"
             onClick={onOpenCart}
-            className="p-2 text-muted hover:text-ink transition-colors relative cursor-pointer"
+            className="p-2 text-muted hover:text-ink transition-colors relative cursor-pointer rounded-full hover:bg-panel"
             aria-label="Ver carrito"
+            title="Bolsa de compra"
           >
             <ShoppingBag className="w-5 h-5" />
             {cartCount > 0 && (
               <span
                 id="cart-badge"
-                className="absolute -top-0.5 -right-0.5 bg-accent text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-mono font-black shadow-md"
+                className="absolute top-0.5 right-0.5 bg-accent text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-mono font-black shadow-md"
               >
                 {cartCount}
               </span>
@@ -231,121 +348,6 @@ export default function Header({
           </motion.div>
         )}
       </AnimatePresence>
-
-      {/* Desktop Navigation Menus (Centered under logo on large viewports or standard navigation block) */}
-      <nav id="desktop-navigation" className="hidden md:flex justify-center border-t border-line py-3 bg-paper">
-        <ul className="flex space-x-8 text-[11px] uppercase tracking-[0.2em] font-medium items-center">
-          {MAIN_NAV_ITEMS.map((item) => {
-            if (item === 'Prendas') {
-              return (
-                <li
-                  key={item}
-                  className="relative py-1"
-                  onMouseEnter={() => setIsDropdownOpen(true)}
-                  onMouseLeave={() => setIsDropdownOpen(false)}
-                >
-                  <button
-                    id="nav-item-prendas"
-                    className={`transition-all duration-300 relative py-1 hover:opacity-60 flex items-center gap-1 ${
-                      isPrendasActive
-                        ? 'text-ink font-semibold tracking-[0.22em]'
-                        : 'text-muted hover:text-ink'
-                    }`}
-                  >
-                    <span>{item}</span>
-                    <ChevronDown className={`w-3 h-3 transition-transform duration-300 ${isDropdownOpen ? 'rotate-180' : ''}`} />
-                    {isPrendasActive && (
-                      <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-accent" />
-                    )}
-                  </button>
-
-                  {/* Dropdown Menu */}
-                  <AnimatePresence>
-                    {isDropdownOpen && (
-                      <motion.div
-                        initial={{ opacity: 0, y: 8 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        exit={{ opacity: 0, y: 8 }}
-                        transition={{ duration: 0.15 }}
-                        className="absolute left-1/2 -translate-x-1/2 mt-2 w-[560px] bg-paper/95 backdrop-blur-2xl border border-line shadow-2xl z-50 p-6 rounded-3xl"
-                      >
-                        <div className="text-xs font-semibold tracking-wider text-muted uppercase mb-4 border-b border-line pb-3 flex items-center justify-between">
-                          <span>SILUETAS Y VARIANTES DE TELA</span>
-                          <span className="text-[10px] text-accent font-bold">ATELIER 2026</span>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2.5">
-                          {PRODUCT_CATEGORIES_WITH_FABRICS.map((pCat) => {
-                            const isSubActive = activeCategory === pCat.name;
-                            return (
-                              <button
-                                key={pCat.name}
-                                onClick={() => {
-                                  onSelectCategory(pCat.name);
-                                  setIsDropdownOpen(false);
-                                }}
-                                className={`text-left p-3.5 transition-all duration-200 border rounded-2xl group/drop flex flex-col ${
-                                  isSubActive
-                                    ? 'bg-accent/10 border-accent/30 text-accent'
-                                    : 'border-line/60 bg-panel/60 hover:bg-paper-soft hover:border-accent/30'
-                                }`}
-                              >
-                                <div className="flex items-center justify-between w-full">
-                                  <span className="font-heading text-xs sm:text-sm font-bold tracking-tight uppercase text-ink group-hover/drop:text-accent transition-colors">
-                                    {pCat.name}
-                                  </span>
-                                  {isSubActive && (
-                                    <span className="w-2 h-2 bg-accent rounded-full animate-pulse" />
-                                  )}
-                                </div>
-                                <div className="text-[11px] text-muted mt-1 tracking-wide">
-                                  Telas: {pCat.fabrics.join(' • ')}
-                                </div>
-                              </button>
-                            );
-                          })}
-                        </div>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </li>
-              );
-            }
-
-            const isActive = activeCategory === item;
-            return (
-              <li key={item}>
-                <button
-                  id={`nav-item-${item.toLowerCase().replace(/\s+/g, '-')}`}
-                  onClick={() => onSelectCategory(item)}
-                  className={`transition-all duration-300 relative py-1 hover:opacity-60 ${
-                    isActive
-                      ? 'text-ink font-semibold tracking-[0.22em]'
-                      : 'text-muted hover:text-ink'
-                  }`}
-                >
-                  {item}
-                  {isActive && (
-                    <span className="absolute bottom-0 left-0 w-full h-[1.5px] bg-accent" />
-                  )}
-                </button>
-              </li>
-            );
-          })}
-
-          {/* Standalone Interactive Catalog (External Lookbook) */}
-          <li>
-            <a
-              href="/catalogo-interactivo"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-rose-500/10 text-rose-500 hover:bg-rose-500/20 hover:text-rose-400 border border-rose-500/30 text-[10.5px] font-bold tracking-wider transition-all"
-            >
-              <Sparkles className="w-3 h-3 text-rose-500" />
-              <span>CATÁLOGO INTERACTIVO ↗</span>
-            </a>
-          </li>
-        </ul>
-      </nav>
 
       {/* Mobile Sidebar Navigation Drawer */}
       <div

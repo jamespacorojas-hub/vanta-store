@@ -49,10 +49,10 @@ export default function Hero({ onExploreClick, onTabSelect }: HeroProps) {
   };
 
   return (
-    <section id="hero-banner" className="relative w-full bg-paper text-ink pt-14 sm:pt-16 md:pt-20 border-b border-line select-none">
-      {/* Full-Width Edge-to-Edge Campaign Banner Frame with Auto-rotation */}
+    <section id="hero-banner" className="relative w-full bg-paper text-ink pt-16 sm:pt-18 border-b border-line select-none">
+      {/* Campaign Banner Frame with controlled height */}
       <div
-        className="w-full relative overflow-hidden bg-paper-soft group"
+        className="w-full relative overflow-hidden bg-neutral-950 group flex items-center justify-center max-h-[300px] sm:max-h-[380px] md:max-h-[440px] lg:max-h-[480px]"
         onMouseEnter={() => setIsPaused(true)}
         onMouseLeave={() => setIsPaused(false)}
         onTouchStart={handleTouchStart}
@@ -61,17 +61,24 @@ export default function Hero({ onExploreClick, onTabSelect }: HeroProps) {
         <button
           id="hero-banner-cta"
           onClick={onExploreClick}
-          className="block w-full cursor-pointer relative"
+          className="block w-full cursor-pointer relative flex items-center justify-center overflow-hidden"
           aria-label="Descubre la colección — ir al catálogo"
         >
+          {/* Ambient blurred backdrop on ultra-wide screens */}
+          <img
+            src={campaign.image}
+            alt=""
+            aria-hidden="true"
+            className="absolute inset-0 w-full h-full object-cover blur-2xl opacity-35 scale-110 pointer-events-none"
+          />
           <img
             key={campaign.image}
             src={campaign.image}
             alt={`VANTA — ${campaign.title}. ${campaign.subtitle}`}
-            className="w-full h-auto object-contain block transition-transform duration-700 ease-out group-hover:scale-[1.008] animate-in fade-in duration-500"
+            className="relative z-10 w-full max-h-[300px] sm:max-h-[380px] md:max-h-[440px] lg:max-h-[480px] object-contain block mx-auto transition-transform duration-700 ease-out group-hover:scale-[1.01] animate-in fade-in duration-500"
           />
           {/* Subtle atmospheric vignette */}
-          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none" />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-black/20 pointer-events-none z-10" />
         </button>
 
         {/* Prev / Next Slide Arrow Controls */}
@@ -124,7 +131,7 @@ export default function Hero({ onExploreClick, onTabSelect }: HeroProps) {
         </div>
 
         {/* Animated Timer Progress Bar */}
-        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/15 overflow-hidden">
+        <div className="absolute bottom-0 left-0 right-0 h-1 bg-white/15 overflow-hidden z-20">
           <div
             key={activeCampaignIndex}
             className="h-full bg-accent transition-all duration-300"
@@ -136,7 +143,7 @@ export default function Hero({ onExploreClick, onTabSelect }: HeroProps) {
       </div>
 
       {/* Hero Actions & Quick Access Deck */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-6">
         <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
           {/* Action Buttons */}
           <div className="md:col-span-6 grid grid-cols-2 gap-2.5 sm:flex sm:gap-3">
