@@ -159,8 +159,9 @@ export default function POSTicketModal({ sale, isOpen, onClose, onNewSale }: POS
 
   const generateWhatsAppMessage = () => {
     let msg = `*VANTA STREETWEAR — COMPROBANTE OFICIAL*\n`;
-    msg += `*EMISOR:* REQUENA AVILA BRYAN MICHAEL\n`;
-    msg += `*R.U.C.:* 10714931062\n`;
+    if (isFactura || isBoleta) {
+      msg += `*R.U.C.:* 10714931062\n`;
+    }
     msg += `*COMPROBANTE:* ${isFactura ? 'FACTURA ELECTRÓNICA' : isBoleta ? 'BOLETA DE VENTA' : 'NOTA DE VENTA'} ${activeDestination}\n`;
     msg += `*N°:* ${sale.receiptNumber}\n`;
     msg += `*FECHA:* ${day}/${month}/${year}\n`;
@@ -262,7 +263,6 @@ export default function POSTicketModal({ sale, isOpen, onClose, onNewSale }: POS
       msg += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
       msg += `💳 *CUENTAS BANCARIAS PARA DEPOSITAR EL SALDO:*\n`;
       msg += `👤 Titular: BRYAN MICHAEL REQUENA AVILA\n`;
-      msg += `🪪 R.U.C.: 10714931062\n`;
       msg += `🟣 Yape / Plin: 904 536 406 / 924 058 988\n`;
       msg += `🟠 BCP Soles: 191-0014100063-0-53 (CCI: 002-191-0014100063053-53)\n`;
       msg += `🔵 BBVA Soles: 0011-0175-0200543981 (CCI: 011-175-000200543981-74)\n`;
@@ -506,9 +506,11 @@ export default function POSTicketModal({ sale, isOpen, onClose, onNewSale }: POS
                     }}
                   >
                     <div>REQUENA AVILA BRYAN MICHAEL</div>
-                    <div style={{ color: isDark ? '#FB7185' : '#E4E4E7', fontWeight: 'bold' }}>
-                      R.U.C. 10714931062
-                    </div>
+                    {(isFactura || isBoleta) && (
+                      <div style={{ color: isDark ? '#FB7185' : '#E4E4E7', fontWeight: 'bold' }}>
+                        R.U.C. 10714931062
+                      </div>
+                    )}
                   </div>
                 </div>
               </div>

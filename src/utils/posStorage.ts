@@ -8,8 +8,14 @@ const STORAGE_KEYS = {
   SHIFT: 'vanta_pos_active_shift',
 };
 
-// Generar correlativo automático ej. 0001-0000001
+// Generar número de orden o correlativo (aleatorio para Notas de Venta)
 export function getNextReceiptNumber(type: ReceiptType = 'NOTA_VENTA'): string {
+  if (type === 'NOTA_VENTA') {
+    // Generar número de orden aleatorio de 6 dígitos (ej. 748291)
+    const randomOrder = Math.floor(100000 + Math.random() * 900000);
+    return String(randomOrder);
+  }
+
   const currentCounters = JSON.parse(localStorage.getItem(STORAGE_KEYS.COUNTER) || '{"NV": 1, "BV": 1, "FT": 1}');
   
   let prefix = 'NV';
@@ -24,6 +30,7 @@ export function getNextReceiptNumber(type: ReceiptType = 'NOTA_VENTA'): string {
 }
 
 export function incrementReceiptCounter(type: ReceiptType = 'NOTA_VENTA'): void {
+  if (type === 'NOTA_VENTA') return; // Las notas de venta utilizan números aleatorios de orden
   const currentCounters = JSON.parse(localStorage.getItem(STORAGE_KEYS.COUNTER) || '{"NV": 1, "BV": 1, "FT": 1}');
   
   let prefix = 'NV';

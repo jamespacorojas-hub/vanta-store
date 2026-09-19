@@ -58,6 +58,7 @@ import { getGarmentPhoto } from '../../../utils/productImages';
 import POSPaymentModal, { POSAdvancePaymentInfo } from './POSPaymentModal';
 import POSTicketModal from './POSTicketModal';
 import POSProformaModal from './POSProformaModal';
+import POSShippingTicketModal from './POSShippingTicketModal';
 
 interface POSTerminalProps {
   onSaleCompleted?: (sale: POSSale) => void;
@@ -224,6 +225,7 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isTicketModalOpen, setIsTicketModalOpen] = useState(false);
   const [isProformaModalOpen, setIsProformaModalOpen] = useState(false);
+  const [isShippingTicketModalOpen, setIsShippingTicketModalOpen] = useState(false);
   const [lastCompletedSale, setLastCompletedSale] = useState<POSSale | null>(null);
 
   // Adelanto (Pago a Cuenta) & Cuenta de la Venta state
@@ -231,6 +233,7 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
   const [customAdvanceAmount, setCustomAdvanceAmount] = useState<string>('');
   const [selectedReceivingAccount, setSelectedReceivingAccount] = useState<string>('YAPE_PLIN');
   const [copySaleAccountFeedback, setCopySaleAccountFeedback] = useState<string | null>(null);
+  const [isShippingFormOpen, setIsShippingFormOpen] = useState<boolean>(true);
 
   // Next receipt number
   const nextReceiptNumber = useMemo(() => getNextReceiptNumber(receiptType), [receiptType, lastCompletedSale]);
@@ -475,8 +478,7 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
     }
     text += `━━━━━━━━━━━━━━━━━━━━━━━━━━━━\n`;
     text += `💳 *CUENTAS BANCARIAS OFICIALES — VANTA:*\n`;
-    text += `👤 *Titular:* BRYAN MICHAEL REQUENA AVILA\n`;
-    text += `🪪 *R.U.C.:* 10714931062\n\n`;
+    text += `👤 *Titular:* BRYAN MICHAEL REQUENA AVILA\n\n`;
     text += `🟣 *Yape / Plin:* 904 536 406 / 924 058 988\n`;
     text += `🟠 *BCP Soles:* 191-0014100063-0-53 (CCI: 002-191-0014100063053-53)\n`;
     text += `🔵 *BBVA Soles:* 0011-0175-0200543981 (CCI: 011-175-000200543981-74)\n`;
@@ -1099,8 +1101,8 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
             <span>← Seguir Agregando Prendas</span>
           </button>
         </div>
-        {/* Register Header */}
-        <div className="p-3 sm:p-4 border-b border-line bg-paper space-y-2.5">
+        {/* Register Top Bar (Fixed at top) */}
+        <div className="p-2.5 sm:p-3 border-b border-line bg-paper space-y-2 shrink-0">
           {/* Document Type & Destination Row */}
           <div className="flex items-center justify-between gap-2">
             {/* Document Type */}
@@ -1121,21 +1123,21 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
             </div>
 
             {/* Destination Toggle Tabs: Lima vs Provincia */}
-            <div className="flex bg-panel p-1 border border-line rounded-xs gap-1">
+            <div className="flex bg-panel p-0.5 border border-line rounded-xs gap-1">
               <button
                 type="button"
                 onClick={() => {
                   setDestinationType('LIMA');
                   if (shippingCost === 15) setShippingCost(10);
                 }}
-                className={`flex-1 py-1.5 px-2 flex items-center justify-center gap-1.5 font-mono text-[10px] font-bold uppercase transition-all cursor-pointer ${
+                className={`py-1 px-2 flex items-center justify-center gap-1 font-mono text-[9.5px] font-bold uppercase transition-all cursor-pointer ${
                   destinationType === 'LIMA'
                     ? 'bg-accent text-white shadow-xs'
                     : 'text-muted hover:text-ink hover:bg-paper'
                 }`}
               >
-                <Truck className="w-3.5 h-3.5" />
-                <span>🛵 Envío Lima</span>
+                <Truck className="w-3 h-3" />
+                <span>Lima</span>
               </button>
               <button
                 type="button"
@@ -1147,35 +1149,40 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
                     setShippingCost(15);
                   }
                 }}
-                className={`flex-1 py-1.5 px-2 flex items-center justify-center gap-1.5 font-mono text-[10px] font-bold uppercase transition-all cursor-pointer ${
+                className={`py-1 px-2 flex items-center justify-center gap-1 font-mono text-[9.5px] font-bold uppercase transition-all cursor-pointer ${
                   destinationType === 'PROVINCIA'
                     ? 'bg-accent text-white shadow-xs'
                     : 'text-muted hover:text-ink hover:bg-paper'
                 }`}
               >
-                <Package className="w-3.5 h-3.5" />
-                <span>📦 Envío Provincia</span>
+                <Package className="w-3 h-3" />
+                <span>Provincia</span>
               </button>
             </div>
           </div>
 
-          {/* Number, Date & Tax Mode preview */}
-          <div className="flex items-center justify-between bg-panel p-2 border border-line text-xs font-mono">
+          {/* Number, Date & Cajero preview */}
+          <div className="flex items-center justify-between bg-panel px-2 py-1 border border-line text-[10.5px] font-mono">
             <div className="flex items-center gap-1.5">
               <span className="text-muted">
-                N° Serie: <b className="text-accent font-bold">N° {nextReceiptNumber}</b>
+                N° Orden: <b className="text-accent font-bold">{nextReceiptNumber}</b>
               </span>
-              <span className={`text-[8.5px] px-1 py-0.2 uppercase font-bold border ${
-                taxMode === 'NO_TAX' ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-emerald-950/80 text-emerald-300 border-emerald-700'
-              }`}>
-                {taxMode === 'NO_TAX' ? 'Sin IGV' : taxMode === 'INCLUDED' ? 'IGV Incl.' : '+18% IGV'}
-              </span>
+              {receiptType !== 'NOTA_VENTA' && (
+                <span className={`text-[8.5px] px-1 py-0.2 uppercase font-bold border ${
+                  taxMode === 'NO_TAX' ? 'bg-zinc-800 text-zinc-300 border-zinc-700' : 'bg-emerald-950/80 text-emerald-300 border-emerald-700'
+                }`}>
+                  {taxMode === 'NO_TAX' ? 'Sin IGV' : taxMode === 'INCLUDED' ? 'IGV Incl.' : '+18% IGV'}
+                </span>
+              )}
             </div>
-            <span className="text-muted text-[10px]">
+            <span className="text-muted text-[9.5px]">
               Cajero: <b className="text-ink">{getActiveSeller()}</b>
             </span>
           </div>
+        </div>
 
+        {/* Scrollable Center Body (Forms, Items, Observations) */}
+        <div className="flex-1 overflow-y-auto min-h-0 p-3 space-y-3">
           {/* Forms Section */}
           <div className="space-y-2">
             {receiptType === 'FACTURA' ? (
@@ -1250,22 +1257,32 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
 
             {/* SPECIALIZED FORM 1: ENVÍO LIMA METROPOLITANA */}
             {destinationType === 'LIMA' && (
-              <div className="bg-panel border border-line p-2.5 space-y-2.5 rounded-xs">
-                {/* Form Header */}
-                <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-line pb-1.5">
-                  <div className="flex items-center gap-1.5 text-accent font-mono text-[10.5px] font-bold uppercase">
+              <div className="bg-panel border border-line rounded-xs overflow-hidden">
+                {/* Form Header with collapse toggle */}
+                <div className="flex flex-wrap items-center justify-between gap-1.5 p-2 bg-paper/60 border-b border-line">
+                  <button
+                    type="button"
+                    onClick={() => setIsShippingFormOpen(!isShippingFormOpen)}
+                    className="flex items-center gap-1.5 text-accent font-mono text-[10.5px] font-bold uppercase cursor-pointer hover:opacity-80 transition-opacity"
+                  >
+                    <span>{isShippingFormOpen ? '▼' : '▶'}</span>
                     <Truck className="w-3.5 h-3.5 text-accent" />
-                    <span>📦 FORMULARIO DE ENVÍO A LIMA – VANTA</span>
-                  </div>
+                    <span>Datos de Envío a Lima</span>
+                    {shippingLima.recipientName && !isShippingFormOpen && (
+                      <span className="text-ink font-normal text-[9px] truncate max-w-[130px]">
+                        ({shippingLima.recipientName})
+                      </span>
+                    )}
+                  </button>
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
                       onClick={() => handleCopyEmptyTemplate('LIMA')}
-                      className="px-2 py-0.5 bg-paper hover:bg-zinc-800 text-muted hover:text-ink border border-line text-[9px] font-mono flex items-center gap-1 cursor-pointer transition-colors"
+                      className="px-1.5 py-0.5 bg-paper hover:bg-zinc-800 text-muted hover:text-ink border border-line text-[8.5px] font-mono flex items-center gap-1 cursor-pointer transition-colors"
                       title="Copiar plantilla vacía para WhatsApp"
                     >
                       <Copy className="w-2.5 h-2.5" />
-                      <span>Copiar Plantilla</span>
+                      <span>Plantilla</span>
                     </button>
                     <button
                       type="button"
@@ -1273,16 +1290,18 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
                         setPasteModalText('');
                         setPasteModalType('LIMA');
                       }}
-                      className="px-2 py-0.5 bg-accent/10 hover:bg-accent text-accent hover:text-white border border-accent/40 text-[9px] font-mono font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                      className="px-1.5 py-0.5 bg-accent/10 hover:bg-accent text-accent hover:text-white border border-accent/40 text-[8.5px] font-mono font-bold flex items-center gap-1 cursor-pointer transition-colors"
                       title="Pegar mensaje de WhatsApp para auto-completar"
                     >
                       <Clipboard className="w-2.5 h-2.5" />
-                      <span>Pegar de WhatsApp</span>
+                      <span>Pegar WhatsApp</span>
                     </button>
                   </div>
                 </div>
 
-                {/* 1. Nombres y apellidos + Celular */}
+                {isShippingFormOpen && (
+                  <div className="p-2.5 space-y-2">
+                    {/* 1. Nombres y apellidos + Celular */}
                 <div className="grid grid-cols-1 sm:grid-cols-12 gap-1.5">
                   <div className="sm:col-span-7">
                     <label className="block text-[9px] font-mono text-muted uppercase font-bold mb-0.5">
@@ -1432,25 +1451,37 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
                 </div>
               </div>
             )}
+          </div>
+        )}
 
             {/* SPECIALIZED FORM 2: ENVÍO PROVINCIA */}
             {destinationType === 'PROVINCIA' && (
-              <div className="bg-panel border border-purple-500/30 p-2.5 space-y-2.5 rounded-xs">
-                {/* Form Header */}
-                <div className="flex flex-wrap items-center justify-between gap-1.5 border-b border-line pb-1.5">
-                  <div className="flex items-center gap-1.5 text-purple-400 font-mono text-[10.5px] font-bold uppercase">
+              <div className="bg-panel border border-purple-500/30 rounded-xs overflow-hidden">
+                {/* Form Header with collapse toggle */}
+                <div className="flex flex-wrap items-center justify-between gap-1.5 p-2 bg-paper/60 border-b border-line">
+                  <button
+                    type="button"
+                    onClick={() => setIsShippingFormOpen(!isShippingFormOpen)}
+                    className="flex items-center gap-1.5 text-purple-400 font-mono text-[10.5px] font-bold uppercase cursor-pointer hover:opacity-80 transition-opacity"
+                  >
+                    <span>{isShippingFormOpen ? '▼' : '▶'}</span>
                     <Package className="w-3.5 h-3.5 text-purple-400" />
-                    <span>📦 FORMULARIO DE ENVÍO – VANTA</span>
-                  </div>
+                    <span>Datos de Envío a Provincia</span>
+                    {shippingProvincia.consigneeName && !isShippingFormOpen && (
+                      <span className="text-ink font-normal text-[9px] truncate max-w-[130px]">
+                        ({shippingProvincia.consigneeName})
+                      </span>
+                    )}
+                  </button>
                   <div className="flex items-center gap-1">
                     <button
                       type="button"
                       onClick={() => handleCopyEmptyTemplate('PROVINCIA')}
-                      className="px-2 py-0.5 bg-paper hover:bg-zinc-800 text-muted hover:text-ink border border-line text-[9px] font-mono flex items-center gap-1 cursor-pointer transition-colors"
+                      className="px-1.5 py-0.5 bg-paper hover:bg-zinc-800 text-muted hover:text-ink border border-line text-[8.5px] font-mono flex items-center gap-1 cursor-pointer transition-colors"
                       title="Copiar plantilla vacía para WhatsApp"
                     >
                       <Copy className="w-2.5 h-2.5" />
-                      <span>Copiar Plantilla</span>
+                      <span>Plantilla</span>
                     </button>
                     <button
                       type="button"
@@ -1458,14 +1489,17 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
                         setPasteModalText('');
                         setPasteModalType('PROVINCIA');
                       }}
-                      className="px-2 py-0.5 bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/40 text-[9px] font-mono font-bold flex items-center gap-1 cursor-pointer transition-colors"
+                      className="px-1.5 py-0.5 bg-purple-600/20 hover:bg-purple-600 text-purple-300 hover:text-white border border-purple-500/40 text-[8.5px] font-mono font-bold flex items-center gap-1 cursor-pointer transition-colors"
                       title="Pegar mensaje de WhatsApp para auto-completar"
                     >
                       <Clipboard className="w-2.5 h-2.5" />
-                      <span>Pegar de WhatsApp</span>
+                      <span>Pegar WhatsApp</span>
                     </button>
                   </div>
                 </div>
+
+                {isShippingFormOpen && (
+                  <div className="p-2.5 space-y-2">
 
                 {/* 🚚 Transporte Selector */}
                 <div className="space-y-1 bg-paper p-1.5 border border-line">
@@ -1695,20 +1729,27 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
                 </div>
               </div>
             )}
-
-            {/* Observations input */}
-            <input
-              type="text"
-              placeholder="Observaciones de la venta / notas de empaque y rotulado (Opcional)..."
-              value={observations}
-              onChange={(e) => setObservations(e.target.value)}
-              className="w-full bg-panel border border-line text-[10.5px] font-mono py-1 px-2.5 text-ink focus:outline-none focus:border-accent"
-            />
           </div>
+        )}
+
+          {/* Observations input */}
+          <input
+            type="text"
+            placeholder="Observaciones de la venta / notas de empaque y rotulado (Opcional)..."
+            value={observations}
+            onChange={(e) => setObservations(e.target.value)}
+            className="w-full bg-panel border border-line text-[10.5px] font-mono py-1.5 px-2.5 text-ink focus:outline-none focus:border-accent"
+          />
         </div>
 
         {/* Cart Item List */}
-        <div className="flex-1 overflow-y-auto p-3 space-y-2">
+        <div className="space-y-2 pt-1">
+          <div className="flex items-center justify-between text-[10px] font-mono font-bold text-muted uppercase">
+            <span>Prendas en Carrito ({cartItems.reduce((acc, i) => acc + i.quantity, 0)} items):</span>
+            {cartItems.length > 0 && (
+              <span className="text-accent font-bold">S/ {rawSubtotal.toFixed(2)}</span>
+            )}
+          </div>
           {cartItems.map((item) => (
             <div
               key={item.id}
@@ -1802,401 +1843,229 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
           )}
         </div>
 
-        {/* Footer Checkout Summary & Square-Up Tools */}
-        <div className="p-3 sm:p-4 border-t border-line bg-paper space-y-2.5 shrink-0">
-          {/* Tax Mode Selector (Para Facturas, Boletas o Notas de Venta) */}
-          <div className="flex items-center justify-between bg-panel p-1.5 border border-line text-[10px] font-mono">
-            <span className="text-muted uppercase font-bold flex items-center gap-1">
-              <Calculator className="w-3 h-3 text-accent" />
-              Régimen IGV:
-            </span>
-            <div className="flex gap-1">
+        {/* Adelanto & Saldo Config (Inside scrollable body, visible when isAdvanceMode is true) */}
+        {isAdvanceMode && (
+          <div className="bg-panel border border-amber-500/40 p-2.5 space-y-2 rounded-xs">
+            <div className="flex items-center justify-between text-[10.5px] font-mono font-bold text-amber-300">
+              <span className="flex items-center gap-1">
+                <Coins className="w-3.5 h-3.5 text-amber-400" />
+                CONFIGURACIÓN DE ADELANTO:
+              </span>
+              <span className="text-rose-400 font-bold">
+                Saldo: S/ {effectivePendingBalance.toFixed(2)}
+              </span>
+            </div>
+            <div className="grid grid-cols-2 gap-2">
+              <div>
+                <label className="block text-[9px] font-mono text-muted uppercase font-bold mb-0.5">
+                  Monto Adelanto:
+                </label>
+                <div className="relative">
+                  <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-amber-400">S/</span>
+                  <input
+                    type="number"
+                    step="any"
+                    value={customAdvanceAmount}
+                    placeholder={Math.round(totalAmount * 0.5).toString()}
+                    onChange={(e) => setCustomAdvanceAmount(e.target.value)}
+                    className="w-full bg-paper border border-amber-500/60 py-1 pl-7 pr-2 text-xs font-mono font-bold text-amber-300 focus:outline-none"
+                  />
+                </div>
+              </div>
+              <div>
+                <label className="block text-[9px] font-mono text-muted uppercase font-bold mb-0.5">
+                  Cuenta de Abono:
+                </label>
+                <select
+                  value={selectedReceivingAccount}
+                  onChange={(e) => setSelectedReceivingAccount(e.target.value)}
+                  className="w-full bg-paper border border-line text-[10px] font-mono py-1 px-1.5 text-ink focus:outline-none"
+                >
+                  {VANTA_BANK_ACCOUNTS.map((acc) => (
+                    <option key={acc.id} value={acc.id}>
+                      {acc.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            {/* Quick Presets */}
+            <div className="flex flex-wrap items-center gap-1 pt-0.5">
+              <span className="text-[8.5px] font-mono text-muted uppercase mr-0.5">Atajos:</span>
               <button
                 type="button"
-                onClick={() => setTaxMode('NO_TAX')}
-                className={`px-2 py-0.5 border cursor-pointer ${
-                  taxMode === 'NO_TAX'
-                    ? 'bg-accent text-white border-accent font-bold'
-                    : 'bg-paper text-muted border-line'
-                }`}
+                onClick={() => setCustomAdvanceAmount(Math.round(totalAmount * 0.5).toString())}
+                className="text-[9px] font-mono px-1.5 py-0.5 bg-paper hover:bg-zinc-700 text-amber-300 border border-amber-500/30 cursor-pointer font-bold"
               >
-                0% (Sin IGV)
+                50% (S/ {Math.round(totalAmount * 0.5)})
               </button>
+              {[20, 30, 50, 70, 100].map((amt) => {
+                if (amt >= totalAmount) return null;
+                return (
+                  <button
+                    key={amt}
+                    type="button"
+                    onClick={() => setCustomAdvanceAmount(amt.toString())}
+                    className="text-[9px] font-mono px-1.5 py-0.5 bg-paper hover:bg-zinc-700 text-ink border border-line cursor-pointer"
+                  >
+                    S/ {amt}
+                  </button>
+                );
+              })}
+            </div>
+            {/* WhatsApp copy link */}
+            <div className="pt-1 border-t border-line/50 flex items-center justify-between">
               <button
                 type="button"
-                onClick={() => setTaxMode('INCLUDED')}
-                className={`px-2 py-0.5 border cursor-pointer ${
-                  taxMode === 'INCLUDED'
-                    ? 'bg-accent text-white border-accent font-bold'
-                    : 'bg-paper text-muted border-line'
-                }`}
+                onClick={handleCopySaleAccount}
+                className="text-[9.5px] font-mono text-accent hover:underline flex items-center gap-1 cursor-pointer"
               >
-                Incluye IGV (18%)
+                <Copy className="w-3 h-3" />
+                <span>Copiar datos de cuenta para WhatsApp</span>
               </button>
-              <button
-                type="button"
-                onClick={() => setTaxMode('PLUS_TAX')}
-                className={`px-2 py-0.5 border cursor-pointer ${
-                  taxMode === 'PLUS_TAX'
-                    ? 'bg-accent text-white border-accent font-bold'
-                    : 'bg-paper text-muted border-line'
-                }`}
-              >
-                +18% IGV
-              </button>
+              {copySaleAccountFeedback && (
+                <span className="text-[9px] font-mono text-emerald-400 font-bold">
+                  {copySaleAccountFeedback}
+                </span>
+              )}
             </div>
           </div>
+        )}
+      </div>
 
-          {/* Quick Wholesale Price / Bulk Pricing Tool */}
-          {cartItems.length > 0 && (
-            <div className="bg-panel p-2 border border-line space-y-1.5 text-xs font-mono">
-              <div className="flex items-center justify-between text-[10px]">
-                <span className="text-muted uppercase font-bold flex items-center gap-1">
-                  <Tag className="w-3 h-3 text-accent" />
-                  Precio Mayorista (Todas las prendas):
-                </span>
-                <div className="flex gap-1">
-                  {[35, 40, 45, 50].map((uniformP) => (
-                    <button
-                      key={uniformP}
-                      type="button"
-                      onClick={() => handleApplyGlobalItemPrice(uniformP)}
-                      className="text-[9px] px-1.5 py-0.5 bg-paper hover:bg-zinc-700 text-ink border border-line font-bold cursor-pointer transition-colors"
-                      title={`Fijar todas las prendas a S/ ${uniformP}`}
-                    >
-                      S/ {uniformP}
-                    </button>
-                  ))}
-                </div>
-              </div>
+      {/* PINNED BOTTOM FOOTER (COMPACT & ALWAYS VISIBLE) */}
+      <div className="p-3 border-t border-line bg-paper space-y-2 shrink-0 shadow-lg">
+        {/* Totals Breakdown */}
+        <div className="space-y-1 text-xs font-mono">
+          <div className="flex justify-between text-muted text-[11px]">
+            <span>Prendas ({cartItems.reduce((acc, i) => acc + i.quantity, 0)} items):</span>
+            <span>S/ {rawSubtotal.toFixed(2)}</span>
+          </div>
 
-              {/* Exact Target Total Tool (Fijar precio cerrado) */}
-              <div className="pt-1.5 border-t border-line/60 space-y-1.5">
-                <div className="flex items-center justify-between text-[10px]">
-                  <span className="text-accent font-bold uppercase flex items-center gap-1">
-                    <Calculator className="w-3 h-3" />
-                    Fijar Total Exacto (Cuadrar):
-                  </span>
-                  <span className="text-[9px] text-muted">Ajusta el total automáticamente</span>
-                </div>
-                <div className="flex gap-1.5">
-                  <div className="relative flex-1">
-                    <span className="absolute left-2.5 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-muted">S/</span>
-                    <input
-                      type="number"
-                      placeholder="Escribe el total exacto (Ej. 650, 600, 100...)"
-                      value={customTargetTotal}
-                      onChange={(e) => setCustomTargetTotal(e.target.value)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter') handleAutoSquareTotal(parseFloat(customTargetTotal) || 0);
-                      }}
-                      className="w-full bg-paper border border-line focus:border-accent text-xs font-mono font-bold py-1.5 pl-8 pr-2 text-ink focus:outline-none"
-                    />
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => handleAutoSquareTotal(parseFloat(customTargetTotal) || 0)}
-                    className="bg-accent hover:opacity-90 text-white px-3 py-1.5 text-[10px] font-mono uppercase font-bold cursor-pointer transition-opacity shadow-sm"
-                  >
-                    CUADRAR
-                  </button>
-                </div>
-
-                {/* Quick Presets */}
-                <div className="flex flex-wrap gap-1 pt-1">
-                  {[50, 80, 100, 150, 200, 300, 400, 500, 600, 650, 700].map((amt) => (
-                    <button
-                      key={amt}
-                      type="button"
-                      onClick={() => {
-                        setCustomTargetTotal(amt.toString());
-                        handleAutoSquareTotal(amt);
-                      }}
-                      className="text-[8.5px] font-mono bg-paper hover:bg-zinc-700 text-muted hover:text-ink border border-line px-1.5 py-0.2 cursor-pointer"
-                    >
-                      S/{amt}
-                    </button>
-                  ))}
-                </div>
-              </div>
+          {shippingCost > 0 && (
+            <div className="flex justify-between text-muted text-[11px]">
+              <span>Envío ({destinationType}):</span>
+              <span>+S/ {shippingCost.toFixed(2)}</span>
             </div>
           )}
 
-          {/* Subtotals breakdown */}
-          <div className="space-y-1 text-xs font-mono">
-            <div className="flex justify-between text-muted">
-              <span>Prendas ({cartItems.reduce((acc, i) => acc + i.quantity, 0)} items):</span>
-              <span>S/ {rawSubtotal.toFixed(2)}</span>
+          {computedDiscount > 0 && (
+            <div className="flex justify-between text-rose-500 font-bold text-[11px]">
+              <span>Descuento aplicado:</span>
+              <span>-S/ {computedDiscount.toFixed(2)}</span>
             </div>
+          )}
 
-            {taxMode !== 'NO_TAX' && (
-              <>
-                <div className="flex justify-between text-muted text-[11px]">
-                  <span>Op. Gravadas (Base):</span>
-                  <span>S/ {baseAmount.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-muted text-[11px]">
-                  <span>I.G.V. (18%):</span>
-                  <span>S/ {taxAmount.toFixed(2)}</span>
-                </div>
-              </>
-            )}
-
-            {shippingCost > 0 && (
-              <div className="flex justify-between text-muted">
-                <span>Envío ({destinationType}):</span>
-                <span>+S/ {shippingCost.toFixed(2)}</span>
-              </div>
-            )}
-
-            {computedDiscount > 0 && (
-              <div className="flex justify-between text-rose-500 font-bold">
-                <span>Descuento / Ajuste aplicado:</span>
-                <span>-S/ {computedDiscount.toFixed(2)}</span>
-              </div>
-            )}
-
-            {/* Editable TOTAL A COBRAR row */}
-            <div className="flex items-center justify-between text-base font-mono font-black text-ink pt-1.5 border-t border-line">
-              <span className="text-sm">TOTAL A COBRAR:</span>
-              <div className="flex items-center gap-1">
-                <span className="text-accent text-sm">S/</span>
-                <input
-                  type="number"
-                  step="0.5"
-                  value={totalAmount.toFixed(2)}
-                  onChange={(e) => {
-                    const typed = parseFloat(e.target.value);
-                    if (!isNaN(typed)) handleAutoSquareTotal(typed);
-                  }}
-                  className="w-28 bg-panel border border-accent/60 text-accent text-lg font-mono font-black text-right px-2 py-0.5 focus:outline-none focus:border-accent"
-                  title="Puedes editar el total a cobrar directamente aquí"
-                />
-              </div>
-            </div>
-
-            {/* Adelanto & Saldo Pendiente (Cuenta de la Venta) Card */}
-            <div className="bg-panel border border-line p-3 space-y-2.5 mt-2.5 shadow-xs">
-              <div className="flex items-center justify-between">
-                <span className="text-[10.5px] font-mono uppercase font-bold text-accent tracking-wider flex items-center gap-1.5">
-                  <Coins className="w-3.5 h-3.5 text-accent" />
-                  ADELANTO Y SALDO (PAGO A CUENTA):
-                </span>
-                {isAdvanceMode && effectivePendingBalance > 0 && (
-                  <span className="text-[9px] font-mono font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30 px-1.5 py-0.5">
-                    CON SALDO PENDIENTE
-                  </span>
-                )}
-              </div>
-
-              {/* Mode Toggle Buttons */}
-              <div className="grid grid-cols-2 gap-1.5">
-                <button
-                  type="button"
-                  onClick={() => setIsAdvanceMode(false)}
-                  className={`py-1.5 px-2 text-[10px] font-mono uppercase font-bold border transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                    !isAdvanceMode
-                      ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500 font-black shadow-xs'
-                      : 'bg-paper text-muted border-line hover:text-ink hover:bg-paper-soft'
-                  }`}
-                >
-                  <Check className="w-3 h-3" />
-                  <span>Pago Total (100%)</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsAdvanceMode(true);
-                    if (!customAdvanceAmount) {
-                      setCustomAdvanceAmount(Math.round(totalAmount * 0.5).toString());
-                    }
-                  }}
-                  className={`py-1.5 px-2 text-[10px] font-mono uppercase font-bold border transition-all cursor-pointer flex items-center justify-center gap-1 ${
-                    isAdvanceMode
-                      ? 'bg-amber-500/20 text-amber-300 border-amber-500 font-black shadow-xs'
-                      : 'bg-paper text-muted border-line hover:text-ink hover:bg-paper-soft'
-                  }`}
-                >
-                  <Coins className="w-3 h-3" />
-                  <span>Con Adelanto / A Cuenta</span>
-                </button>
-              </div>
-
-              {/* Expanded details when isAdvanceMode is true */}
-              {isAdvanceMode && (
-                <div className="space-y-2 pt-1 border-t border-line/60">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    <div>
-                      <label className="block text-[9.5px] font-mono uppercase tracking-wider text-muted mb-1 font-bold">
-                        Monto de Adelanto (S/):
-                      </label>
-                      <div className="relative">
-                        <span className="absolute left-2 top-1/2 -translate-y-1/2 text-xs font-mono font-bold text-amber-400">
-                          S/
-                        </span>
-                        <input
-                          type="number"
-                          step="any"
-                          value={customAdvanceAmount}
-                          placeholder={Math.round(totalAmount * 0.5).toString()}
-                          onChange={(e) => setCustomAdvanceAmount(e.target.value)}
-                          className="w-full bg-paper border border-amber-500/60 focus:border-amber-400 py-1 pl-7 pr-2 text-xs font-mono font-black text-amber-300 focus:outline-none"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="bg-paper border border-line p-1.5 flex flex-col justify-center">
-                      <span className="text-[8.5px] font-mono uppercase tracking-wider text-muted">
-                        Saldo Pendiente:
-                      </span>
-                      <span className="font-mono text-sm font-black text-rose-500">
-                        S/ {effectivePendingBalance.toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Quick Preset Buttons */}
-                  <div className="flex flex-wrap items-center gap-1">
-                    <span className="text-[8.5px] font-mono text-muted uppercase mr-0.5">Atajos:</span>
-                    <button
-                      type="button"
-                      onClick={() => setCustomAdvanceAmount(Math.round(totalAmount * 0.5).toString())}
-                      className="text-[9px] font-mono px-1.5 py-0.5 bg-paper hover:bg-zinc-700 text-amber-300 border border-amber-500/30 cursor-pointer font-bold"
-                    >
-                      50% (S/ {Math.round(totalAmount * 0.5)})
-                    </button>
-                    {[20, 30, 50, 70, 100].map((amt) => {
-                      if (amt >= totalAmount) return null;
-                      return (
-                        <button
-                          key={amt}
-                          type="button"
-                          onClick={() => setCustomAdvanceAmount(amt.toString())}
-                          className="text-[9px] font-mono px-1.5 py-0.5 bg-paper hover:bg-zinc-700 text-ink border border-line cursor-pointer"
-                        >
-                          S/ {amt}
-                        </button>
-                      );
-                    })}
-                  </div>
-
-                  {/* Receiving Account selector */}
-                  <div>
-                    <label className="block text-[9.5px] font-mono uppercase tracking-wider text-muted mb-1 font-bold">
-                      Cuenta Receptora / Banco de la Venta:
-                    </label>
-                    <div className="grid grid-cols-3 gap-1">
-                      {VANTA_BANK_ACCOUNTS.map((acc) => {
-                        const isAccSelected = selectedReceivingAccount === acc.id;
-                        return (
-                          <button
-                            key={acc.id}
-                            type="button"
-                            onClick={() => setSelectedReceivingAccount(acc.id)}
-                            className={`p-1.5 text-left text-[9px] font-mono border transition-all cursor-pointer truncate ${
-                              isAccSelected
-                                ? 'bg-accent/15 text-accent border-accent font-bold'
-                                : 'bg-paper text-muted border-line hover:text-ink hover:border-zinc-500'
-                            }`}
-                            title={`${acc.name} - ${acc.holder}`}
-                          >
-                            <div className="font-bold truncate">{acc.name}</div>
-                            <div className="text-[8px] text-muted truncate">{acc.number}</div>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  </div>
-                </div>
-              )}
-
-              {/* One-Click Actions: Emit Nota de Venta A4 & Copy WhatsApp */}
-              <div className="pt-1.5 space-y-1.5">
-                <button
-                  id="pos-direct-emit-a4-btn"
-                  type="button"
-                  onClick={() => handleCreateNotaVentaDirect('A4')}
-                  disabled={cartItems.length === 0}
-                  className="w-full bg-rose-600 hover:bg-rose-500 text-white font-mono text-xs font-bold uppercase tracking-wider py-2.5 px-3 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md shadow-rose-950/30 rounded-xs"
-                  title="Crear y registrar inmediatamente la Nota de Venta en el sistema y abrir para descargar en formato A4 (PDF)"
-                >
-                  <FileText className="w-4 h-4" />
-                  <span>CREAR NOTA DE VENTA Y DESCARGAR A4</span>
-                </button>
-
-                <button
-                  type="button"
-                  onClick={handleCopySaleAccount}
-                  disabled={cartItems.length === 0}
-                  className="w-full bg-paper hover:bg-paper-soft text-ink hover:text-accent border border-line hover:border-accent text-[10px] font-mono uppercase font-bold py-2 px-3 flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-xs"
-                  title="Copiar resumen comercial de la venta con cuentas bancarias para enviar al cliente por WhatsApp"
-                >
-                  <Copy className="w-3.5 h-3.5 text-accent" />
-                  <span>COPIAR CUENTA DE LA VENTA (WHATSAPP)</span>
-                </button>
-                {copySaleAccountFeedback && (
-                  <span className="block text-[9.5px] font-mono text-emerald-400 font-bold text-center mt-0.5 animate-fade-in">
-                    {copySaleAccountFeedback}
-                  </span>
-                )}
-              </div>
+          {/* TOTAL A COBRAR row */}
+          <div className="flex items-center justify-between text-base font-mono font-black text-ink pt-1 border-t border-line">
+            <span className="text-xs sm:text-sm tracking-wider">TOTAL A COBRAR:</span>
+            <div className="flex items-center gap-1">
+              <span className="text-accent text-sm">S/</span>
+              <input
+                type="number"
+                step="0.5"
+                value={totalAmount.toFixed(2)}
+                onChange={(e) => {
+                  const typed = parseFloat(e.target.value);
+                  if (!isNaN(typed)) handleAutoSquareTotal(typed);
+                }}
+                className="w-24 sm:w-28 bg-panel border border-accent/60 text-accent text-base sm:text-lg font-mono font-black text-right px-2 py-0.5 focus:outline-none focus:border-accent"
+                title="Puedes editar el total a cobrar directamente aquí"
+              />
             </div>
           </div>
+        </div>
 
-          {/* Action Buttons */}
-          <div className="space-y-2 pt-1">
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={handleClearTicket}
-                disabled={cartItems.length === 0}
-                className="bg-panel hover:bg-zinc-800 disabled:opacity-40 text-muted hover:text-ink font-mono text-xs uppercase px-3 py-2.5 border border-line transition-colors cursor-pointer flex items-center justify-center"
-                title="Limpiar nota"
-              >
-                <RotateCcw className="w-4 h-4" />
-              </button>
+        {/* Mode toggle (Adelanto vs 100%) */}
+        <div className="flex items-center justify-between pt-0.5 text-[9.5px] font-mono">
+          <button
+            type="button"
+            onClick={() => {
+              const nextMode = !isAdvanceMode;
+              setIsAdvanceMode(nextMode);
+              if (nextMode && !customAdvanceAmount) {
+                setCustomAdvanceAmount(Math.round(totalAmount * 0.5).toString());
+              }
+            }}
+            className={`flex items-center gap-1 px-2 py-0.5 border transition-colors cursor-pointer rounded-xs ${
+              isAdvanceMode
+                ? 'bg-amber-500/20 text-amber-300 border-amber-500 font-bold'
+                : 'bg-panel text-muted hover:text-ink border-line'
+            }`}
+          >
+            <Coins className="w-3 h-3 text-amber-400" />
+            <span>{isAdvanceMode ? '✓ Modo Adelanto Activo' : '+ Con Adelanto / A Cuenta'}</span>
+          </button>
+          {isAdvanceMode && effectivePendingBalance > 0 && (
+            <span className="text-rose-400 font-bold">
+              Saldo: S/ {effectivePendingBalance.toFixed(2)}
+            </span>
+          )}
+        </div>
 
-              <button
-                id="pos-open-proforma-btn"
-                type="button"
-                disabled={cartItems.length === 0}
-                onClick={() => {
-                  if (lastCompletedSale) {
-                    setIsProformaModalOpen(true);
-                  } else {
-                    handleCreateNotaVentaDirect('A4');
-                  }
-                }}
-                className="flex-1 bg-panel hover:bg-paper border border-line hover:border-accent hover:text-accent text-ink font-mono text-xs font-bold uppercase tracking-wider py-2.5 px-3 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-xs"
-                title="Emitir y ver Nota de Venta oficial en Formato A4 (PDF)"
-              >
-                <FileText className="w-4 h-4 text-accent" />
-                <span>NOTA DE VENTA A4</span>
-              </button>
-            </div>
+        {/* Action Buttons */}
+        <div className="flex gap-2 pt-0.5">
+          <button
+            type="button"
+            onClick={handleClearTicket}
+            disabled={cartItems.length === 0}
+            className="bg-panel hover:bg-zinc-800 disabled:opacity-40 text-muted hover:text-ink font-mono text-xs uppercase px-3 py-2.5 border border-line transition-colors cursor-pointer flex items-center justify-center rounded-xs"
+            title="Limpiar nota"
+          >
+            <RotateCcw className="w-4 h-4" />
+          </button>
 
+          <button
+            id="pos-open-proforma-btn"
+            type="button"
+            disabled={cartItems.length === 0}
+            onClick={() => {
+              if (lastCompletedSale) {
+                setIsProformaModalOpen(true);
+              } else {
+                handleCreateNotaVentaDirect('A4');
+              }
+            }}
+            className="flex-1 bg-panel hover:bg-paper border border-line hover:border-accent hover:text-accent text-ink font-mono text-xs font-bold uppercase tracking-wider py-2.5 px-2 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-xs rounded-xs"
+            title="Emitir y ver Nota de Venta oficial en Formato A4 (PDF)"
+          >
+            <FileText className="w-4 h-4 text-accent" />
+            <span>NOTA A4</span>
+          </button>
+
+          {/* Boleta de Envío button — visible when destination is LIMA or PROVINCIA */}
+          {(destinationType === 'LIMA' || destinationType === 'PROVINCIA') && (
             <button
               type="button"
               disabled={cartItems.length === 0}
-              onClick={() => setIsPaymentModalOpen(true)}
-              className={`w-full ${
-                isAdvanceMode && effectivePendingBalance > 0
-                  ? 'bg-amber-600 hover:bg-amber-500 text-white'
-                  : 'bg-accent hover:bg-rose-600 text-white'
-              } disabled:bg-panel disabled:text-muted disabled:cursor-not-allowed font-mono text-xs font-bold uppercase tracking-wider py-3.5 px-4 transition-all flex items-center justify-center gap-2 shadow-lg shadow-rose-950/40 cursor-pointer`}
+              onClick={() => setIsShippingTicketModalOpen(true)}
+              className="bg-panel hover:bg-purple-950/60 border border-purple-500/40 hover:border-purple-400 text-purple-300 hover:text-purple-200 font-mono text-xs font-bold uppercase tracking-wider py-2.5 px-2 transition-all flex items-center justify-center gap-1.5 cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed shadow-xs rounded-xs"
+              title="Generar Boleta de Envío / Guía de Despacho"
             >
-              <CreditCard className="w-4 h-4" />
-              {isAdvanceMode && effectivePendingBalance > 0 ? (
-                <span>
-                  COBRAR ADELANTO S/ {effectiveAdvanceAmount.toFixed(2)} (SALDO: S/ {effectivePendingBalance.toFixed(2)})
-                </span>
-              ) : (
-                <span>COBRAR S/ {totalAmount.toFixed(2)} (F4)</span>
-              )}
+              <Package className="w-4 h-4 text-purple-400" />
+              <span>ENVÍO</span>
             </button>
-          </div>
+          )}
+
+          <button
+            type="button"
+            disabled={cartItems.length === 0}
+            onClick={() => setIsPaymentModalOpen(true)}
+            className={`flex-1 ${
+              isAdvanceMode && effectivePendingBalance > 0
+                ? 'bg-amber-600 hover:bg-amber-500 text-white'
+                : 'bg-accent hover:bg-rose-600 text-white'
+            } disabled:bg-panel disabled:text-muted disabled:cursor-not-allowed font-mono text-xs font-bold uppercase tracking-wider py-2.5 px-3 transition-all flex items-center justify-center gap-1.5 shadow-lg shadow-rose-950/40 cursor-pointer rounded-xs`}
+          >
+            <CreditCard className="w-4 h-4" />
+            {isAdvanceMode && effectivePendingBalance > 0 ? (
+              <span>COBRAR S/ {effectiveAdvanceAmount.toFixed(2)}</span>
+            ) : (
+              <span>COBRAR (F4)</span>
+            )}
+          </button>
         </div>
+      </div>
       </div>
 
       {/* Product Variant Quick-Select Modal */}
@@ -2506,6 +2375,46 @@ export default function POSTerminal({ onSaleCompleted }: POSTerminalProps) {
         }}
         onNewSale={handleNewSale}
         onRegisterSale={() => handleCreateNotaVentaDirect('A4')}
+      />
+
+      {/* POS Boleta de Envío / Shipping Ticket Modal */}
+      <POSShippingTicketModal
+        isOpen={isShippingTicketModalOpen}
+        onClose={() => setIsShippingTicketModalOpen(false)}
+        items={lastCompletedSale?.items || cartItems}
+        customer={lastCompletedSale?.customer || customer}
+        destinationType={lastCompletedSale?.destinationType || destinationType}
+        shippingCost={lastCompletedSale?.shippingCost ?? shippingCost}
+        totalAmount={lastCompletedSale?.totalAmount ?? totalAmount}
+        sellerName={lastCompletedSale?.sellerName || getActiveSeller()}
+        orderNumber={lastCompletedSale?.receiptNumber || nextReceiptNumber}
+        shippingInfo={
+          lastCompletedSale?.shippingInfo || {
+            destination: destinationType,
+            shippingCost: shippingCost,
+            lima: destinationType === 'LIMA' ? shippingLima : undefined,
+            provincia: destinationType === 'PROVINCIA' ? shippingProvincia : undefined,
+          }
+        }
+        observations={lastCompletedSale?.observations || observations}
+        advanceAmount={
+          lastCompletedSale?.advanceAmount !== undefined
+            ? lastCompletedSale.advanceAmount
+            : isAdvanceMode
+            ? effectiveAdvanceAmount
+            : undefined
+        }
+        pendingBalance={
+          lastCompletedSale?.pendingBalance !== undefined
+            ? lastCompletedSale.pendingBalance
+            : isAdvanceMode
+            ? effectivePendingBalance
+            : undefined
+        }
+        isAdvancePayment={
+          lastCompletedSale?.isAdvancePayment ??
+          (isAdvanceMode && effectivePendingBalance > 0)
+        }
       />
 
       {/* WhatsApp Quick Paste Auto-Fill Modal */}
